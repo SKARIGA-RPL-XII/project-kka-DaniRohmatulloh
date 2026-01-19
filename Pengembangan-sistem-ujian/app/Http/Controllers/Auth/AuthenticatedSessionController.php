@@ -28,7 +28,13 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Auth::user();
+        
+        if ($user->role == 'guru') {
+            return redirect('/guru/dashboard');
+        } else {
+            return redirect('/siswa/dashboard');
+        }
     }
 
     /**
@@ -45,3 +51,4 @@ class AuthenticatedSessionController extends Controller
         return redirect('/');
     }
 }
+
