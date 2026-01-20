@@ -22,24 +22,36 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
-    {
-        $request->authenticate();
+    public function store(Request $request)
+{
+    $request->validate([
+        'email' => ['required', 'email'],
+        'password' => ['required'],
+    ]);
 
-        $request->session()->regenerate();
-
-        $user = Auth::user();
-        
-        if ($user->role == 'guru') {
-            return redirect('/guru/dashboard');
-        } else {
-            return redirect('/siswa/dashboard');
-        }
+    if (!Auth::attempt($request->only('email', 'password'))) {
+        return back()->withErrors([
+            'email' => 'Email atau password salah',
+        ]);
     }
 
-    /**
-     * Destroy an authenticated session.
-     */
+    $request->session()->regenerate();
+
+    $user = Auth::user();
+
+    if ($user->role === 'guru') {
+        return redirect()->route('guru.dashboard');
+    }
+
+    if ($user->role === 'murid') {
+        return redirect()->route('murid.dashboard');
+    }
+
+    Auth::logout();
+    return redirect('/login')->withErrors([
+        'role' => 'Role tidak dikenali',
+    ]);
+}
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
@@ -51,4 +63,3 @@ class AuthenticatedSessionController extends Controller
         return redirect('/');
     }
 }
-
