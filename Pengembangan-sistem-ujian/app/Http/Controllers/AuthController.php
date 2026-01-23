@@ -1,27 +1,21 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
-
-use App\Http\Controllers\Controller;
-use App\Models\User;
+namespace App\Http\Controllers;
 use Illuminate\Http\Request;
+namespace App\Http\Controllers;
+use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
 
-class RegisteredUserController extends Controller
+class AuthController extends Controller
 {
-    public function create(): View
-    {
-        return view('auth.register');
-    }
-
-    public function store(Request $request)
+    public function register(Request $request)
     {
         $request->validate([
             'nama' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:8|confirmed',
             'role' => 'required|in:guru,murid',
         ]);
 
@@ -39,3 +33,4 @@ class RegisteredUserController extends Controller
             : redirect()->route('murid.dashboard');
     }
 }
+
