@@ -17,25 +17,25 @@ class RegisteredUserController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:guru,murid',
-        ]);
+{
+    $request->validate([
+        'nama' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|min:8|confirmed',
+        'role' => 'required|in:guru,murid',
+    ]);
 
-        $user = User::create([
-            'name' => $request->nama,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
-        ]);
+    User::create([
+        'name' => $request->nama,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'role' => $request->role,
+    ]);
 
-        Auth::login($user);
+    // ❌ Jangan auto login
+    // Auth::login($user);
 
-        return $user->role === 'guru'
-            ? redirect()->route('guru.dashboard')
-            : redirect()->route('murid.dashboard');
-    }
+    return redirect()->route('login')
+        ->with('success', 'Registrasi berhasil, silakan login');
+}
 }
