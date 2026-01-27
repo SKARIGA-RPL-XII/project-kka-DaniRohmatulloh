@@ -154,7 +154,7 @@ Route::middleware(['guest'])->group(function () {
 // FALLBACK ROUTE (jika halaman tidak ditemukan)
 // ========================================
 Route::fallback(function () {
-    return response()->view('errors.404', [], 404);
+    return view('/examp');
 });
 
 // ========================================

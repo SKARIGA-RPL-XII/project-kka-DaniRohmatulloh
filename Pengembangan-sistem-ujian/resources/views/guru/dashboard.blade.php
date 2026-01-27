@@ -77,7 +77,7 @@
                         <span>Kelola Soal</span>
                     </a>
                     
-                    <a href="#" 
+                    <a href="/examp" 
                        class="flex items-center gap-3 p-3 hover:bg-white/10 rounded-lg transition">
                         <i class="fas fa-file-alt"></i>
                         <span>Buat Ujian</span>
@@ -224,69 +224,7 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Quick Actions -->
-                <div class="mb-8">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                        <i class="fas fa-bolt text-yellow-500"></i>
-                        Aksi Cepat
-                    </h3>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <a href="{{ route('guru.soal') }}" 
-                           class="card-hover group bg-white rounded-xl shadow border p-6 hover:border-blue-300">
-                            <div class="flex items-start gap-4">
-                                <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center text-white">
-                                    <i class="fas fa-plus-circle text-xl"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-gray-800 mb-2 group-hover:text-blue-600">Tambah Soal Baru</h4>
-                                    <p class="text-sm text-gray-600">Buat soal pilihan ganda, esai, atau benar/salah</p>
-                                </div>
-                            </div>
-                            <div class="mt-4 pt-4 border-t border-gray-100">
-                                <span class="text-sm text-blue-600 font-medium">Mulai sekarang →</span>
-                            </div>
-                        </a>
-                        
-                        <a href="#"
-                           class="card-hover group bg-white rounded-xl shadow border p-6 hover:border-green-300">
-                            <div class="flex items-start gap-4">
-                                <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center text-white">
-                                    <i class="fas fa-file-medical text-xl"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-gray-800 mb-2 group-hover:text-green-600">Buat Ujian Baru</h4>
-                                    <p class="text-sm text-gray-600">Buat ujian dengan soal pilihan dari bank soal</p>
-                                </div>
-                            </div>
-                            <div class="mt-4 pt-4 border-t border-gray-100">
-                                <span class="inline-flex items-center gap-2 text-sm text-gray-500">
-                                    <i class="fas fa-clock"></i>
-                                    <span>Coming Soon</span>
-                                </span>
-                            </div>
-                        </a>
-                        
-                        <a href="/examp" 
-                           class="card-hover group bg-white rounded-xl shadow border p-6 hover:border-purple-300">
-                            <div class="flex items-start gap-4">
-                                <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white">
-                                    <i class="fas fa-play-circle text-xl"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-gray-800 mb-2 group-hover:text-purple-600">Preview Ujian</h4>
-                                    <p class="text-sm text-gray-600">Lihat tampilan ujian dari sisi siswa</p>
-                                </div>
-                            </div>
-                            <div class="mt-4 pt-4 border-t border-gray-100">
-                                <span class="text-sm text-purple-600 font-medium">Coba sekarang →</span>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Recent Activity & Stats -->
+              <!-- Recent Activity & Stats -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <!-- Recent Activity -->
                     <div class="bg-white rounded-xl shadow p-6">
