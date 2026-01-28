@@ -65,13 +65,13 @@
 
                 <!-- Navigation Menu -->
                 <nav class="space-y-1">
-                    <a href="{{ route('guru.dashboard') }}" 
+                    <a href="/guru/dashboard" 
                        class="flex items-center gap-3 p-3 active-menu rounded-lg">
                         <i class="fas fa-home"></i>
                         <span>Dashboard</span>
                     </a>
                     
-                    <a href="{{ route('guru.soal') }}" 
+                    <a href="/guru/soal" 
                        class="flex items-center gap-3 p-3 hover:bg-white/10 rounded-lg transition">
                         <i class="fas fa-question-circle"></i>
                         <span>Kelola Soal</span>
@@ -96,14 +96,11 @@
                     </a>
                     
                     <div class="pt-4 border-t border-white/10">
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" 
-                                    class="w-full flex items-center gap-3 p-3 text-red-300 hover:bg-white/10 rounded-lg transition">
-                                <i class="fas fa-sign-out-alt"></i>
-                                <span>Logout</span>
-                            </button>
-                        </form>
+                        <button onclick="handleLogout()" 
+                                class="w-full flex items-center gap-3 p-3 text-red-300 hover:bg-white/10 rounded-lg transition">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
                     </div>
                 </nav>
             </div>
@@ -334,6 +331,26 @@
     </div>
 
     <script>
+        // Handle logout
+        function handleLogout() {
+            if (confirm('Apakah Anda yakin ingin logout?')) {
+                fetch('{{ route("logout") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(() => {
+                    window.location.href = '/';
+                })
+                .catch(() => {
+                    window.location.href = '/';
+                });
+            }
+        }
+        
         // Toggle mobile sidebar (jika nanti dibuat responsive)
         function toggleSidebar() {
             const sidebar = document.querySelector('.sidebar');

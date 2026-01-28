@@ -138,69 +138,69 @@
             </div>
 
             <div class="grid md:grid-cols-3 gap-6">
-                <!-- FEATURE 1 -->
+                <!-- MONITORING UJIAN -->
                 <div class="bg-white p-6 rounded-xl border border-gray-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
                     <div class="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center text-white mb-4">
-                        <i class="fas fa-pencil-alt"></i>
+                        <i class="fas fa-eye"></i>
                     </div>
-                    <h4 class="font-bold text-lg mb-2">Pembuat Soal</h4>
+                    <h4 class="font-bold text-lg mb-2">Monitoring Ujian</h4>
                     <p class="text-gray-600">
-                        Buat soal dengan berbagai tipe pilihan ganda, esai, dan lainnya dengan mudah.
+                        Pantau ujian yang sedang berlangsung dan aktivitas siswa secara real-time.
                     </p>
                 </div>
 
-                <!-- FEATURE 2 -->
+                <!-- KELOLA SOAL -->
                 <div class="bg-white p-6 rounded-xl border border-gray-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
                     <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center text-white mb-4">
-                        <i class="fas fa-bolt"></i>
+                        <i class="fas fa-question-circle"></i>
                     </div>
-                    <h4 class="font-bold text-lg mb-2">Hasil Cepat</h4>
+                    <h4 class="font-bold text-lg mb-2">Kelola Soal</h4>
                     <p class="text-gray-600">
-                        Nilai otomatis langsung muncul setelah ujian selesai dikerjakan.
+                        Buat, edit, dan kelola bank soal dengan berbagai tipe pertanyaan pilihan ganda.
                     </p>
                 </div>
 
-                <!-- FEATURE 3 -->
+                <!-- BUAT UJIAN -->
                 <div class="bg-white p-6 rounded-xl border border-gray-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
                     <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center text-white mb-4">
-                        <i class="fas fa-shield-alt"></i>
+                        <i class="fas fa-file-alt"></i>
                     </div>
-                    <h4 class="font-bold text-lg mb-2">Aman & Terpercaya</h4>
+                    <h4 class="font-bold text-lg mb-2">Buat Ujian</h4>
                     <p class="text-gray-600">
-                        Sistem keamanan berlapis untuk mencegah kecurangan selama ujian.
+                        Susun ujian dari bank soal yang tersedia dengan pengaturan waktu dan mata pelajaran.
                     </p>
                 </div>
 
-                <!-- FEATURE 4 -->
+                <!-- ANALISIS NILAI -->
                 <div class="bg-white p-6 rounded-xl border border-gray-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
                     <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center text-white mb-4">
                         <i class="fas fa-chart-bar"></i>
                     </div>
-                    <h4 class="font-bold text-lg mb-2">Analisis Data</h4>
+                    <h4 class="font-bold text-lg mb-2">Analisis Nilai</h4>
                     <p class="text-gray-600">
-                        Lihat laporan detail dan statistik performa ujian secara real-time.
+                        Lihat laporan detail dan statistik performa siswa secara real-time dan komprehensif.
                     </p>
                 </div>
 
-                <!-- FEATURE 5 -->
+                <!-- KELOLA KELAS -->
                 <div class="bg-white p-6 rounded-xl border border-gray-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
                     <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white mb-4">
-                        <i class="fas fa-mobile-alt"></i>
+                        <i class="fas fa-users"></i>
                     </div>
-                    <h4 class="font-bold text-lg mb-2">Responsif</h4>
+                    <h4 class="font-bold text-lg mb-2">Kelola Kelas</h4>
                     <p class="text-gray-600">
-                        Akses dari smartphone, tablet, atau komputer dengan tampilan optimal.
+                        Atur dan kelola kelas, siswa, serta distribusi ujian untuk setiap mata pelajaran.
                     </p>
                 </div>
 
-                <!-- FEATURE 6 -->
+                <!-- SISTEM KEAMANAN -->
                 <div class="bg-white p-6 rounded-xl border border-gray-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
                     <div class="w-12 h-12 bg-gradient-to-r from-teal-500 to-green-500 rounded-lg flex items-center justify-center text-white mb-4">
-                        <i class="fas fa-users"></i>
+                        <i class="fas fa-shield-alt"></i>
                     </div>
-                    <h4 class="font-bold text-lg mb-2">Kolaborasi</h4>
+                    <h4 class="font-bold text-lg mb-2">Sistem Keamanan</h4>
                     <p class="text-gray-600">
-                        Guru dan murid dapat berinteraksi langsung dalam satu platform.
+                        Keamanan berlapis untuk mencegah kecurangan dan memastikan integritas ujian.
                     </p>
                 </div>
             </div>

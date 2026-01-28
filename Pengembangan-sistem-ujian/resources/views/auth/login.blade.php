@@ -145,6 +145,7 @@
             <!-- Login Form -->
             <form method="POST" action="{{ route('login') }}" class="space-y-6" id="loginForm">
                 @csrf
+                <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
                 <!-- Email Input -->
                 <div class="space-y-2">
@@ -235,7 +236,8 @@
                 <button
                     type="submit"
                     class="w-full btn-gradient text-white font-semibold py-4 rounded-xl transition-all duration-300 transform hover:shadow-lg mt-8"
-                    id="submitBtn">
+                    id="submitBtn"
+                    onclick="handleLogin(event)">
                     <span class="flex items-center justify-center">
                         <i class="fas fa-sign-in-alt mr-3"></i>
                         <span id="btnText">Masuk ke Dashboard</span>
@@ -276,6 +278,87 @@
     </div>
 
     <script>
+        // Handle login form submission
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const form = document.getElementById('loginForm');
+            const email = document.querySelector('input[name="email"]').value;
+            const password = document.querySelector('input[name="password"]').value;
+            const remember = document.querySelector('input[name="remember"]').checked;
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            btnText.classList.add('hidden');
+            loadingSpinner.classList.remove('hidden');
+            
+            // Create form data
+            const formData = new FormData();
+            formData.append('email', email);
+            formData.append('password', password);
+            formData.append('_token', document.querySelector('input[name="_token"]').value);
+            if (remember) formData.append('remember', '1');
+            
+            // Submit login request
+            fetch('{{ route("login") }}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                    return;
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data && data.errors) {
+                    showError(data.errors.email ? data.errors.email[0] : 'Login gagal');
+                } else {
+                    // Check user role and redirect
+                    fetch('/test-role')
+                    .then(res => res.json())
+                    .then(userData => {
+                        if (userData.role === 'guru') {
+                            window.location.href = '/guru/dashboard';
+                        } else if (userData.role === 'murid') {
+                            window.location.href = '/murid/dashboard';
+                        } else {
+                            window.location.href = '/dashboard';
+                        }
+                    })
+                    .catch(() => {
+                        window.location.href = '/dashboard';
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Login error:', error);
+                showError('Terjadi kesalahan sistem');
+            })
+            .finally(() => {
+                // Reset button state
+                submitBtn.disabled = false;
+                btnText.classList.remove('hidden');
+                loadingSpinner.classList.add('hidden');
+            });
+        }
+        
+        // Show error message
+        function showError(message) {
+            const errorMsg = document.getElementById('error-message');
+            const errorText = document.getElementById('error-text');
+            errorText.textContent = message;
+            errorMsg.classList.remove('hidden');
+            errorMsg.classList.add('error-shake');
+        }
+        
         // Password visibility toggle
         function togglePassword() {
             const passwordInput = document.getElementById('passwordInput');
@@ -349,6 +432,19 @@
             
             // Set hint text
             if (password.length > 0 && password.length < 8) {
+                hint = 'Password minimal 8 karakter';
+            } else if (strength <= 2) {
+                hint = 'Password lemah';
+            } else if (strength === 3) {
+                hint = 'Password cukup';
+            } else {
+                hint = 'Password kuat';
+            }
+            
+            passwordHint.textContent = hint;
+        });
+        
+    </script>d.length > 0 && password.length < 8) {
                 hint = 'Password minimal 8 karakter';
             } else if (strength <= 2) {
                 hint = 'Password lemah';

@@ -40,11 +40,11 @@ class AuthenticatedSessionController extends Controller
     $user = Auth::user();
 
     if ($user->role === 'guru') {
-        return redirect()->route('guru.dashboard');
+        return redirect('/guru/dashboard');
     }
 
     if ($user->role === 'murid') {
-        return redirect()->route('murid.dashboard');
+        return redirect('/murid/dashboard');
     }
 
     Auth::logout();

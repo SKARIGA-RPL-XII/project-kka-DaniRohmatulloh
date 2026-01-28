@@ -47,12 +47,18 @@ Route::prefix('api')->group(function () {
 
 // Route untuk halaman web
 Route::middleware(['auth'])->group(function () {
-    Route::get('/guru/soal', function () {
-        return view('guru.soal'); // Pastikan view ini ada
-    });
-    
+    // ROUTE GURU - Simple routes
     Route::get('/guru/dashboard', function () {
         return view('guru.dashboard');
+    });
+    
+    Route::get('/guru/soal', function () {
+        return view('guru.soal');
+    });
+    
+    // ROUTE MURID
+    Route::get('/murid/dashboard', function () {
+        return view('murid.dashboard');
     });
     
     // ROUTE UTAMA DASHBOARD - Redirect berdasarkan role
@@ -60,12 +66,11 @@ Route::middleware(['auth'])->group(function () {
         $user = Auth::user();
         
         if ($user->role === 'guru') {
-            return view('guru.dashboard');
+            return redirect('/guru/dashboard');
         } elseif ($user->role === 'murid') {
-            return view('murid.dashboard');
+            return redirect('/murid/dashboard');
         }
         
-        // Default view jika role tidak dikenali
         return view('dashboard');
     })->name('dashboard');
 
