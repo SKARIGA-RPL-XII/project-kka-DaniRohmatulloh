@@ -361,43 +361,6 @@
             passwordHint.textContent = hint;
         });
         
-        // Form submission simulation
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const submitBtn = document.getElementById('submitBtn');
-            const btnText = document.getElementById('btnText');
-            const loadingSpinner = document.getElementById('loadingSpinner');
-            
-            // Show loading state
-            btnText.classList.add('hidden');
-            loadingSpinner.classList.remove('hidden');
-            submitBtn.disabled = true;
-            
-            // Simulate API call
-            setTimeout(() => {
-                // In real application, remove this setTimeout and handle actual form submission
-                // For demo purposes, we'll show an error message
-                const errorMsg = document.getElementById('error-message');
-                const errorText = document.getElementById('error-text');
-                
-                errorText.textContent = 'Kredensial tidak valid. Silakan coba lagi.';
-                errorMsg.classList.remove('hidden');
-                errorMsg.classList.add('error-shake');
-                
-                // Reset button state
-                btnText.classList.remove('hidden');
-                loadingSpinner.classList.add('hidden');
-                submitBtn.disabled = false;
-                
-                // Remove shake animation after it plays
-                setTimeout(() => {
-                    errorMsg.classList.remove('error-shake');
-                }, 500);
-                
-            }, 1500);
-        });
-        
     </script>
 
 </body>

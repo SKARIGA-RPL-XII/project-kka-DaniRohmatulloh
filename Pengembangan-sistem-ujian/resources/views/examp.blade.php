@@ -2,199 +2,266 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Ujian Game Edukasi - Monitoring Guru</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Ujian Real-time | Dashboard Guru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        .progress-bar {
-            transition: width 0.5s ease-in-out;
-        }
-        .student-card {
+        .sidebar {
             transition: all 0.3s ease;
         }
-        .student-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        .status-online {
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        .timer-critical {
-            animation: blink 1s infinite;
-        }
-        @keyframes blink {
-            0%, 100% { background-color: #fef2f2; }
-            50% { background-color: #fee2e2; }
+        .active-menu {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen p-4 md:p-6">
-    <div class="max-w-7xl mx-auto">
-        <!-- Header Section -->
-        <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<body class="bg-gray-50">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white">
+            <div class="p-6">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg">ExamSystem</h1>
+                        <p class="text-xs text-gray-300">Guru Dashboard</p>
+                    </div>
+                </div>
+
+                <!-- User Profile -->
+                <div class="mb-8 p-4 bg-white/5 rounded-xl">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        </div>
+                        <div>
+                            <p class="font-medium">{{ auth()->user()->name }}</p>
+                            <p class="text-xs text-gray-300">{{ auth()->user()->email }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-center gap-2 px-2 py-1 bg-purple-900/30 rounded-full">
+                        <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                        <span class="text-xs">Guru</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="space-y-1">
+                    <a href="/guru/dashboard" class="flex items-center gap-3 p-3 hover:bg-white/10 rounded-lg transition">
+                        <i class="fas fa-home"></i><span>Dashboard</span>
+                    </a>
+                    <a href="/guru/soal" class="flex items-center gap-3 p-3 hover:bg-white/10 rounded-lg transition">
+                        <i class="fas fa-question-circle"></i><span>Kelola Soal</span>
+                    </a>
+                    <a href="/examp" class="flex items-center gap-3 p-3 active-menu rounded-lg">
+                        <i class="fas fa-file-alt"></i><span>Buat Ujian</span>
+                    </a>
+                    <a href="#" class="flex items-center gap-3 p-3 hover:bg-white/10 rounded-lg transition">
+                        <i class="fas fa-chart-bar"></i><span>Analisis Nilai</span>
+                    </a>
+                    <a href="#" class="flex items-center gap-3 p-3 hover:bg-white/10 rounded-lg transition">
+                        <i class="fas fa-users"></i><span>Kelola Kelas</span>
+                    </a>
+                    <div class="pt-4 border-t border-white/10">
+                        <form method="POST" action="/logout">
+                            <button type="submit" class="w-full flex items-center gap-3 p-3 text-red-300 hover:bg-white/10 rounded-lg transition">
+                                <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+                            </button>
+                        </form>
+                    </div>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1">
+            <!-- Top Bar -->
+            <header class="bg-white shadow-sm border-b">
+                <div class="px-6 py-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-800">Monitoring Ujian Real-time</h1>
+                            <p class="text-sm text-gray-600 mt-1">
+                                <i class="fas fa-calendar-alt mr-1"></i>
+                                Senin, 27 Januari 2025
+                            </p>
+                        </div>
+                        
+                        <div class="flex items-center gap-4">
+                            <!-- Notifications -->
+                            <button class="relative p-2 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100">
+                                <i class="fas fa-bell"></i>
+                                <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="p-6">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-sm p-4 mb-6 border">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-800 mb-2">
-                        <i class="fas fa-chalkboard-teacher text-blue-600 mr-3"></i>
-                        Monitoring Ujian - Dashboard Guru
+                    <h1 class="text-xl font-semibold text-gray-800">
+                        <i class="fas fa-chalkboard-teacher text-blue-500 mr-2"></i>
+                        Monitoring Ujian
                     </h1>
-                    <p class="text-gray-600">Pantau peserta ujian secara real-time</p>
+                    <p class="text-sm text-gray-600">Matematika Kelas 10 - 30 menit</p>
                 </div>
                 
-                <div class="flex items-center gap-3">
-                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-3">
-                        <span class="text-sm text-gray-600">Ujian Aktif:</span>
-                        <span class="ml-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                            <i class="fas fa-play-circle mr-1"></i> Matematika Kelas 10
-                        </span>
+                <div class="flex items-center gap-2">
+                    <div class="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded">
+                        <i class="fas fa-users mr-1"></i>
+                        <span id="totalStudents">8</span> Peserta
                     </div>
-                    <button onclick="refreshData()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
-                        <i class="fas fa-sync-alt"></i> Refresh
+                    <button onclick="refreshData()" class="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">
+                        <i class="fas fa-sync-alt mr-1"></i>Refresh
                     </button>
                 </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Left Column: Stats & Controls -->
-            <div class="lg:col-span-1 space-y-6">
-                <!-- Exam Overview Card -->
-                <div class="bg-white rounded-2xl shadow-xl p-6">
-                    <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                        <i class="fas fa-chart-bar text-blue-600"></i>
-                        Ringkasan Ujian
-                    </h2>
-
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="text-center p-3 bg-blue-50 rounded-lg">
-                                <div class="text-2xl font-bold text-blue-600" id="totalStudents">8</div>
-                                <div class="text-sm text-gray-600">Total Peserta</div>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+            <!-- Stats Cards -->
+            <div class="lg:col-span-1 space-y-4">
+                <!-- Stats Summary -->
+                <div class="bg-white rounded-lg shadow-sm p-4 border">
+                    <h2 class="font-medium text-gray-700 mb-3">Statistik</h2>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                                <span class="text-sm text-gray-600">Sedang Ujian</span>
                             </div>
-                            
-                            <div class="text-center p-3 bg-green-50 rounded-lg">
-                                <div class="text-2xl font-bold text-green-600" id="activeStudents">6</div>
-                                <div class="text-sm text-gray-600">Sedang Ujian</div>
-                            </div>
-                            
-                            <div class="text-center p-3 bg-purple-50 rounded-lg">
-                                <div class="text-2xl font-bold text-purple-600" id="submittedStudents">2</div>
-                                <div class="text-sm text-gray-600">Selesai</div>
-                            </div>
-                            
-                            <div class="text-center p-3 bg-red-50 rounded-lg">
-                                <div class="text-2xl font-bold text-red-600" id="absentStudents">0</div>
-                                <div class="text-sm text-gray-600">Tidak Hadir</div>
-                            </div>
+                            <span class="font-semibold" id="activeStudents">6</span>
                         </div>
-
-                        <!-- Exam Timer -->
-                        <div class="pt-4 border-t">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="font-medium text-gray-700">Waktu Ujian</span>
-                                <span class="text-sm text-gray-500" id="examTimer">29:45</span>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+                                <span class="text-sm text-gray-600">Selesai</span>
                             </div>
-                            <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
-                                <div id="examProgress" class="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full w-45%"></div>
-                            </div>
+                            <span class="font-semibold" id="submittedStudents">2</span>
                         </div>
-
-                        <!-- Quick Actions -->
-                        <div class="pt-4 border-t">
-                            <h3 class="font-semibold text-gray-700 mb-3">Kontrol Ujian</h3>
-                            <div class="grid grid-cols-2 gap-2">
-                                <button onclick="pauseAllExams()" class="p-2 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 border border-yellow-300 rounded-lg">
-                                    <i class="fas fa-pause mr-1"></i>Jeda Semua
-                                </button>
-                                <button onclick="extendTime()" class="p-2 bg-green-100 text-green-700 hover:bg-green-200 border border-green-300 rounded-lg">
-                                    <i class="fas fa-clock mr-1"></i>Tambah Waktu
-                                </button>
-                                <button onclick="endExam()" class="p-2 bg-red-100 text-red-700 hover:bg-red-200 border border-red-300 rounded-lg">
-                                    <i class="fas fa-stop mr-1"></i>Akhiri Ujian
-                                </button>
-                                <button onclick="downloadReport()" class="p-2 bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-300 rounded-lg">
-                                    <i class="fas fa-eye mr-1"></i>Lihat Hasil Jawaban
-                                </button>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
+                                <span class="text-sm text-gray-600">Belum Mulai</span>
                             </div>
+                            <span class="font-semibold" id="absentStudents">0</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Top Performers -->
-                <div class="bg-white rounded-2xl shadow-xl p-6">
-                    <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                        <i class="fas fa-trophy text-yellow-600"></i>
-                        Top Performers
-                    </h2>
-                    
-                    <div id="topPerformers" class="space-y-3">
-                        <!-- Data akan diisi oleh JavaScript -->
+                <!-- Timer -->
+                <div class="bg-white rounded-lg shadow-sm p-4 border">
+                    <h2 class="font-medium text-gray-700 mb-2">Waktu Ujian</h2>
+                    <div class="text-center mb-2">
+                        <div class="text-2xl font-bold text-gray-800" id="examTimer">29:45</div>
+                        <div class="text-xs text-gray-500">Sisa waktu</div>
+                    </div>
+                    <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div id="examProgress" class="h-full bg-blue-500 rounded-full w-45%"></div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg shadow-sm p-4 border">
+                    <h2 class="font-medium text-gray-700 mb-3">Kontrol</h2>
+                    <div class="space-y-2">
+                        <button onclick="pauseAllExams()" class="w-full text-left px-3 py-2 bg-yellow-50 text-yellow-700 rounded border border-yellow-200 hover:bg-yellow-100 text-sm">
+                            <i class="fas fa-pause mr-2"></i>Jeda Semua
+                        </button>
+                        <button onclick="endExam()" class="w-full text-left px-3 py-2 bg-red-50 text-red-700 rounded border border-red-200 hover:bg-red-100 text-sm">
+                            <i class="fas fa-stop mr-2"></i>Akhiri Ujian
+                        </button>
+                        <button onclick="downloadReport()" class="w-full text-left px-3 py-2 bg-blue-50 text-blue-700 rounded border border-blue-200 hover:bg-blue-100 text-sm">
+                            <i class="fas fa-download mr-2"></i>Unduh Laporan
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Top 3 -->
+                <div class="bg-white rounded-lg shadow-sm p-4 border">
+                    <h2 class="font-medium text-gray-700 mb-3">Top 3</h2>
+                    <div id="topPerformers" class="space-y-2">
+                        <!-- Data akan diisi JavaScript -->
                     </div>
                 </div>
             </div>
 
-            <!-- Middle Column: Student List -->
-            <div class="lg:col-span-2">
-                <!-- Filters & Search -->
-                <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div>
-                            <h2 class="text-xl font-bold text-gray-800">Daftar Peserta Ujian</h2>
-                            <p class="text-sm text-gray-600">Monitoring real-time semua siswa</p>
-                        </div>
-                        
-                        <div class="flex flex-wrap gap-3">
+            <!-- Students List -->
+            <div class="lg:col-span-3">
+                <!-- Search & Filter -->
+                <div class="bg-white rounded-lg shadow-sm p-4 mb-4 border">
+                    <div class="flex flex-col md:flex-row gap-3">
+                        <div class="flex-1">
                             <div class="relative">
                                 <input type="text" id="searchStudent" placeholder="Cari siswa..." 
-                                       class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                                       class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                                <i class="fas fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
                             </div>
-                            
-                            <select id="filterStatus" class="border border-gray-300 rounded-lg px-3 py-2">
-                                <option value="all">Semua Status</option>
-                                <option value="active">Sedang Ujian</option>
-                                <option value="submitted">Selesai</option>
-                                <option value="not_started">Belum Mulai</option>
-                            </select>
                         </div>
+                        <select id="filterStatus" class="border border-gray-300 rounded px-3 py-2 text-sm">
+                            <option value="all">Semua Status</option>
+                            <option value="active">Sedang Ujian</option>
+                            <option value="submitted">Selesai</option>
+                            <option value="not_started">Belum Mulai</option>
+                        </select>
                     </div>
                 </div>
 
                 <!-- Students Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="studentsGrid">
-                    <!-- Data siswa akan diisi oleh JavaScript -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="studentsGrid">
+                    <!-- Data akan diisi JavaScript -->
                 </div>
             </div>
         </div>
 
-        <!-- Detailed View Modal -->
-        <div id="detailModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto hidden z-50">
-            <div class="relative top-20 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-xl bg-white">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-gray-800" id="detailTitle">Detail Peserta</h3>
-                    <button onclick="closeDetailModal()" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
-                
-                <div id="detailContent">
-                    <!-- Detail konten akan diisi oleh JavaScript -->
+        <!-- Detail Modal -->
+        <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+            <div class="min-h-screen flex items-center justify-center p-4">
+                <div class="bg-white rounded-lg w-full max-w-2xl">
+                    <div class="flex justify-between items-center p-4 border-b">
+                        <h3 class="font-semibold text-gray-800" id="detailTitle">Detail Peserta</h3>
+                        <button onclick="closeDetailModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="p-4 max-h-96 overflow-y-auto" id="detailContent">
+                        <!-- Detail akan diisi JavaScript -->
+                    </div>
+                    
+                    <div class="p-4 border-t flex justify-end gap-2">
+                        <button onclick="closeDetailModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                            Tutup
+                        </button>
+                        <button onclick="viewAnswers(0)" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                            <i class="fas fa-eye mr-1"></i>Lihat Jawaban
+                        </button>
+                    </div>
                 </div>
             </div>
+        </div>
+            </main>
         </div>
     </div>
 
     <script>
-        // Mock data from database structure
+        // Data (tetap sama dengan sebelumnya)
         const examData = {
             exam: {
                 id: 1,
                 name: "Matematika Kelas 10",
-                duration: 1800, // 30 minutes
+                duration: 1800,
                 start_time: "2025-01-26 08:00:00",
                 end_time: "2025-01-26 08:30:00",
                 total_questions: 20
@@ -295,18 +362,10 @@
                     last_activity: "3 menit lalu",
                     ip_address: "192.168.1.105"
                 }
-            ],
-            questions: [
-                { id: 1, question: "2 + 2 = ?", correct_answer: "B" },
-                { id: 2, question: "Ibukota Indonesia?", correct_answer: "A" }
-            ],
-            submissions: [
-                { student_id: 4, question_id: 1, answer: "B", is_correct: true },
-                { student_id: 4, question_id: 2, answer: "A", is_correct: true }
             ]
         };
 
-        // Application State
+        // State
         let state = {
             filteredStudents: [...examData.students],
             searchTerm: '',
@@ -340,7 +399,6 @@
             document.getElementById('submittedStudents').textContent = submitted;
             document.getElementById('absentStudents').textContent = absent;
             
-            // Calculate average progress
             const avgProgress = examData.students.reduce((sum, s) => sum + s.progress, 0) / total;
             document.getElementById('examProgress').style.width = avgProgress + '%';
         }
@@ -352,77 +410,52 @@
             
             state.filteredStudents.forEach(student => {
                 const card = document.createElement('div');
-                card.className = 'student-card bg-white rounded-xl shadow p-4 cursor-pointer hover:shadow-lg';
+                card.className = 'bg-white rounded-lg border hover:border-blue-300 cursor-pointer';
                 card.onclick = () => showStudentDetail(student.id);
                 
-                // Status styling
-                let statusBadge = '';
+                // Status color
                 let statusColor = '';
                 switch(student.status) {
-                    case 'active':
-                        statusBadge = 'Sedang Ujian';
-                        statusColor = 'bg-green-100 text-green-800';
-                        break;
-                    case 'submitted':
-                        statusBadge = 'Selesai';
-                        statusColor = 'bg-blue-100 text-blue-800';
-                        break;
-                    case 'not_started':
-                        statusBadge = 'Belum Mulai';
-                        statusColor = 'bg-gray-100 text-gray-800';
-                        break;
+                    case 'active': statusColor = 'bg-green-100 text-green-800'; break;
+                    case 'submitted': statusColor = 'bg-blue-100 text-blue-800'; break;
+                    case 'not_started': statusColor = 'bg-gray-100 text-gray-800'; break;
                 }
                 
-                // Time warning
-                const timeClass = student.time_left <= 300 ? 'timer-critical' : '';
-                
                 card.innerHTML = `
-                    <div class="flex justify-between items-start mb-3">
-                        <div>
-                            <div class="font-bold text-gray-800">${student.nama}</div>
-                            <div class="text-sm text-gray-500">${student.email}</div>
+                    <div class="p-3">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <div class="font-medium text-gray-800">${student.nama}</div>
+                                <div class="text-xs text-gray-500 truncate">${student.email}</div>
+                            </div>
+                            <span class="px-2 py-1 ${statusColor} rounded text-xs">
+                                ${student.status === 'active' ? 'Ujian' : student.status === 'submitted' ? 'Selesai' : 'Belum'}
+                            </span>
                         </div>
-                        <span class="px-2 py-1 ${statusColor} rounded-full text-xs font-medium">
-                            ${statusBadge}
-                        </span>
-                    </div>
-                    
-                    <div class="space-y-3">
-                        <div>
-                            <div class="flex justify-between text-sm text-gray-600 mb-1">
+                        
+                        <div class="mb-2">
+                            <div class="flex justify-between text-xs text-gray-600 mb-1">
                                 <span>Progress</span>
                                 <span>${student.progress}%</span>
                             </div>
-                            <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
-                                <div class="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full" 
-                                     style="width: ${student.progress}%"></div>
+                            <div class="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-blue-500 rounded-full" style="width: ${student.progress}%"></div>
                             </div>
                         </div>
                         
-                        ${student.status === 'active' ? `
-                            <div class="${timeClass} p-2 rounded-lg">
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-600">Sisa Waktu:</span>
-                                    <span class="font-medium ${student.time_left <= 300 ? 'text-red-600' : 'text-gray-800'}">
-                                        ${formatTime(student.time_left)}
-                                    </span>
-                                </div>
+                        <div class="grid grid-cols-3 gap-1 text-xs">
+                            <div class="text-center p-1 bg-gray-50 rounded">
+                                <div class="font-semibold">${student.score}</div>
+                                <div class="text-gray-500">Skor</div>
                             </div>
-                        ` : ''}
-                        
-                        <div class="grid grid-cols-2 gap-2 text-sm">
-                            <div class="text-center p-2 bg-gray-50 rounded">
-                                <div class="font-bold text-gray-800">${student.score}</div>
-                                <div class="text-gray-600">Skor</div>
+                            <div class="text-center p-1 bg-gray-50 rounded">
+                                <div class="font-semibold">${student.questions_answered}</div>
+                                <div class="text-gray-500">Soal</div>
                             </div>
-                            <div class="text-center p-2 bg-gray-50 rounded">
-                                <div class="font-bold text-gray-800">${student.questions_answered}/${examData.exam.total_questions}</div>
-                                <div class="text-gray-600">Soal</div>
+                            <div class="text-center p-1 bg-gray-50 rounded">
+                                <div class="font-semibold">${formatTime(student.time_left)}</div>
+                                <div class="text-gray-500">Sisa</div>
                             </div>
-                        </div>
-                        
-                        <div class="text-xs text-gray-500 pt-2 border-t">
-                            <i class="fas fa-clock mr-1"></i>Aktifitas: ${student.last_activity}
                         </div>
                     </div>
                 `;
@@ -437,33 +470,32 @@
             const topStudents = [...examData.students]
                 .filter(s => s.status === 'submitted')
                 .sort((a, b) => b.score - a.score)
-                .slice(0, 5);
+                .slice(0, 3);
             
             container.innerHTML = '';
             
             topStudents.forEach((student, index) => {
-                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '🏅';
-                
                 const item = document.createElement('div');
-                item.className = 'flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg';
+                item.className = 'flex items-center justify-between p-2 hover:bg-gray-50 rounded';
                 item.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <span class="text-xl">${medal}</span>
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-700 rounded-full text-xs">
+                            ${index + 1}
+                        </span>
                         <div>
-                            <div class="font-medium text-gray-800">${student.nama}</div>
-                            <div class="text-xs text-gray-500">${student.email}</div>
+                            <div class="font-medium text-sm">${student.nama}</div>
+                            <div class="text-xs text-gray-500">${student.score} poin</div>
                         </div>
                     </div>
-                    <div class="text-right">
-                        <div class="font-bold text-green-600">${student.score}</div>
-                        <div class="text-xs text-gray-500">poin</div>
+                    <div class="text-xs text-gray-500">
+                        ${student.questions_answered} soal
                     </div>
                 `;
                 container.appendChild(item);
             });
         }
 
-        // Format time (seconds to MM:SS)
+        // Format time
         function formatTime(seconds) {
             const minutes = Math.floor(seconds / 60);
             const secs = seconds % 60;
@@ -472,6 +504,7 @@
 
         // Start exam timer
         function startExamTimer() {
+            clearInterval(state.examTimerInterval);
             state.examTimerInterval = setInterval(() => {
                 if (state.examTimer > 0) {
                     state.examTimer--;
@@ -488,125 +521,66 @@
             document.getElementById('detailTitle').textContent = `Detail: ${student.nama}`;
             
             let detailHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-4">
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <h4 class="font-bold text-gray-800 mb-3">Informasi Siswa</h4>
-                            <div class="space-y-2">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">Nama:</span>
-                                    <span class="font-medium">${student.nama}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">Email:</span>
-                                    <span class="font-medium">${student.email}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-600">Status:</span>
-                                    <span class="px-2 py-1 ${student.status === 'active' ? 'bg-green-100 text-green-800' : student.status === 'submitted' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'} rounded text-sm">
-                                        ${student.status === 'active' ? 'Sedang Ujian' : student.status === 'submitted' ? 'Selesai' : 'Belum Mulai'}
-                                    </span>
-                                </div>
-                            </div>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <div class="text-sm text-gray-500">Nama</div>
+                            <div class="font-medium">${student.nama}</div>
                         </div>
-                        
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <h4 class="font-bold text-gray-800 mb-3">Statistik Ujian</h4>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div class="text-center p-3 bg-white rounded-lg">
-                                    <div class="text-2xl font-bold ${student.score >= 70 ? 'text-green-600' : student.score >= 50 ? 'text-yellow-600' : 'text-red-600'}">
-                                        ${student.score}
-                                    </div>
-                                    <div class="text-sm text-gray-600">Skor</div>
-                                </div>
-                                <div class="text-center p-3 bg-white rounded-lg">
-                                    <div class="text-2xl font-bold text-blue-600">${student.progress}%</div>
-                                    <div class="text-sm text-gray-600">Progress</div>
-                                </div>
-                                <div class="text-center p-3 bg-white rounded-lg">
-                                    <div class="text-2xl font-bold text-purple-600">${student.questions_answered}</div>
-                                    <div class="text-sm text-gray-600">Soal Dijawab</div>
-                                </div>
-                                <div class="text-center p-3 bg-white rounded-lg">
-                                    <div class="text-2xl font-bold text-gray-600">${examData.exam.total_questions - student.questions_answered}</div>
-                                    <div class="text-sm text-gray-600">Belum Dijawab</div>
-                                </div>
-                            </div>
+                        <div>
+                            <div class="text-sm text-gray-500">Email</div>
+                            <div class="font-medium">${student.email}</div>
                         </div>
                     </div>
                     
-                    <div class="space-y-4">
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <h4 class="font-bold text-gray-800 mb-3">Progress Detail</h4>
-                            <div class="mb-4">
-                                <div class="flex justify-between text-sm text-gray-600 mb-1">
-                                    <span>Progress Pengerjaan</span>
-                                    <span>${student.progress}%</span>
-                                </div>
-                                <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
-                                    <div class="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full" 
-                                         style="width: ${student.progress}%"></div>
-                                </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-center p-3 bg-gray-50 rounded">
+                            <div class="text-2xl font-bold ${student.score >= 70 ? 'text-green-600' : student.score >= 50 ? 'text-yellow-600' : 'text-red-600'}">
+                                ${student.score}
                             </div>
-            `;
-            
-            if (student.status === 'active') {
-                detailHTML += `
-                            <div class="p-3 ${student.time_left <= 300 ? 'bg-red-50 border border-red-200' : 'bg-blue-50 border border-blue-200'} rounded-lg">
-                                <div class="flex justify-between items-center">
-                                    <div>
-                                        <div class="text-sm text-gray-600">Sisa Waktu</div>
-                                        <div class="text-xl font-bold ${student.time_left <= 300 ? 'text-red-600' : 'text-blue-700'}">
-                                            ${formatTime(student.time_left)}
-                                        </div>
-                                    </div>
-                                    <div class="text-sm">
-                                        <div class="text-gray-600">IP Address</div>
-                                        <div class="font-medium">${student.ip_address || 'Tidak tersedia'}</div>
-                                    </div>
-                                </div>
-                            </div>
-                `;
-            }
-            
-            if (student.status === 'submitted') {
-                detailHTML += `
-                            <div class="p-3 bg-green-50 border border-green-200 rounded-lg">
-                                <div class="flex justify-between items-center">
-                                    <div>
-                                        <div class="text-sm text-gray-600">Waktu Selesai</div>
-                                        <div class="font-medium">${student.submitted_at || 'Tidak tersedia'}</div>
-                                    </div>
-                                    <div class="text-3xl ${student.score >= 70 ? 'text-green-600' : student.score >= 50 ? 'text-yellow-600' : 'text-red-600'}">
-                                        ${student.score}
-                                    </div>
-                                </div>
-                            </div>
-                `;
-            }
-            
-            detailHTML += `
+                            <div class="text-sm text-gray-600">Skor</div>
                         </div>
-                        
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <h4 class="font-bold text-gray-800 mb-3">Aksi Guru</h4>
-                            <div class="grid grid-cols-2 gap-2">
-                                ${student.status === 'active' ? `
-                                    <button onclick="sendMessage(${student.id})" class="p-2 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-lg">
-                                        <i class="fas fa-comment mr-1"></i>Pesan
-                                    </button>
-                                    <button onclick="extendStudentTime(${student.id})" class="p-2 bg-green-100 text-green-700 hover:bg-green-200 rounded-lg">
-                                        <i class="fas fa-clock mr-1"></i>Tambah Waktu
-                                    </button>
-                                ` : ''}
-                                <button onclick="viewAnswers(${student.id})" class="p-2 bg-purple-100 text-purple-700 hover:bg-purple-200 rounded-lg">
-                                    <i class="fas fa-eye mr-1"></i>Lihat Jawaban
-                                </button>
-                                <button onclick="downloadStudentReport(${student.id})" class="p-2 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 rounded-lg">
-                                    <i class="fas fa-download mr-1"></i>Undah Laporan
-                                </button>
+                        <div class="text-center p-3 bg-gray-50 rounded">
+                            <div class="text-2xl font-bold text-blue-600">${student.progress}%</div>
+                            <div class="text-sm text-gray-600">Progress</div>
+                        </div>
+                        <div class="text-center p-3 bg-gray-50 rounded">
+                            <div class="text-2xl font-bold text-purple-600">${student.questions_answered}</div>
+                            <div class="text-sm text-gray-600">Soal</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="text-sm text-gray-500 mb-1">Status</div>
+                        <div class="inline-flex items-center px-3 py-1 rounded-full text-sm ${
+                            student.status === 'active' ? 'bg-green-100 text-green-800' :
+                            student.status === 'submitted' ? 'bg-blue-100 text-blue-800' :
+                            'bg-gray-100 text-gray-800'
+                        }">
+                            <i class="fas fa-circle text-xs mr-2 ${
+                                student.status === 'active' ? 'text-green-500' :
+                                student.status === 'submitted' ? 'text-blue-500' :
+                                'text-gray-400'
+                            }"></i>
+                            ${student.status === 'active' ? 'Sedang Ujian' : 
+                              student.status === 'submitted' ? 'Selesai' : 'Belum Mulai'}
+                        </div>
+                    </div>
+                    
+                    ${student.status === 'active' ? `
+                        <div class="p-3 ${student.time_left <= 300 ? 'bg-red-50 border border-red-200' : 'bg-blue-50 border border-blue-200'} rounded">
+                            <div class="text-sm text-gray-500">Sisa Waktu</div>
+                            <div class="text-xl font-bold ${student.time_left <= 300 ? 'text-red-600' : 'text-blue-700'}">
+                                ${formatTime(student.time_left)}
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">
+                                <i class="fas fa-desktop mr-1"></i>${student.ip_address}
                             </div>
                         </div>
+                    ` : ''}
+                    
+                    <div class="text-sm text-gray-500">
+                        <i class="fas fa-clock mr-1"></i>Aktifitas terakhir: ${student.last_activity}
                     </div>
                 </div>
             `;
@@ -634,7 +608,6 @@
         function filterStudents() {
             let filtered = [...examData.students];
             
-            // Apply search filter
             if (state.searchTerm) {
                 filtered = filtered.filter(student => 
                     student.nama.toLowerCase().includes(state.searchTerm) ||
@@ -642,7 +615,6 @@
                 );
             }
             
-            // Apply status filter
             if (state.filterStatus !== 'all') {
                 filtered = filtered.filter(student => student.status === state.filterStatus);
             }
@@ -653,59 +625,32 @@
 
         // Control functions
         function refreshData() {
-            // Simulate API call
-            alert('Data diperbarui!');
+            // In real app, fetch from API
             renderAll();
         }
 
         function pauseAllExams() {
             if (confirm('Jeda ujian untuk semua siswa?')) {
-                alert('Ujian dijeda untuk semua siswa');
-                // In real app, send API request to pause all exams
-            }
-        }
-
-        function extendTime() {
-            const minutes = prompt('Tambah waktu (menit):', '5');
-            if (minutes && !isNaN(minutes)) {
-                alert(`Waktu ditambah ${minutes} menit untuk semua siswa`);
-                // In real app, update exam duration
+                alert('Ujian dijeda');
+                // API call here
             }
         }
 
         function endExam() {
             if (confirm('Akhiri ujian untuk semua siswa?')) {
-                alert('Ujian diakhiri. Semua jawaban akan dikumpulkan.');
-                // In real app, end exam for all students
+                alert('Ujian diakhiri');
+                // API call here
             }
         }
 
         function downloadReport() {
             alert('Laporan sedang diunduh...');
-            // In real app, generate and download report
-        }
-
-        function sendMessage(studentId) {
-            const message = prompt('Pesan untuk siswa:');
-            if (message) {
-                alert(`Pesan terkirim ke siswa ID: ${studentId}`);
-            }
-        }
-
-        function extendStudentTime(studentId) {
-            const minutes = prompt('Tambah waktu untuk siswa ini (menit):', '5');
-            if (minutes && !isNaN(minutes)) {
-                alert(`Waktu ditambah ${minutes} menit untuk siswa ID: ${studentId}`);
-            }
+            // API call here
         }
 
         function viewAnswers(studentId) {
-            alert(`Melihat jawaban siswa ID: ${studentId}\n\nDalam aplikasi nyata, ini akan menampilkan semua jawaban siswa.`);
+            alert('Melihat jawaban siswa');
             closeDetailModal();
-        }
-
-        function downloadStudentReport(studentId) {
-            alert(`Mengunduh laporan untuk siswa ID: ${studentId}`);
         }
 
         // Close modal when clicking outside

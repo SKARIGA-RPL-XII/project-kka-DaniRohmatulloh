@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Kelola Soal | Dashboard Guru</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -25,11 +26,11 @@
                 <div class="mb-8 p-4 bg-white/5 rounded-xl">
                     <div class="flex items-center gap-3 mb-3">
                         <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                            G
+                            {{ strtoupper(substr(auth()->user()->nama ?? auth()->user()->name ?? 'G', 0, 1)) }}
                         </div>
                         <div>
-                            <p class="font-medium">Guru Matematika</p>
-                            <p class="text-xs text-gray-300">guru@gmail.com</p>
+                            <p class="font-medium">{{ auth()->user()->nama ?? auth()->user()->name ?? 'Guru' }}</p>
+                            <p class="text-xs text-gray-300">{{ auth()->user()->email }}</p>
                         </div>
                     </div>
                     <div class="flex items-center justify-center gap-2 px-2 py-1 bg-purple-900/30 rounded-full">
@@ -45,7 +46,7 @@
                     <a href="/guru/soal" class="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
                         <i class="fas fa-question-circle"></i><span>Kelola Soal</span>
                     </a>
-                    <a href="#" class="flex items-center gap-3 p-3 hover:bg-white/10 rounded-lg transition">
+                    <a href="/examp" class="flex items-center gap-3 p-3 hover:bg-white/10 rounded-lg transition">
                         <i class="fas fa-file-alt"></i><span>Buat Ujian</span>
                     </a>
                     <a href="#" class="flex items-center gap-3 p-3 hover:bg-white/10 rounded-lg transition">
@@ -61,28 +62,6 @@
                             </button>
                         </form>
                     </div>
-                </nav>
-                    <a href="#" class="flex items-center gap-3 p-3 hover:bg-white/10 rounded-lg transition">
-                        <i class="dashboard"></i><span>Dashboard</span>
-                    </a>
-                    <a href="#" class="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
-                        <i class="kelola soal"></i><span>Kelola Soal</span>
-                    </a>
-                    <a href="#" class="flex items-center gap-3 p-3 hover:bg-white/10 rounded-lg transition">
-                        <i class="fas fa-file-alt"></i><span>Buat Ujian</span>
-                    </a>
-                    <a href="#" class="flex items-center gap-3 p-3 hover:bg-white/10 rounded-lg transition">
-                        <i class="fas fa-chart-bar"></i><span>Analisis Nilai</span>
-                    </a>
-                    <a href="#" class="flex items-center gap-3 p-3 hover:bg-white/10 rounded-lg transition">
-                        <i class="fas fa-users"></i><span>Kelola Kelas</span>
-                    </a>
-                    <div class="pt-4 border-t border-white/10">
-                        <button class="w-full flex items-center gap-3 p-3 text-red-300 hover:bg-white/10 rounded-lg transition">
-                            <i class="fas fa-sign-out-alt"></i><span>Logout</span>
-                        </button>
-                    </div>
-                </nav>
             </div>
         </div>
 
@@ -337,7 +316,26 @@ const data = {
         { id: 5, name: 'Bahasa Inggris' },
         { id: 6, name: 'PKN' }
     ],
-    
+    soal: [
+        {
+            id: 1,
+            type: 'pg',
+            question: 'Berapa hasil dari 2 + 2?',
+            subject: 'Matematika',
+            date: '2025-01-26',
+            status: 'aktif',
+            options: ['3', '4', '5', '6'],
+            correct: 'B'
+        },
+        {
+            id: 2,
+            type: 'uraian',
+            question: 'Jelaskan pengertian fotosintesis!',
+            subject: 'IPA',
+            date: '2025-01-25',
+            status: 'review'
+        }
+    ],
     selected: new Set(),
     page: 1,
     perPage: 10,
@@ -346,10 +344,48 @@ const data = {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
-    updateStats();
-    loadQuestions();
-    loadSubjects();
+    loadSubjectsFromDB();
+    loadQuestionsFromDB();
 });
+
+// Load subjects from database
+function loadSubjectsFromDB() {
+    fetch('/api/subjects')
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                data.subjects = result.data.map(s => ({
+                    id: s.id,
+                    name: s.nama_mapel
+                }));
+                loadSubjects();
+            }
+        })
+        .catch(error => console.error('Error loading subjects:', error));
+}
+
+// Load questions from database
+function loadQuestionsFromDB() {
+    fetch('/api/soal')
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                data.soal = result.data.map(q => ({
+                    id: q.id,
+                    type: q.jenis,
+                    question: q.pertanyaan,
+                    subject: q.subject_name,
+                    date: q.created_at.split('T')[0],
+                    status: q.status,
+                    options: q.pilihan ? JSON.parse(q.pilihan) : null,
+                    correct: q.jawaban_benar
+                }));
+                updateStats();
+                loadQuestions();
+            }
+        })
+        .catch(error => console.error('Error loading questions:', error));
+}
 
 // Update Statistics
 function updateStats() {
@@ -560,6 +596,11 @@ function closeModal() {
 }
 
 function setType(type) {
+    if (type === 'uraian') {
+        alert('Maaf, soal uraian belum didukung. Silakan gunakan Pilihan Ganda.');
+        return;
+    }
+    
     data.type = type;
     document.getElementById('btnPG').classList.toggle('border-blue-400', type === 'pg');
     document.getElementById('btnPG').classList.toggle('bg-blue-50', type === 'pg');
@@ -622,10 +663,34 @@ function addSubject() {
         alert('Nama mapel harus diisi');
         return;
     }
-    const newSub = { id: data.subjects.length + 1, name: name };
-    data.subjects.push(newSub);
-    loadSubjects();
-    hideNewSubject();
+    
+    fetch('/api/subjects', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ nama_mapel: name })
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            data.subjects.push({
+                id: result.data.id,
+                name: result.data.nama_mapel
+            });
+            loadSubjects();
+            hideNewSubject();
+            alert('Mata pelajaran berhasil ditambahkan!');
+            updateStats();
+        } else {
+            alert('Gagal menambahkan mata pelajaran!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan!');
+    });
 }
 
 function generateQuestions() {
@@ -637,22 +702,35 @@ function generateQuestions() {
         div.innerHTML = data.type === 'pg' ? `
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Soal ${i}</label>
-                <textarea placeholder="Pertanyaan..." class="w-full px-3 py-2 border rounded-lg" rows="2" required></textarea>
+                <textarea placeholder="Pertanyaan..." class="w-full px-3 py-2 border rounded-lg question-text" rows="2" required></textarea>
             </div>
             <div class="grid grid-cols-2 gap-4 mb-4">
-                <div><input type="text" placeholder="Opsi A" class="w-full px-3 py-2 border rounded-lg" required></div>
-                <div><input type="text" placeholder="Opsi B" class="w-full px-3 py-2 border rounded-lg" required></div>
-                <div><input type="text" placeholder="Opsi C" class="w-full px-3 py-2 border rounded-lg" required></div>
-                <div><input type="text" placeholder="Opsi D" class="w-full px-3 py-2 border rounded-lg" required></div>
+                <div><input type="text" placeholder="Opsi A" class="w-full px-3 py-2 border rounded-lg opsi-a" required></div>
+                <div><input type="text" placeholder="Opsi B" class="w-full px-3 py-2 border rounded-lg opsi-b" required></div>
+                <div><input type="text" placeholder="Opsi C" class="w-full px-3 py-2 border rounded-lg opsi-c"></div>
+                <div><input type="text" placeholder="Opsi D" class="w-full px-3 py-2 border rounded-lg opsi-d"></div>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Jawaban Benar</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Jawaban Benar (Wajib)</label>
                 <div class="grid grid-cols-4 gap-3">
-                    <div class="text-center"><input type="radio" name="jawaban${i}" value="A" required><label class="text-sm ml-1">A</label></div>
-                    <div class="text-center"><input type="radio" name="jawaban${i}" value="B"><label class="text-sm ml-1">B</label></div>
-                    <div class="text-center"><input type="radio" name="jawaban${i}" value="C"><label class="text-sm ml-1">C</label></div>
-                    <div class="text-center"><input type="radio" name="jawaban${i}" value="D"><label class="text-sm ml-1">D</label></div>
+                    <div class="text-center p-2 border rounded hover:bg-gray-50 cursor-pointer" onclick="selectAnswer(this, ${i})">
+                        <input type="radio" name="jawaban_${i}" value="A" required class="jawaban-radio" style="display: none;">
+                        <div class="jawaban-label font-medium">A</div>
+                    </div>
+                    <div class="text-center p-2 border rounded hover:bg-gray-50 cursor-pointer" onclick="selectAnswer(this, ${i})">
+                        <input type="radio" name="jawaban_${i}" value="B" class="jawaban-radio" style="display: none;">
+                        <div class="jawaban-label font-medium">B</div>
+                    </div>
+                    <div class="text-center p-2 border rounded hover:bg-gray-50 cursor-pointer" onclick="selectAnswer(this, ${i})">
+                        <input type="radio" name="jawaban_${i}" value="C" class="jawaban-radio" style="display: none;">
+                        <div class="jawaban-label font-medium">C</div>
+                    </div>
+                    <div class="text-center p-2 border rounded hover:bg-gray-50 cursor-pointer" onclick="selectAnswer(this, ${i})">
+                        <input type="radio" name="jawaban_${i}" value="D" class="jawaban-radio" style="display: none;">
+                        <div class="jawaban-label font-medium">D</div>
+                    </div>
                 </div>
+                <p class="text-xs text-gray-500 mt-2">Klik huruf untuk memilih jawaban benar</p>
             </div>
         ` : `
             <div class="mb-4">
@@ -668,10 +746,28 @@ function generateQuestions() {
     }
 }
 
+// Tambahkan fungsi untuk memilih jawaban dengan UI yang lebih baik
+function selectAnswer(element, questionIndex) {
+    // Reset semua pilihan di soal ini
+    const container = element.closest('.grid');
+    container.querySelectorAll('.text-center').forEach(el => {
+        el.classList.remove('bg-blue-100', 'border-blue-500', 'text-blue-700');
+        el.classList.add('border');
+    });
+    
+    // Tandai yang dipilih
+    element.classList.add('bg-blue-100', 'border-blue-500', 'text-blue-700');
+    element.classList.remove('border');
+    
+    // Set radio button
+    const radio = element.querySelector('.jawaban-radio');
+    if (radio) {
+        radio.checked = true;
+    }
+}
+
 function addMore() {
     data.count++;
-    document.getElementById('count').value = data.count;
-    document.getElementById('display').textContent = data.count;
     generateQuestions();
 }
 
@@ -681,24 +777,149 @@ function saveQuestions(e) {
         alert('Pilih mata pelajaran!');
         return;
     }
-    const subject = data.subjects.find(s => s.id === data.selectedSubject);
-    for (let i = 0; i < data.count; i++) {
-        const newId = data.soal.length > 0 ? Math.max(...data.soal.map(s => s.id)) + 1 : 1;
-        data.soal.unshift({
-            id: newId,
-            type: data.type,
-            question: `Soal ${data.type === 'pg' ? 'Pilihan Ganda' : 'Uraian'} ${i+1} - ${subject.name}`,
-            subject: subject.name,
-            date: new Date().toISOString().split('T')[0],
-            status: 'review',
-            options: data.type === 'pg' ? ['Opsi A', 'Opsi B', 'Opsi C', 'Opsi D'] : undefined,
-            correct: data.type === 'pg' ? 'A' : undefined
+    
+    // Ambil data dari form
+    const questions = [];
+    const questionDivs = document.querySelectorAll('#questions > div');
+    
+    questionDivs.forEach((div, index) => {
+        // Cari semua input dalam div ini
+        const questionText = div.querySelector('textarea').value;
+        if (!questionText.trim()) return;
+        
+        let questionData = {
+            pertanyaan: questionText.trim()
+        };
+        
+        if (data.type === 'pg') {
+            // Untuk soal PG - ambil semua input text
+            const inputs = div.querySelectorAll('input[type="text"]');
+            questionData.opsi_a = inputs[0] ? inputs[0].value.trim() : '';
+            questionData.opsi_b = inputs[1] ? inputs[1].value.trim() : '';
+            questionData.opsi_c = inputs[2] && inputs[2].value.trim() ? inputs[2].value.trim() : null;
+            questionData.opsi_d = inputs[3] && inputs[3].value.trim() ? inputs[3].value.trim() : null;
+            
+            // Ambil jawaban yang dipilih - perbaiki selector ini
+            const radios = div.querySelectorAll('input[type="radio"]');
+            let jawabanDipilih = null;
+            radios.forEach(radio => {
+                if (radio.checked) {
+                    jawabanDipilih = radio.value;
+                }
+            });
+            
+            questionData.jawaban_benar = jawabanDipilih;
+            
+            // Validasi di client side
+            if (!jawabanDipilih) {
+                alert(`Soal ${index + 1}: Pilih jawaban benar!`);
+                throw new Error(`Jawaban benar tidak dipilih untuk soal ${index + 1}`);
+            }
+            
+        } else {
+            // Untuk soal uraian - tidak didukung oleh struktur database saat ini
+            // Tampilkan pesan bahwa hanya PG yang didukung
+            alert('Maaf, soal uraian belum didukung. Gunakan tipe Pilihan Ganda.');
+            return;
+        }
+        
+        questions.push(questionData);
+    });
+    
+    if (questions.length === 0) {
+        alert('Isi minimal 1 soal!');
+        return;
+    }
+    
+    // Validasi tambahan
+    const invalidQuestions = questions.filter(q => !q.jawaban_benar);
+    if (invalidQuestions.length > 0) {
+        alert('Ada soal yang belum dipilih jawaban benarnya!');
+        return;
+    }
+    
+    // Kirim ke server - format baru
+    if (questions.length === 1) {
+        // Kirim single question
+        const question = questions[0];
+        const payload = {
+            mapel_id: data.selectedSubject,
+            pertanyaan: question.pertanyaan,
+            opsi_a: question.opsi_a,
+            opsi_b: question.opsi_b,
+            opsi_c: question.opsi_c,
+            opsi_d: question.opsi_d,
+            jawaban_benar: question.jawaban_benar
+        };
+        
+        console.log('Payload yang dikirim:', payload); // Untuk debugging
+        
+        fetch('/api/soal', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw new Error(JSON.stringify(err));
+                });
+            }
+            return response.json();
+        })
+        .then(responseData => {
+            if (responseData.success) {
+                alert(`Berhasil menambah soal!`);
+                closeModal();
+                loadQuestionsFromDB();
+            } else {
+                alert('Gagal menyimpan soal: ' + (responseData.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            try {
+                const err = JSON.parse(error.message);
+                alert('Error: ' + (err.message || JSON.stringify(err.errors || err)));
+            } catch {
+                alert('Terjadi kesalahan: ' + error.message);
+            }
+        });
+    } else {
+        // Kirim batch questions
+        const payload = {
+            mapel_id: data.selectedSubject,
+            questions: questions
+        };
+        
+        console.log('Batch payload:', payload); // Untuk debugging
+        
+        fetch('/api/soal/batch', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(responseData => {
+            if (responseData.success) {
+                alert(`Berhasil menambah ${questions.length} soal!`);
+                closeModal();
+                loadQuestionsFromDB();
+            } else {
+                alert('Gagal menyimpan soal: ' + (responseData.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan: ' + error.message);
         });
     }
-    updateStats();
-    loadQuestions();
-    alert(`Berhasil tambah ${data.count} soal!`);
-    closeModal();
 }
 
 function resetForm() {

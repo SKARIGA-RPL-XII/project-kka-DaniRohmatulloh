@@ -81,7 +81,6 @@
                        class="flex items-center gap-3 p-3 hover:bg-white/10 rounded-lg transition">
                         <i class="fas fa-file-alt"></i>
                         <span>Buat Ujian</span>
-                        <span class="ml-auto text-xs bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded">Soon</span>
                     </a>
                     
                     <a href="#" 
@@ -94,12 +93,6 @@
                        class="flex items-center gap-3 p-3 hover:bg-white/10 rounded-lg transition">
                         <i class="fas fa-users"></i>
                         <span>Kelola Kelas</span>
-                    </a>
-                    
-                    <a href="#" 
-                       class="flex items-center gap-3 p-3 hover:bg-white/10 rounded-lg transition">
-                        <i class="fas fa-cog"></i>
-                        <span>Pengaturan</span>
                     </a>
                     
                     <div class="pt-4 border-t border-white/10">
