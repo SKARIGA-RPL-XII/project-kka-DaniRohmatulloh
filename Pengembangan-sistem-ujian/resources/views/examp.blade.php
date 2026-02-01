@@ -7,9 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        .sidebar {
-            transition: all 0.3s ease;
-        }
+        .sidebar { transition: all 0.3s ease; }
         .active-menu {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -36,11 +34,11 @@
                 <div class="mb-8 p-4 bg-white/5 rounded-xl">
                     <div class="flex items-center gap-3 mb-3">
                         <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                            {{ strtoupper(substr(auth()->user()->nama ?? 'G', 0, 1)) }}
                         </div>
                         <div>
-                            <p class="font-medium">{{ auth()->user()->name }}</p>
-                            <p class="text-xs text-gray-300">{{ auth()->user()->email }}</p>
+                            <p class="font-medium">{{ auth()->user()->nama ?? 'Guru' }}</p>
+                            <p class="text-xs text-gray-300">{{ auth()->user()->email ?? 'guru@email.com' }}</p>
                         </div>
                     </div>
                     <div class="flex items-center justify-center gap-2 px-2 py-1 bg-purple-900/30 rounded-full">
@@ -58,7 +56,7 @@
                         <i class="fas fa-question-circle"></i><span>Kelola Soal</span>
                     </a>
                     <a href="/examp" class="flex items-center gap-3 p-3 active-menu rounded-lg">
-                        <i class="fas fa-file-alt"></i><span>Buat Ujian</span>
+                        <i class="fas fa-file-alt"></i><span>Monitoring Ujian</span>
                     </a>
                     <a href="#" class="flex items-center gap-3 p-3 hover:bg-white/10 rounded-lg transition">
                         <i class="fas fa-chart-bar"></i><span>Analisis Nilai</span>
@@ -67,7 +65,8 @@
                         <i class="fas fa-users"></i><span>Kelola Kelas</span>
                     </a>
                     <div class="pt-4 border-t border-white/10">
-                        <form method="POST" action="/logout">
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
                             <button type="submit" class="w-full flex items-center gap-3 p-3 text-red-300 hover:bg-white/10 rounded-lg transition">
                                 <i class="fas fa-sign-out-alt"></i><span>Logout</span>
                             </button>
@@ -87,7 +86,7 @@
                             <h1 class="text-2xl font-bold text-gray-800">Monitoring Ujian Real-time</h1>
                             <p class="text-sm text-gray-600 mt-1">
                                 <i class="fas fa-calendar-alt mr-1"></i>
-                                Senin, 27 Januari 2025
+                                {{ now()->translatedFormat('l, d F Y') }}
                             </p>
                         </div>
                         
@@ -104,159 +103,179 @@
 
             <!-- Main Content -->
             <main class="p-6">
-        <!-- Header -->
-        <div class="bg-white rounded-lg shadow-sm p-4 mb-6 border">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-                <div>
-                    <h1 class="text-xl font-semibold text-gray-800">
-                        <i class="fas fa-chalkboard-teacher text-blue-500 mr-2"></i>
-                        Monitoring Ujian
-                    </h1>
-                    <p class="text-sm text-gray-600">Matematika Kelas 10 - 30 menit</p>
-                </div>
-                
-                <div class="flex items-center gap-2">
-                    <div class="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded">
-                        <i class="fas fa-users mr-1"></i>
-                        <span id="totalStudents">8</span> Peserta
-                    </div>
-                    <button onclick="refreshData()" class="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">
-                        <i class="fas fa-sync-alt mr-1"></i>Refresh
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
-            <!-- Stats Cards -->
-            <div class="lg:col-span-1 space-y-4">
-                <!-- Stats Summary -->
-                <div class="bg-white rounded-lg shadow-sm p-4 border">
-                    <h2 class="font-medium text-gray-700 mb-3">Statistik</h2>
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                                <span class="text-sm text-gray-600">Sedang Ujian</span>
+                <!-- Pilih Ujian (jika tidak ada ujian yang dipilih) -->
+                @if(!isset($ujian) && isset($ujians) && $ujians->count() > 0)
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-list-alt text-blue-500 mr-2"></i>
+                        Pilih Ujian untuk Dimonitoring
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        @foreach($ujians as $exam)
+                        <a href="{{ route('guru.monitoring.detail', $exam->id) }}" 
+                           class="block p-4 border rounded-lg hover:border-blue-300 hover:bg-blue-50 transition">
+                            <div class="flex items-start justify-between mb-2">
+                                <h3 class="font-medium text-gray-800">{{ $exam->nama_ujian }}</h3>
+                                <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
+                                    Aktif
+                                </span>
                             </div>
-                            <span class="font-semibold" id="activeStudents">6</span>
+                            <p class="text-sm text-gray-600 mb-2">
+                                <i class="fas fa-book mr-1"></i>
+                                {{ $exam->mataPelajaran->nama_mapel ?? 'Tidak ada mapel' }}
+                            </p>
+                            <div class="flex justify-between text-xs text-gray-500">
+                                <span><i class="fas fa-clock mr-1"></i>{{ $exam->durasi }} menit</span>
+                                <span><i class="fas fa-users mr-1"></i>8 peserta</span>
+                            </div>
+                        </a>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
+                <!-- Header Monitoring (jika ujian dipilih) -->
+                @if(isset($ujian))
+                <div class="bg-white rounded-lg shadow-sm p-4 mb-6 border">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                        <div>
+                            <h1 class="text-xl font-semibold text-gray-800">
+                                <i class="fas fa-chalkboard-teacher text-blue-500 mr-2"></i>
+                                {{ $ujian->nama_ujian ?? 'Monitoring Ujian' }}
+                            </h1>
+                            <p class="text-sm text-gray-600">
+                                {{ $ujian->mataPelajaran->nama_mapel ?? 'Matematika' }} - {{ $ujian->durasi ?? 30 }} menit
+                            </p>
                         </div>
                         
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-                                <span class="text-sm text-gray-600">Selesai</span>
+                        <div class="flex items-center gap-2">
+                            <div class="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded">
+                                <i class="fas fa-users mr-1"></i>
+                                <span id="totalStudents">{{ $stats['total_students'] ?? 8 }}</span> Peserta
                             </div>
-                            <span class="font-semibold" id="submittedStudents">2</span>
-                        </div>
-                        
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
-                                <span class="text-sm text-gray-600">Belum Mulai</span>
-                            </div>
-                            <span class="font-semibold" id="absentStudents">0</span>
+                            <button onclick="refreshData()" class="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">
+                                <i class="fas fa-sync-alt mr-1"></i>Refresh
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Timer -->
-                <div class="bg-white rounded-lg shadow-sm p-4 border">
-                    <h2 class="font-medium text-gray-700 mb-2">Waktu Ujian</h2>
-                    <div class="text-center mb-2">
-                        <div class="text-2xl font-bold text-gray-800" id="examTimer">29:45</div>
-                        <div class="text-xs text-gray-500">Sisa waktu</div>
-                    </div>
-                    <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div id="examProgress" class="h-full bg-blue-500 rounded-full w-45%"></div>
-                    </div>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="bg-white rounded-lg shadow-sm p-4 border">
-                    <h2 class="font-medium text-gray-700 mb-3">Kontrol</h2>
-                    <div class="space-y-2">
-                        <button onclick="pauseAllExams()" class="w-full text-left px-3 py-2 bg-yellow-50 text-yellow-700 rounded border border-yellow-200 hover:bg-yellow-100 text-sm">
-                            <i class="fas fa-pause mr-2"></i>Jeda Semua
-                        </button>
-                        <button onclick="endExam()" class="w-full text-left px-3 py-2 bg-red-50 text-red-700 rounded border border-red-200 hover:bg-red-100 text-sm">
-                            <i class="fas fa-stop mr-2"></i>Akhiri Ujian
-                        </button>
-                        <button onclick="downloadReport()" class="w-full text-left px-3 py-2 bg-blue-50 text-blue-700 rounded border border-blue-200 hover:bg-blue-100 text-sm">
-                            <i class="fas fa-download mr-2"></i>Unduh Laporan
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Top 3 -->
-                <div class="bg-white rounded-lg shadow-sm p-4 border">
-                    <h2 class="font-medium text-gray-700 mb-3">Top 3</h2>
-                    <div id="topPerformers" class="space-y-2">
-                        <!-- Data akan diisi JavaScript -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Students List -->
-            <div class="lg:col-span-3">
-                <!-- Search & Filter -->
-                <div class="bg-white rounded-lg shadow-sm p-4 mb-4 border">
-                    <div class="flex flex-col md:flex-row gap-3">
-                        <div class="flex-1">
-                            <div class="relative">
-                                <input type="text" id="searchStudent" placeholder="Cari siswa..." 
-                                       class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
-                                <i class="fas fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                    <!-- Stats Cards -->
+                    <div class="lg:col-span-1 space-y-4">
+                        <!-- Stats Summary -->
+                        <div class="bg-white rounded-lg shadow-sm p-4 border">
+                            <h2 class="font-medium text-gray-700 mb-3">Statistik</h2>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                                        <span class="text-sm text-gray-600">Sedang Ujian</span>
+                                    </div>
+                                    <span class="font-semibold" id="activeStudents">{{ $stats['active_students'] ?? 5 }}</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+                                        <span class="text-sm text-gray-600">Selesai</span>
+                                    </div>
+                                    <span class="font-semibold" id="submittedStudents">{{ $stats['submitted_students'] ?? 2 }}</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
+                                        <span class="text-sm text-gray-600">Belum Mulai</span>
+                                    </div>
+                                    <span class="font-semibold" id="absentStudents">{{ $stats['not_started_students'] ?? 1 }}</span>
+                                </div>
                             </div>
                         </div>
-                        <select id="filterStatus" class="border border-gray-300 rounded px-3 py-2 text-sm">
-                            <option value="all">Semua Status</option>
-                            <option value="active">Sedang Ujian</option>
-                            <option value="submitted">Selesai</option>
-                            <option value="not_started">Belum Mulai</option>
-                        </select>
-                    </div>
-                </div>
 
-                <!-- Students Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="studentsGrid">
-                    <!-- Data akan diisi JavaScript -->
-                </div>
-            </div>
-        </div>
+                        <!-- Timer -->
+                        <div class="bg-white rounded-lg shadow-sm p-4 border">
+                            <h2 class="font-medium text-gray-700 mb-2">Waktu Ujian</h2>
+                            <div class="text-center mb-2">
+                                <div class="text-2xl font-bold text-gray-800" id="examTimer">--:--</div>
+                                <div class="text-xs text-gray-500">Sisa waktu</div>
+                            </div>
+                            <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div id="examProgress" class="h-full bg-blue-500 rounded-full w-0%"></div>
+                            </div>
+                        </div>
 
-        <!-- Detail Modal -->
-        <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
-            <div class="min-h-screen flex items-center justify-center p-4">
-                <div class="bg-white rounded-lg w-full max-w-2xl">
-                    <div class="flex justify-between items-center p-4 border-b">
-                        <h3 class="font-semibold text-gray-800" id="detailTitle">Detail Peserta</h3>
-                        <button onclick="closeDetailModal()" class="text-gray-400 hover:text-gray-600">
-                            <i class="fas fa-times"></i>
-                        </button>
+                        <!-- Quick Actions -->
+                        <div class="bg-white rounded-lg shadow-sm p-4 border">
+                            <h2 class="font-medium text-gray-700 mb-3">Kontrol</h2>
+                            <div class="space-y-2">
+                                <button onclick="pauseAllExams()" class="w-full text-left px-3 py-2 bg-yellow-50 text-yellow-700 rounded border border-yellow-200 hover:bg-yellow-100 text-sm">
+                                    <i class="fas fa-pause mr-2"></i>Jeda Semua
+                                </button>
+                                <button onclick="endExam()" class="w-full text-left px-3 py-2 bg-red-50 text-red-700 rounded border border-red-200 hover:bg-red-100 text-sm">
+                                    <i class="fas fa-stop mr-2"></i>Akhiri Ujian
+                                </button>
+                                <button onclick="downloadReport()" class="w-full text-left px-3 py-2 bg-blue-50 text-blue-700 rounded border border-blue-200 hover:bg-blue-100 text-sm">
+                                    <i class="fas fa-download mr-2"></i>Unduh Laporan
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Top 3 -->
+                        <div class="bg-white rounded-lg shadow-sm p-4 border">
+                            <h2 class="font-medium text-gray-700 mb-3">Top 3</h2>
+                            <div id="topPerformers" class="space-y-2">
+                                <!-- Data akan diisi JavaScript -->
+                            </div>
+                        </div>
                     </div>
-                    
-                    <div class="p-4 max-h-96 overflow-y-auto" id="detailContent">
-                        <!-- Detail akan diisi JavaScript -->
-                    </div>
-                    
-                    <div class="p-4 border-t flex justify-end gap-2">
-                        <button onclick="closeDetailModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
-                            Tutup
-                        </button>
-                        <button onclick="viewAnswers(0)" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                            <i class="fas fa-eye mr-1"></i>Lihat Jawaban
-                        </button>
+
+                    <!-- Students List -->
+                    <div class="lg:col-span-3">
+                        <!-- Search & Filter -->
+                        <div class="bg-white rounded-lg shadow-sm p-4 mb-4 border">
+                            <div class="flex flex-col md:flex-row gap-3">
+                                <div class="flex-1">
+                                    <div class="relative">
+                                        <input type="text" id="searchStudent" placeholder="Cari siswa..." 
+                                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                                        <i class="fas fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                                    </div>
+                                </div>
+                                <select id="filterStatus" class="border border-gray-300 rounded px-3 py-2 text-sm">
+                                    <option value="all">Semua Status</option>
+                                    <option value="active">Sedang Ujian</option>
+                                    <option value="submitted">Selesai</option>
+                                    <option value="not_started">Belum Mulai</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Students Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="studentsGrid">
+                            <!-- Data akan diisi JavaScript -->
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
+                @elseif(!isset($ujians) || $ujians->count() == 0)
+                <!-- Jika tidak ada ujian -->
+                <div class="bg-white rounded-lg shadow-sm p-8 text-center">
+                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-file-alt text-gray-400 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-800 mb-2">Belum Ada Ujian</h3>
+                    <p class="text-gray-600 mb-4">Buat ujian terlebih dahulu untuk memulai monitoring</p>
+                    <a href="/guru/ujian" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                        <i class="fas fa-plus mr-2"></i> Buat Ujian Baru
+                    </a>
+                </div>
+                @endif
             </main>
         </div>
     </div>
 
     <script>
-        // Data (tetap sama dengan sebelumnya)
+        // Data dummy (tetap sama dengan sebelumnya)
         const examData = {
             exam: {
                 id: 1,
@@ -367,7 +386,7 @@
 
         // State
         let state = {
-            filteredStudents: [...examData.students],
+            filteredStudents: examData.students,
             searchTerm: '',
             filterStatus: 'all',
             examTimer: examData.exam.duration,
@@ -376,8 +395,11 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            renderAll();
-            startExamTimer();
+            // Hanya render jika ada ujian yang dipilih
+            if (document.getElementById('studentsGrid')) {
+                renderAll();
+                startExamTimer();
+            }
         });
 
         // Render all components
@@ -389,6 +411,8 @@
 
         // Update statistics
         function updateStats() {
+            if (!examData) return;
+            
             const total = examData.students.length;
             const active = examData.students.filter(s => s.status === 'active').length;
             const submitted = examData.students.filter(s => s.status === 'submitted').length;
@@ -406,6 +430,8 @@
         // Render students list
         function renderStudents() {
             const container = document.getElementById('studentsGrid');
+            if (!container) return;
+            
             container.innerHTML = '';
             
             state.filteredStudents.forEach(student => {
@@ -467,6 +493,8 @@
         // Render top performers
         function renderTopPerformers() {
             const container = document.getElementById('topPerformers');
+            if (!container) return;
+            
             const topStudents = [...examData.students]
                 .filter(s => s.status === 'submitted')
                 .sort((a, b) => b.score - a.score)
@@ -508,7 +536,10 @@
             state.examTimerInterval = setInterval(() => {
                 if (state.examTimer > 0) {
                     state.examTimer--;
-                    document.getElementById('examTimer').textContent = formatTime(state.examTimer);
+                    const timerElement = document.getElementById('examTimer');
+                    if (timerElement) {
+                        timerElement.textContent = formatTime(state.examTimer);
+                    }
                 }
             }, 1000);
         }
@@ -518,7 +549,13 @@
             const student = examData.students.find(s => s.id === studentId);
             if (!student) return;
             
-            document.getElementById('detailTitle').textContent = `Detail: ${student.nama}`;
+            // Buat modal jika belum ada
+            let modal = document.getElementById('detailModal');
+            if (!modal) {
+                modal = createDetailModal();
+            }
+            
+            modal.querySelector('#detailTitle').textContent = `Detail: ${student.nama}`;
             
             let detailHTML = `
                 <div class="space-y-4">
@@ -585,25 +622,67 @@
                 </div>
             `;
             
-            document.getElementById('detailContent').innerHTML = detailHTML;
-            document.getElementById('detailModal').classList.remove('hidden');
+            modal.querySelector('#detailContent').innerHTML = detailHTML;
+            modal.classList.remove('hidden');
+        }
+
+        // Buat modal detail
+        function createDetailModal() {
+            const modalHTML = `
+                <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+                    <div class="min-h-screen flex items-center justify-center p-4">
+                        <div class="bg-white rounded-lg w-full max-w-2xl">
+                            <div class="flex justify-between items-center p-4 border-b">
+                                <h3 class="font-semibold text-gray-800" id="detailTitle">Detail Peserta</h3>
+                                <button onclick="closeDetailModal()" class="text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="p-4 max-h-96 overflow-y-auto" id="detailContent"></div>
+                            
+                            <div class="p-4 border-t flex justify-end gap-2">
+                                <button onclick="closeDetailModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                                    Tutup
+                                </button>
+                                <button onclick="viewAnswers(0)" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                    <i class="fas fa-eye mr-1"></i>Lihat Jawaban
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            return document.getElementById('detailModal');
         }
 
         // Close detail modal
         function closeDetailModal() {
-            document.getElementById('detailModal').classList.add('hidden');
+            const modal = document.getElementById('detailModal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
         }
 
         // Search and filter
-        document.getElementById('searchStudent').addEventListener('input', function(e) {
-            state.searchTerm = e.target.value.toLowerCase();
-            filterStudents();
-        });
-
-        document.getElementById('filterStatus').addEventListener('change', function(e) {
-            state.filterStatus = e.target.value;
-            filterStudents();
-        });
+        const searchInput = document.getElementById('searchStudent');
+        const filterSelect = document.getElementById('filterStatus');
+        
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                state.searchTerm = e.target.value.toLowerCase();
+                filterStudents();
+            });
+        }
+        
+        if (filterSelect) {
+            filterSelect.addEventListener('change', function(e) {
+                state.filterStatus = e.target.value;
+                filterStudents();
+            });
+        }
 
         function filterStudents() {
             let filtered = [...examData.students];
@@ -625,27 +704,23 @@
 
         // Control functions
         function refreshData() {
-            // In real app, fetch from API
             renderAll();
         }
 
         function pauseAllExams() {
             if (confirm('Jeda ujian untuk semua siswa?')) {
                 alert('Ujian dijeda');
-                // API call here
             }
         }
 
         function endExam() {
             if (confirm('Akhiri ujian untuk semua siswa?')) {
                 alert('Ujian diakhiri');
-                // API call here
             }
         }
 
         function downloadReport() {
             alert('Laporan sedang diunduh...');
-            // API call here
         }
 
         function viewAnswers(studentId) {
@@ -654,8 +729,9 @@
         }
 
         // Close modal when clicking outside
-        document.getElementById('detailModal').addEventListener('click', function(e) {
-            if (e.target === this) {
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('detailModal');
+            if (modal && e.target === modal) {
                 closeDetailModal();
             }
         });

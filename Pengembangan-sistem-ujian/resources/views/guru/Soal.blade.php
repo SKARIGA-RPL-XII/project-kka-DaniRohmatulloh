@@ -56,11 +56,11 @@
                         <i class="fas fa-users"></i><span>Kelola Kelas</span>
                     </a>
                     <div class="pt-4 border-t border-white/10">
-                        <form method="POST" action="/logout">
-                            <button type="submit" class="w-full flex items-center gap-3 p-3 text-red-300 hover:bg-white/10 rounded-lg transition">
-                                <i class="fas fa-sign-out-alt"></i><span>Logout</span>
-                            </button>
-                        </form>
+                        <button onclick="handleLogout()" 
+                                class="w-full flex items-center gap-3 p-3 text-red-300 hover:bg-white/10 rounded-lg transition">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
                     </div>
             </div>
         </div>

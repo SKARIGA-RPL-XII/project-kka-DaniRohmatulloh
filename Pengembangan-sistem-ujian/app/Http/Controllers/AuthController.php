@@ -1,36 +1,46 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
-namespace App\Http\Controllers;
-use Illuminate\Http\Request;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    public function showLogin()
     {
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:8|confirmed',
-            'role' => 'required|in:guru,murid',
+        return view('auth.login');
+    }
+    
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
-
-        $user = User::create([
-            'name' => $request->nama,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
+        
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+            
+            $user = Auth::user();
+            if ($user->role === 'guru') {
+                return redirect('/guru/dashboard');
+            } else {
+                return redirect('/murid/dashboard');
+            }
+        }
+        
+        return back()->withErrors([
+            'email' => 'Email atau password salah.',
         ]);
-
-        Auth::login($user);
-
-        return $user->role === 'guru'
-            ? redirect()->route('guru.dashboard')
-            : redirect()->route('murid.dashboard');
+    }
+    
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/login');
     }
 }
-

@@ -7,57 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#f5f3ff',
-                            600: '#7c3aed',
-                            700: '#6d28d9',
-                        }
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.5s ease-in-out',
-                        'slide-up': 'slideUp 0.3s ease-out',
-                        'pulse-slow': 'pulse 3s infinite',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        },
-                        slideUp: {
-                            '0%': { transform: 'translateY(10px)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .card-hover:hover { transform: translateY(-5px); }
-        .glass-effect { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
-        .progress-ring {
-            transform: rotate(-90deg);
-        }
-        .progress-ring-circle {
-            stroke-dasharray: 283;
-            stroke-dashoffset: 283;
-            transition: stroke-dashoffset 0.5s ease;
-        }
-    </style>
 </head>
 
 <body class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
 
-    <!-- NAVBAR ENHANCED -->
-    <nav class="glass-effect shadow-sm sticky top-0 z-50 border-b border-gray-100">
+    <!-- NAVBAR -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <div class="flex items-center justify-between">
                 <!-- LOGO -->
@@ -67,116 +22,47 @@
                     </div>
                     <div>
                         <span class="font-extrabold text-xl text-gray-800">Ujian Sistem</span>
-                        <span class="text-xs text-purple-600 font-semibold bg-purple-50 px-2 py-0.5 rounded-full ml-2">STUDENT</span>
+                        <span class="text-xs text-purple-600 font-semibold bg-purple-50 px-2 py-0.5 rounded-full ml-2">MURID</span>
                     </div>
                 </div>
 
-                <!-- MENU CENTER -->
+                <!-- MENU -->
                 <ul class="hidden md:flex items-center gap-1 bg-gray-50 rounded-2xl p-1">
                     <li>
-                        <a href="#" class="flex items-center gap-2 px-5 py-2 rounded-xl bg-white shadow-sm text-purple-600 font-semibold">
+                        <a href="{{ route('murid.dashboard') }}" class="flex items-center gap-2 px-5 py-2 rounded-xl bg-white shadow-sm text-purple-600 font-semibold">
                             <i class="fas fa-home text-sm"></i>
                             Dashboard
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center gap-2 px-5 py-2 rounded-xl text-gray-600 hover:text-purple-600 hover:bg-white transition font-medium">
+                        <a href="{{ route('murid.ujian') }}" class="flex items-center gap-2 px-5 py-2 rounded-xl text-gray-600 hover:text-purple-600 hover:bg-white transition font-medium">
                             <i class="fas fa-file-alt text-sm"></i>
                             Ujian
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center gap-2 px-5 py-2 rounded-xl text-gray-600 hover:text-purple-600 hover:bg-white transition font-medium">
+                        <a href="{{ route('murid.riwayat') }}" class="flex items-center gap-2 px-5 py-2 rounded-xl text-gray-600 hover:text-purple-600 hover:bg-white transition font-medium">
                             <i class="fas fa-history text-sm"></i>
                             Riwayat
                         </a>
                     </li>
-                    <li>
-                        <a href="#" class="flex items-center gap-2 px-5 py-2 rounded-xl text-gray-600 hover:text-purple-600 hover:bg-white transition font-medium">
-                            <i class="fas fa-chart-line text-sm"></i>
-                            Statistik
-                        </a>
-                    </li>
                 </ul>
 
-                <!-- PROFILE DROPDOWN -->
-                @auth
+                <!-- PROFILE -->
                 <div class="relative">
-                    <button onclick="toggleProfile()"
-                        class="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl hover:shadow-md transition-all duration-200 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-100">
+                    <div class="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl border border-gray-100">
                         <div class="relative">
                             <div class="w-9 h-9 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow">
-                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                {{ strtoupper(substr(Auth::user()->nama, 0, 1)) }}
                             </div>
                             <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
                         </div>
                         <div class="hidden lg:block text-left">
-                            <p class="font-semibold text-gray-800 text-sm">{{ Auth::user()->name }}</p>
+                            <p class="font-semibold text-gray-800 text-sm">{{ Auth::user()->nama }}</p>
                             <p class="text-xs text-gray-500">Murid</p>
-                        </div>
-                        <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
-                    </button>
-
-                    <!-- DROPDOWN MENU -->
-                    <div id="profileDropdown"
-                        class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-slide-up">
-                        <div class="px-5 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
-                            <p class="text-xs opacity-90">Login sebagai</p>
-                            <p class="font-bold text-lg">{{ Auth::user()->name }}</p>
-                            <p class="text-xs opacity-75 mt-1">{{ Auth::user()->email }}</p>
-                        </div>
-                        
-                        <div class="py-2">
-                            <a href="{{ route('profile') }}"
-                                class="flex items-center gap-3 px-5 py-3 text-gray-700 hover:bg-purple-50 transition group">
-                                <div class="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 group-hover:bg-purple-200">
-                                    <i class="fas fa-user text-sm"></i>
-                                </div>
-                                <div>
-                                    <p class="font-medium">Profil Saya</p>
-                                    <p class="text-xs text-gray-500">Kelola profil Anda</p>
-                                </div>
-                            </a>
-                            
-                            <a href="#"
-                                class="flex items-center gap-3 px-5 py-3 text-gray-700 hover:bg-purple-50 transition group">
-                                <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 group-hover:bg-blue-200">
-                                    <i class="fas fa-cog text-sm"></i>
-                                </div>
-                                <div>
-                                    <p class="font-medium">Pengaturan</p>
-                                    <p class="text-xs text-gray-500">Penyesuaian aplikasi</p>
-                                </div>
-                            </a>
-                            
-                            <div class="border-t border-gray-100 my-2"></div>
-                            
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit"
-                                    class="w-full text-left flex items-center gap-3 px-5 py-3 text-red-600 hover:bg-red-50 transition group">
-                                    <div class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center text-red-600 group-hover:bg-red-200">
-                                        <i class="fas fa-sign-out-alt text-sm"></i>
-                                    </div>
-                                    <div>
-                                        <p class="font-medium">Logout</p>
-                                        <p class="text-xs text-gray-500">Keluar dari sistem</p>
-                                    </div>
-                                </button>
-                            </form>
                         </div>
                     </div>
                 </div>
-                @else
-                <div class="flex gap-2">
-                    <a href="{{ route('login') }}" class="text-gray-700 px-5 py-2 rounded-lg font-medium hover:bg-gray-100 transition">
-                        Masuk
-                    </a>
-                    <a href="{{ route('register') }}" class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-5 py-2 rounded-lg font-medium hover:shadow-lg transition hover:shadow-purple-200">
-                        Daftar
-                    </a>
-                </div>
-                @endauth
             </div>
         </div>
     </nav>
@@ -184,8 +70,7 @@
     <!-- MAIN CONTENT -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- HEADER -->
-        <div class="mb-10 animate-fade-in">
-            @auth
+        <div class="mb-10">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div>
                     <div class="flex items-center gap-3 mb-2">
@@ -194,48 +79,34 @@
                         </div>
                         <div>
                             <h1 class="text-3xl md:text-4xl font-bold text-gray-900">
-                                Selamat Datang, <span class="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">{{ Auth::user()->name }}</span>
+                                Selamat Datang, <span class="bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">{{ Auth::user()->nama }}</span>
                             </h1>
                             <p class="text-gray-600 mt-1 flex items-center gap-2">
                                 <i class="fas fa-calendar-alt text-sm"></i>
-                                <span id="currentDate"></span>
+                                {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}
                             </p>
                         </div>
                     </div>
                     <p class="text-gray-600 mt-3 max-w-2xl">
-                        Siap untuk mengasah kemampuanmu hari ini? Ada <span class="font-semibold text-purple-600">3 ujian</span> yang menantimu!
+                        Siap untuk mengasah kemampuanmu hari ini? 
+                        @if($ujian->count() > 0)
+                        Ada <span class="font-semibold text-purple-600">{{ $ujian->count() }} ujian</span> yang tersedia!
+                        @else
+                        Saat ini belum ada ujian yang tersedia.
+                        @endif
                     </p>
                 </div>
             </div>
-            @else
-            <div class="text-center py-12">
-                <div class="w-20 h-20 rounded-full bg-gradient-to-r from-purple-100 to-indigo-100 flex items-center justify-center mx-auto mb-6">
-                    <i class="fas fa-graduation-cap text-3xl text-purple-600"></i>
-                </div>
-                <h1 class="text-4xl font-bold text-gray-900 mb-3">Selamat Datang di ExamSystem</h1>
-                <p class="text-gray-600 text-lg max-w-2xl mx-auto mb-8">
-                    Platform ujian online terpercaya untuk meningkatkan kemampuan akademismu
-                </p>
-                <div class="flex gap-4 justify-center">
-                    <a href="{{ route('login') }}" class="px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-medium hover:shadow-lg transition">
-                        Masuk ke Akun
-                    </a>
-                    <a href="{{ route('register') }}" class="px-8 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl font-medium hover:border-purple-400 transition">
-                        Buat Akun Baru
-                    </a>
-                </div>
-            </div>
-            @endauth
         </div>
 
-        @auth
         <!-- STATISTICS CARDS -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 animate-fade-in">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 card-hover">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <!-- Card 1: Total Ujian Diikuti -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500 text-sm font-medium mb-1">Total Ujian Diikuti</p>
-                        <p class="text-3xl font-bold text-gray-900">12</p>
+                        <p class="text-3xl font-bold text-gray-900">{{ $totalUjianDiikuti ?? 0 }}</p>
                     </div>
                     <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center">
                         <i class="fas fa-file-alt text-xl text-purple-600"></i>
@@ -243,46 +114,58 @@
                 </div>
                 <div class="mt-4 pt-4 border-t border-gray-100">
                     <div class="flex items-center text-sm">
+                        @if($ujianBaruMingguIni > 0)
                         <span class="text-green-600 font-medium flex items-center">
                             <i class="fas fa-arrow-up mr-1 text-xs"></i>
-                            2 baru minggu ini
+                            {{ $ujianBaruMingguIni ?? 0 }} baru minggu ini
                         </span>
+                        @else
+                        <span class="text-gray-500 font-medium">
+                            Belum ada ujian baru
+                        </span>
+                        @endif
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 card-hover">
+            <!-- Card 2: Rata-rata Nilai -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500 text-sm font-medium mb-1">Rata-rata Nilai</p>
-                        <p class="text-3xl font-bold text-gray-900">85.5</p>
+                        <p class="text-3xl font-bold text-gray-900">{{ $rataRataNilai ?? 0 }}</p>
                     </div>
-                    <div class="relative w-12 h-12">
-                        <svg class="w-12 h-12" viewBox="0 0 100 100">
-                            <circle cx="50" cy="50" r="45" fill="none" stroke="#f3f4f6" stroke-width="8"/>
-                            <circle cx="50" cy="50" r="45" fill="none" stroke="#10b981" stroke-width="8" stroke-linecap="round"
-                                    stroke-dasharray="283" stroke-dashoffset="42" class="progress-ring-circle"/>
-                        </svg>
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <i class="fas fa-chart-line text-xl text-green-600"></i>
-                        </div>
+                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center">
+                        <i class="fas fa-chart-line text-xl text-green-600"></i>
                     </div>
                 </div>
                 <div class="mt-4 pt-4 border-t border-gray-100">
                     <div class="flex items-center text-sm">
+                        @if($rataRataNilai > 75)
                         <span class="text-green-600 font-medium flex items-center">
                             <i class="fas fa-trend-up mr-1 text-xs"></i>
-                            Naik 5% dari bulan lalu
+                            Nilai baik
                         </span>
+                        @elseif($rataRataNilai > 0)
+                        <span class="text-yellow-600 font-medium flex items-center">
+                            <i class="fas fa-exclamation-circle mr-1 text-xs"></i>
+                            Perlu peningkatan
+                        </span>
+                        @else
+                        <span class="text-gray-500 font-medium">
+                            Belum ada nilai
+                        </span>
+                        @endif
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 card-hover">
+            <!-- Card 3: Ujian Tersedia -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-500 text-sm font-medium mb-1">Ujian Aktif</p>
-                        <p class="text-3xl font-bold text-gray-900">3</p>
+                        <p class="text-gray-500 text-sm font-medium mb-1">Ujian Tersedia</p>
+                        <p class="text-3xl font-bold text-gray-900">{{ $ujian->count() }}</p>
                     </div>
                     <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-50 to-orange-100 flex items-center justify-center">
                         <i class="fas fa-clock text-xl text-orange-600"></i>
@@ -290,19 +173,26 @@
                 </div>
                 <div class="mt-4 pt-4 border-t border-gray-100">
                     <div class="flex items-center text-sm">
+                        @if($ujian->count() > 0)
                         <span class="text-orange-600 font-medium flex items-center">
-                            <i class="fas fa-exclamation-circle mr-1 text-xs"></i>
-                            Deadline mendekati
+                            <i class="fas fa-book-open mr-1 text-xs"></i>
+                            Siap dikerjakan
                         </span>
+                        @else
+                        <span class="text-gray-500 font-medium">
+                            Tidak ada ujian
+                        </span>
+                        @endif
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 card-hover">
+            <!-- Card 4: Nilai Tertinggi -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-500 text-sm font-medium mb-1">Ranking Kelas</p>
-                        <p class="text-3xl font-bold text-gray-900">#8</p>
+                        <p class="text-gray-500 text-sm font-medium mb-1">Nilai Tertinggi</p>
+                        <p class="text-3xl font-bold text-gray-900">{{ $nilaiTertinggi ?? 0 }}</p>
                     </div>
                     <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center">
                         <i class="fas fa-trophy text-xl text-blue-600"></i>
@@ -310,10 +200,16 @@
                 </div>
                 <div class="mt-4 pt-4 border-t border-gray-100">
                     <div class="flex items-center text-sm">
+                        @if($nilaiTertinggi > 0)
                         <span class="text-blue-600 font-medium flex items-center">
                             <i class="fas fa-crown mr-1 text-xs"></i>
-                            Naik 2 peringkat
+                            Pencapaian terbaik
                         </span>
+                        @else
+                        <span class="text-gray-500 font-medium">
+                            Belum ada nilai
+                        </span>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -331,167 +227,226 @@
                     </h2>
                     <p class="text-gray-600 mt-2">Pilih ujian yang ingin kamu kerjakan</p>
                 </div>
+                
+                @if($ujian->count() > 0 && $mataPelajaran->count() > 0)
                 <div class="flex gap-2">
-                    <button class="px-4 py-2 border border-gray-300 rounded-xl text-gray-700 hover:border-purple-400 transition flex items-center gap-2">
-                        <i class="fas fa-filter text-sm"></i>
-                        Filter
-                    </button>
-                    <button class="px-4 py-2 bg-gray-50 rounded-xl text-gray-700 hover:bg-gray-100 transition flex items-center gap-2">
-                        <i class="fas fa-sort text-sm"></i>
-                        Urutkan
-                    </button>
+                    <form method="GET" action="{{ route('murid.dashboard') }}" class="flex gap-2">
+                        <select name="mapel_id" onchange="this.form.submit()" class="border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <option value="">Semua Mata Pelajaran</option>
+                            @foreach($mataPelajaran as $mapel)
+                            <option value="{{ $mapel->id }}" {{ request('mapel_id') == $mapel->id ? 'selected' : '' }}>
+                                {{ $mapel->nama_mapel }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </form>
                 </div>
+                @endif
             </div>
 
+            @if($ujian->count() > 0)
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Ujian 1 -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden card-hover hover:border-purple-200">
-                    <div class="h-3 bg-gradient-to-r from-orange-400 to-pink-500"></div>
+                @foreach($ujian as $item)
+                @php
+                    // Tentukan warna berdasarkan mata pelajaran
+                    $colors = [
+                        1 => ['from' => 'from-green-400', 'to' => 'to-teal-500', 'bg' => 'bg-green-50', 'text' => 'text-green-700', 'icon' => 'fa-calculator'],
+                    ];
+                    
+                    $color = $colors[$item->mapel_id] ?? ['from' => 'from-purple-400', 'to' => 'to-indigo-500', 'bg' => 'bg-purple-50', 'text' => 'text-purple-700', 'icon' => 'fa-book'];
+                    
+                    // Hitung jumlah peserta yang sudah mengerjakan
+                    $pesertaSudahMengerjakan = \App\Models\HasilUjian::where('ujian_id', $item->id)->count();
+                    
+                    // Check apakah user sudah mengerjakan ujian ini
+                    $sudahMengerjakan = \App\Models\HasilUjian::where('ujian_id', $item->id)
+                        ->where('murid_id', Auth::id())
+                        ->exists();
+                @endphp
+                
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
+                    <div class="h-3 bg-gradient-to-r {{ $color['from'] }} {{ $color['to'] }}"></div>
                     <div class="p-6">
                         <div class="flex items-start justify-between mb-4">
                             <div>
-                                <span class="inline-block px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-xs font-semibold">
-                                    Bahasa Indonesia
+                                <span class="inline-block px-3 py-1 {{ $color['bg'] }} {{ $color['text'] }} rounded-full text-xs font-semibold">
+                                    {{ $item->mataPelajaran->nama_mapel ?? 'Tidak ada mapel' }}
                                 </span>
-                                <h3 class="font-bold text-gray-900 text-lg mt-2">Teks Anekdot</h3>
+                                <h3 class="font-bold text-gray-900 text-lg mt-2">{{ $item->nama_ujian }}</h3>
                             </div>
-                            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-50 to-pink-50 flex items-center justify-center">
-                                <i class="fas fa-book text-orange-600"></i>
+                            <div class="w-10 h-10 rounded-lg {{ $color['bg'] }} flex items-center justify-center">
+                                <i class="fas {{ $color['icon'] }} {{ $color['text'] }}"></i>
                             </div>
                         </div>
                         
                         <div class="space-y-3 mb-6">
                             <div class="flex items-center text-gray-600 text-sm">
-                                <i class="fas fa-question-circle text-orange-500 mr-2"></i>
-                                <span>20 Soal Pilihan Ganda</span>
+                                <i class="fas fa-question-circle {{ $color['text'] }} mr-2"></i>
+                                <span>{{ \App\Models\Soal::where('mapel_id', $item->mapel_id)->count() }} Soal</span>
                             </div>
                             <div class="flex items-center text-gray-600 text-sm">
-                                <i class="fas fa-clock text-orange-500 mr-2"></i>
-                                <span>Durasi: 30 Menit</span>
+                                <i class="fas fa-clock {{ $color['text'] }} mr-2"></i>
+                                <span>Durasi: {{ $item->durasi }} Menit</span>
                             </div>
                             <div class="flex items-center text-gray-600 text-sm">
-                                <i class="fas fa-calendar text-orange-500 mr-2"></i>
-                                <span>Deadline: 2 Hari Lagi</span>
+                                <i class="fas fa-users {{ $color['text'] }} mr-2"></i>
+                                <span>{{ $pesertaSudahMengerjakan }} peserta sudah mengerjakan</span>
                             </div>
                         </div>
                         
                         <div class="pt-4 border-t border-gray-100">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
-                                    <div class="flex -space-x-2">
-                                        <div class="w-8 h-8 rounded-full bg-blue-100 border-2 border-white"></div>
-                                        <div class="w-8 h-8 rounded-full bg-green-100 border-2 border-white"></div>
-                                        <div class="w-8 h-8 rounded-full bg-purple-100 border-2 border-white flex items-center justify-center text-xs text-purple-700">
-                                            +8
-                                        </div>
-                                    </div>
-                                    <span class="text-xs text-gray-500 ml-2">Sudah mengerjakan</span>
+                                    @if($sudahMengerjakan)
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
+                                        <i class="fas fa-check-circle mr-1"></i> Sudah Dikerjakan
+                                    </span>
+                                    @else
+                                    <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold">
+                                        <i class="fas fa-clock mr-1"></i> Belum Dikerjakan
+                                    </span>
+                                    @endif
                                 </div>
-                                <button class="px-5 py-2.5 bg-gradient-to-r from-orange-500 to-pink-500 text-white font-semibold rounded-xl hover:shadow-lg transition hover:shadow-orange-200">
-                                    Mulai
-                                </button>
+                                
+                                @if($sudahMengerjakan)
+                                <a href="{{ route('murid.hasil', $item->id) }}" 
+                                   class="px-5 py-2.5 bg-gradient-to-r {{ $color['from'] }} {{ $color['to'] }} text-white font-semibold rounded-xl hover:shadow-lg transition">
+                                    Lihat Hasil
+                                </a>
+                                @else
+                                <a href="{{ route('murid.ujian.mulai', $item->id) }}" 
+                                   class="px-5 py-2.5 bg-gradient-to-r {{ $color['from'] }} {{ $color['to'] }} text-white font-semibold rounded-xl hover:shadow-lg transition">
+                                    Mulai Ujian
+                                </a>
+                                @endif
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Ujian 2 -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden card-hover hover:border-blue-200">
-                    <div class="h-3 bg-gradient-to-r from-blue-400 to-cyan-500"></div>
-                    <div class="p-6">
-                        <div class="flex items-start justify-between mb-4">
-                            <div>
-                                <span class="inline-block px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-semibold">
-                                    Bahasa Inggris
-                                </span>
-                                <h3 class="font-bold text-gray-900 text-lg mt-2">Degree of Comparison</h3>
-                            </div>
-                            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-50 to-cyan-50 flex items-center justify-center">
-                                <i class="fas fa-language text-blue-600"></i>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-3 mb-6">
-                            <div class="flex items-center text-gray-600 text-sm">
-                                <i class="fas fa-question-circle text-blue-500 mr-2"></i>
-                                <span>25 Soal Campuran</span>
-                            </div>
-                            <div class="flex items-center text-gray-600 text-sm">
-                                <i class="fas fa-clock text-blue-500 mr-2"></i>
-                                <span>Durasi: 25 Menit</span>
-                            </div>
-                            <div class="flex items-center text-gray-600 text-sm">
-                                <i class="fas fa-calendar text-blue-500 mr-2"></i>
-                                <span>Deadline: Besok</span>
-                            </div>
-                        </div>
-                        
-                        <div class="pt-4 border-t border-gray-100">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <div class="flex -space-x-2">
-                                        <div class="w-8 h-8 rounded-full bg-blue-100 border-2 border-white"></div>
-                                        <div class="w-8 h-8 rounded-full bg-green-100 border-2 border-white"></div>
-                                    </div>
-                                    <span class="text-xs text-gray-500 ml-2">12 sudah mengerjakan</span>
-                                </div>
-                                <button class="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold rounded-xl hover:shadow-lg transition hover:shadow-blue-200">
-                                    Mulai
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                @endforeach
+            </div>
+            
+            <!-- Pagination -->
+            @if($ujian->hasPages())
+            <div class="mt-8">
+                {{ $ujian->links() }}
+            </div>
+            @endif
+            
+            @else
+            <!-- TAMPILAN JIKA TIDAK ADA UJIAN -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+                <div class="w-20 h-20 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-book-open text-3xl text-gray-400"></i>
                 </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Belum Ada Ujian Tersedia</h3>
+                <p class="text-gray-600 mb-6 max-w-md mx-auto">
+                    Saat ini belum ada ujian yang tersedia untuk dikerjakan. Silakan hubungi guru Anda atau coba lagi nanti.
+                </p>
+                <div class="flex gap-4 justify-center">
+                    <a href="{{ route('murid.dashboard') }}" class="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-medium hover:shadow-lg transition">
+                        <i class="fas fa-refresh mr-2"></i> Refresh Halaman
+                    </a>
+                </div>
+            </div>
+            @endif
+        </section>
 
-                <!-- Ujian 3 -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden card-hover hover:border-green-200">
-                    <div class="h-3 bg-gradient-to-r from-green-400 to-teal-500"></div>
-                    <div class="p-6">
-                        <div class="flex items-start justify-between mb-4">
-                            <div>
-                                <span class="inline-block px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-semibold">
-                                    Matematika
-                                </span>
-                                <h3 class="font-bold text-gray-900 text-lg mt-2">Aljabar Linear</h3>
-                            </div>
-                            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-green-50 to-teal-50 flex items-center justify-center">
-                                <i class="fas fa-calculator text-green-600"></i>
-                            </div>
+        <!-- RIWAYAT UJIAN SECTION -->
+        @if($riwayatUjian && $riwayatUjian->count() > 0)
+        <section class="mb-12">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-100 to-cyan-100 flex items-center justify-center">
+                            <i class="fas fa-history text-blue-600"></i>
                         </div>
-                        
-                        <div class="space-y-3 mb-6">
-                            <div class="flex items-center text-gray-600 text-sm">
-                                <i class="fas fa-question-circle text-green-500 mr-2"></i>
-                                <span>15 Soal Esai Singkat</span>
-                            </div>
-                            <div class="flex items-center text-gray-600 text-sm">
-                                <i class="fas fa-clock text-green-500 mr-2"></i>
-                                <span>Durasi: 40 Menit</span>
-                            </div>
-                            <div class="flex items-center text-gray-600 text-sm">
-                                <i class="fas fa-calendar text-green-500 mr-2"></i>
-                                <span>Deadline: 5 Hari Lagi</span>
-                            </div>
-                        </div>
-                        
-                        <div class="pt-4 border-t border-gray-100">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <div class="flex -space-x-2">
-                                        <div class="w-8 h-8 rounded-full bg-blue-100 border-2 border-white"></div>
+                        Riwayat Ujian Terakhir
+                    </h2>
+                    <p class="text-gray-600 mt-2">Lihat hasil ujian yang sudah kamu kerjakan</p>
+                </div>
+                @if(isset($riwayatUjian) && $riwayatUjian->count() > 0)
+                <a href="{{ route('murid.riwayat') }}" class="px-4 py-2 text-purple-600 hover:text-purple-700 font-medium flex items-center gap-2">
+                    Lihat Semua <i class="fas fa-arrow-right text-sm"></i>
+                </a>
+                @endif
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-100">
+                                <th class="text-left py-4 px-6 text-gray-600 font-semibold">Nama Ujian</th>
+                                <th class="text-left py-4 px-6 text-gray-600 font-semibold">Mata Pelajaran</th>
+                                <th class="text-left py-4 px-6 text-gray-600 font-semibold">Nilai</th>
+                                <th class="text-left py-4 px-6 text-gray-600 font-semibold">Tanggal</th>
+                                <th class="text-left py-4 px-6 text-gray-600 font-semibold">Status</th>
+                                <th class="text-left py-4 px-6 text-gray-600 font-semibold">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($riwayatUjian as $riwayat)
+                            @php
+                                $nilai = $riwayat->nilai ?? 0;
+                                $statusColor = $nilai >= 75 ? 'bg-green-100 text-green-800' : 
+                                             ($nilai >= 60 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800');
+                                $statusText = $nilai >= 75 ? 'Lulus' : 
+                                            ($nilai >= 60 ? 'Cukup' : 'Tidak Lulus');
+                            @endphp
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                                <td class="py-4 px-6">
+                                    <div class="font-medium text-gray-900">{{ $riwayat->ujian->nama_ujian ?? '-' }}</div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="inline-block px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs">
+                                        {{ $riwayat->ujian->mataPelajaran->nama_mapel ?? '-' }}
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center">
+                                        <span class="text-2xl font-bold {{ $nilai >= 75 ? 'text-green-600' : ($nilai >= 60 ? 'text-yellow-600' : 'text-red-600') }}">
+                                            {{ $nilai }}
+                                        </span>
+                                        <span class="text-gray-400 mx-2">/</span>
+                                        <span class="text-gray-600">100</span>
                                     </div>
-                                    <span class="text-xs text-gray-500 ml-2">5 sudah mengerjakan</span>
-                                </div>
-                                <button class="px-5 py-2.5 bg-gradient-to-r from-green-500 to-teal-500 text-white font-semibold rounded-xl hover:shadow-lg transition hover:shadow-green-200">
-                                    Mulai
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                                </td>
+                                <td class="py-4 px-6 text-gray-600">
+                                    {{ $riwayat->created_at ? \Carbon\Carbon::parse($riwayat->created_at)->translatedFormat('d M Y') : '-' }}
+                                </td>
+                                <td class="py-4 px-6">
+                                    <span class="px-3 py-1 {{ $statusColor }} rounded-full text-xs font-semibold">
+                                        {{ $statusText }}
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6">
+                                    @if(isset($riwayat->id))
+                                    <a href="{{ route('murid.hasil.detail', $riwayat->id) }}" 
+                                       class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm font-medium">
+                                        Detail
+                                    </a>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>
-        @endauth
+        @elseif($totalUjianDiikuti > 0)
+        <!-- Jika ada ujian diikuti tapi tidak ada riwayat (seharusnya tidak terjadi) -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
+            <div class="w-16 h-16 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-history text-2xl text-gray-400"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-3">Belum Ada Riwayat Ujian</h3>
+            <p class="text-gray-600 mb-6">
+                Data riwayat ujian tidak ditemukan.
+            </p>
+        </div>
+        @endif
     </main>
 
     <!-- FOOTER -->
@@ -503,57 +458,16 @@
                         E
                     </div>
                     <span class="font-bold text-gray-800">ExamSystem</span>
-                    <span class="text-xs text-gray-500">© 2024 All rights reserved</span>
+                    <span class="text-xs text-gray-500">© {{ date('Y') }} All rights reserved</span>
                 </div>
                 <div class="flex gap-6 text-sm text-gray-600">
                     <a href="#" class="hover:text-purple-600 transition">Kebijakan Privasi</a>
                     <a href="#" class="hover:text-purple-600 transition">Syarat & Ketentuan</a>
                     <a href="#" class="hover:text-purple-600 transition">Bantuan</a>
-                    <a href="#" class="hover:text-purple-600 transition">Kontak</a>
                 </div>
             </div>
         </div>
     </footer>
-
-    <!-- SCRIPTS -->
-    <script>
-        // Toggle Profile Dropdown
-        function toggleProfile() {
-            const dropdown = document.getElementById('profileDropdown');
-            dropdown.classList.toggle('hidden');
-        }
-
-        // Close dropdown when clicking outside
-        window.addEventListener('click', function(e) {
-            const btn = document.querySelector('button[onclick="toggleProfile()"]');
-            const dropdown = document.getElementById('profileDropdown');
-            
-            if (btn && dropdown && !btn.contains(e.target) && !dropdown.contains(e.target)) {
-                dropdown.classList.add('hidden');
-            }
-        });
-
-        // Set current date
-        const currentDate = new Date();
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('currentDate').textContent = currentDate.toLocaleDateString('id-ID', options);
-
-        // Progress circles animation
-        document.addEventListener('DOMContentLoaded', function() {
-            const circles = document.querySelectorAll('.progress-ring-circle');
-            circles.forEach(circle => {
-                const radius = circle.r.baseVal.value;
-                const circumference = radius * 2 * Math.PI;
-                circle.style.strokeDasharray = `${circumference} ${circumference}`;
-                circle.style.strokeDashoffset = circumference;
-                
-                const offset = circumference - (85.5 / 100 * circumference);
-                setTimeout(() => {
-                    circle.style.strokeDashoffset = offset;
-                }, 100);
-            });
-        });
-    </script>
 
 </body>
 
