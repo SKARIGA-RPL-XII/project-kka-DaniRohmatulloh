@@ -10,17 +10,16 @@ return new class extends Migration
     {
         Schema::create('soal', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['pg', 'uraian']);
-            $table->text('question');
-            $table->unsignedBigInteger('subject_id');
-            $table->json('options')->nullable();
-            $table->string('correct_answer')->nullable();
-            $table->unsignedBigInteger('created_by');
-            $table->enum('status', ['pending', 'review', 'aktif'])->default('review');
+            $table->foreignId('mapel_id')->constrained('mata_pelajaran')->onDelete('cascade');
+            $table->integer('nomor');
+            $table->text('pertanyaan');
+            $table->string('opsi_a');
+            $table->string('opsi_b');
+            $table->string('opsi_c');
+            $table->string('opsi_d');
+            $table->enum('jawaban_benar', ['A','B','C','D']);
+            $table->enum('tipe', ['pg','essay'])->default('pg');
             $table->timestamps();
-            
-            $table->foreign('subject_id')->references('id')->on('subjects');
-            $table->foreign('created_by')->references('id')->on('users');
         });
     }
 

@@ -77,7 +77,7 @@
                         <span>Kelola Soal</span>
                     </a>
                     
-                    <a href="/examp" 
+                    <a href="/guru/examp" 
                        class="flex items-center gap-3 p-3 hover:bg-white/10 rounded-lg transition">
                         <i class="fas fa-file-alt"></i>
                         <span>Buat Ujian</span>

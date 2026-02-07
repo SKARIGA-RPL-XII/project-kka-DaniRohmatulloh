@@ -3,18 +3,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class MataPelajaran extends Model
 {
-    protected $table = 'mata_pelajaran';
+    use HasFactory;
 
+    protected $table = 'mata_pelajaran';
+    
     protected $fillable = [
         'nama_mapel',
         'kode_mapel',
+        'deskripsi'
     ];
 
-    public function ujian()
+    public function soals()
     {
-        return $this->hasMany(Ujian::class, 'mapel_id');
+        return $this->hasMany(Soal::class, 'mapel_id');
     }
 }

@@ -301,6 +301,87 @@
     </div>
 
 <script>
+// Form submission handling
+const soalForm = document.getElementById('form');
+const submitBtn = document.querySelector('button[type="submit"]');
+
+if (soalForm) {
+    soalForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        if (!confirm('Ingin menyimpan soal ini?')) {
+            return; // ❌ batal simpan
+        }
+
+        simpanSoal(false);
+    });
+}
+
+function simpanSoal(isTambahLagi = false) {
+    if (!submitBtn) return;
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menyimpan...';
+
+    fetch(soalForm.action || '/api/soal', {
+        method: 'POST',
+        body: new FormData(soalForm),
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json'
+        }
+    })
+    .then(res => res.json())
+    .then(res => {
+        if (!res.success) {
+            alert(res.message || 'Gagal menyimpan soal');
+            return;
+        }
+
+        showSuccessNotification('Soal berhasil disimpan');
+
+        if (isTambahLagi) {
+            // reset tanpa mapel
+            const pertanyaanField = soalForm.querySelector('textarea[name="pertanyaan"]');
+            if (pertanyaanField) pertanyaanField.value = '';
+            
+            ['a','b','c','d'].forEach(h => {
+                const opsiField = soalForm.querySelector(`input[name="opsi_${h}"]`);
+                if (opsiField) opsiField.value = '';
+            });
+            document.querySelectorAll('input[name="jawaban_benar"]').forEach(r => r.checked = false);
+        } else {
+            soalForm.reset();
+        }
+
+        loadSoalList();
+    })
+    .catch(() => {
+        alert('Terjadi kesalahan saat menyimpan soal');
+    })
+    .finally(() => {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i>Simpan Soal';
+        }
+    });
+}
+
+function addMore() {
+    if (!confirm('Simpan soal ini dan lanjutkan membuat soal baru?')) return;
+    simpanSoal(true);
+}
+
+function showSuccessNotification(message) {
+    // Simple notification - you can enhance this
+    alert(message);
+}
+
+function loadSoalList() {
+    // Reload the questions list
+    loadQuestionsFromDB();
+}
+
 // Data State
 const data = {
     type: 'pg',

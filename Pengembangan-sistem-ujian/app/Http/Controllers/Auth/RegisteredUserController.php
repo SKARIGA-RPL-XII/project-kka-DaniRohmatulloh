@@ -26,14 +26,11 @@ class RegisteredUserController extends Controller
     ]);
 
     User::create([
-        'name' => $request->nama,
+        'nama' => $request->nama,
         'email' => $request->email,
         'password' => Hash::make($request->password),
         'role' => $request->role,
     ]);
-
-    // ❌ Jangan auto login
-    // Auth::login($user);
 
     return redirect()->route('login')
         ->with('success', 'Registrasi berhasil, silakan login');

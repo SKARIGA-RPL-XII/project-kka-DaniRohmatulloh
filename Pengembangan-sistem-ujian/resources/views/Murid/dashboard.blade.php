@@ -11,7 +11,7 @@
 
 <body class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
 
-    <!-- NAVBAR -->
+     <!-- NAVBAR -->
     <nav class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <div class="flex items-center justify-between">
@@ -35,12 +35,6 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('murid.ujian') }}" class="flex items-center gap-2 px-5 py-2 rounded-xl text-gray-600 hover:text-purple-600 hover:bg-white transition font-medium">
-                            <i class="fas fa-file-alt text-sm"></i>
-                            Ujian
-                        </a>
-                    </li>
-                    <li>
                         <a href="{{ route('murid.riwayat') }}" class="flex items-center gap-2 px-5 py-2 rounded-xl text-gray-600 hover:text-purple-600 hover:bg-white transition font-medium">
                             <i class="fas fa-history text-sm"></i>
                             Riwayat
@@ -48,9 +42,10 @@
                     </li>
                 </ul>
 
-                <!-- PROFILE -->
+                <!-- PROFILE DROPDOWN -->
                 <div class="relative">
-                    <div class="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl border border-gray-100">
+                    <button id="profileDropdownBtn" 
+                            class="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl border border-gray-100 hover:shadow-md transition-all duration-200">
                         <div class="relative">
                             <div class="w-9 h-9 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow">
                                 {{ strtoupper(substr(Auth::user()->nama, 0, 1)) }}
@@ -60,6 +55,44 @@
                         <div class="hidden lg:block text-left">
                             <p class="font-semibold text-gray-800 text-sm">{{ Auth::user()->nama }}</p>
                             <p class="text-xs text-gray-500">Murid</p>
+                        </div>
+                        <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
+                        <!-- Header -->
+                        <div class="px-5 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
+                            <p class="text-xs opacity-90">Login sebagai</p>
+                            <p class="font-bold text-lg">{{ Auth::user()->nama }}</p>
+                            <p class="text-xs opacity-75 mt-1">{{ Auth::user()->email }}</p>
+                        </div>
+                        
+                        <!-- Menu Items -->
+                        <div class="py-2">
+                            <a href="{{ route('murid.profil.index') }}" 
+                               class="flex items-center gap-3 px-5 py-3 text-gray-700 hover:bg-purple-50 transition group">
+                                <div class="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 group-hover:bg-purple-200">
+                                    <i class="fas fa-user text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Profil Saya</p>
+                                    <p class="text-xs text-gray-500">Kelola data pribadi</p>
+                                </div>
+                            </a>
+                            <div class="border-t border-gray-100 my-2"></div>
+                            <!-- Logout Button -->
+                            <button type="button" 
+                                    id="logoutBtn"
+                                    class="w-full text-left flex items-center gap-3 px-5 py-3 text-red-600 hover:bg-red-50 transition group">
+                                <div class="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center text-red-600 group-hover:bg-red-200">
+                                    <i class="fas fa-sign-out-alt text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Logout</p>
+                                    <p class="text-xs text-gray-500">Keluar dari sistem</p>
+                                </div>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -469,6 +502,119 @@
         </div>
     </footer>
 
-</body>
+    <!-- CUSTOM LOGOUT MODAL -->
+    <div id="logoutModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full transform transition-all duration-300 scale-95">
+            <div class="px-6 pt-6 pb-4">
+                <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-red-100">
+                    <i class="fas fa-sign-out-alt text-2xl text-red-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 text-center">Konfirmasi Logout</h3>
+                <p class="text-gray-600 text-center mt-2">Anda yakin ingin keluar dari sistem?</p>
+            </div>
 
+            <div class="px-6 pb-6">
+                <div class="bg-blue-50 rounded-lg p-4 mb-6">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-blue-500 mt-0.5 mr-3"></i>
+                        <div class="text-sm text-blue-700">
+                            <p class="font-medium">Anda akan logout dari:</p>
+                            <p class="mt-1">{{ Auth::user()->email }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <button type="button" 
+                            id="cancelLogout"
+                            class="py-3 px-4 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors duration-200">
+                        <i class="fas fa-times mr-2"></i>
+                        Batal
+                    </button>
+
+                    <form method="POST" action="{{ route('logout') }}" id="logoutForm">
+                        @csrf
+                        <button type="submit"
+                                class="py-3 px-4 bg-gradient-to-r from-red-500 to-red-600 text-white font-medium rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-200 w-full">
+                            <i class="fas fa-sign-out-alt mr-2"></i>
+                            Ya, Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-100 px-6 py-4 bg-gray-50 rounded-b-2xl">
+                <p class="text-xs text-gray-500 text-center">
+                    <i class="fas fa-shield-alt mr-1"></i>
+                    Sesi Anda akan diakhiri dengan aman
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for Dropdown -->
+    <script>
+        // Toggle profile dropdown
+        document.getElementById('profileDropdownBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('profileDropdown').classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('profileDropdown');
+            const button = document.getElementById('profileDropdownBtn');
+            
+            if (!dropdown.contains(e.target) && !button.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // Logout Modal Logic
+        const logoutBtn = document.getElementById('logoutBtn');
+        const logoutModal = document.getElementById('logoutModal');
+        const cancelLogout = document.getElementById('cancelLogout');
+        const logoutForm = document.getElementById('logoutForm');
+
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            logoutModal.classList.remove('hidden');
+            setTimeout(() => {
+                logoutModal.querySelector('.scale-95').classList.remove('scale-95');
+            }, 10);
+        });
+
+        cancelLogout.addEventListener('click', function() {
+            logoutModal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => {
+                logoutModal.classList.add('hidden');
+            }, 200);
+        });
+
+        logoutModal.addEventListener('click', function(e) {
+            if (e.target === logoutModal) {
+                logoutModal.querySelector('div').classList.add('scale-95');
+                setTimeout(() => {
+                    logoutModal.classList.add('hidden');
+                }, 200);
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !logoutModal.classList.contains('hidden')) {
+                logoutModal.querySelector('div').classList.add('scale-95');
+                setTimeout(() => {
+                    logoutModal.classList.add('hidden');
+                }, 200);
+            }
+        });
+
+        logoutForm.addEventListener('submit', function() {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
+            submitBtn.disabled = true;
+        });
+    </script>
+
+</body>
 </html>

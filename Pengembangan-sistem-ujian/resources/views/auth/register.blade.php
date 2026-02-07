@@ -128,15 +128,15 @@
                                 id="role"
                                 required
                                 class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition appearance-none bg-white">
-                                <option value="">Pilih Role</option>
+                    <option value="">Pilih Role</option>
                                 <option value="guru">👨‍🏫 Guru</option>
                                 <option value="murid">👨‍🎓 Murid</option>
-                            </select>
+                </select>
                             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                 <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                 </svg>
-                            </div>
+            </div>
                         </div>
                     </div>
 
@@ -167,7 +167,7 @@
                     </div>
                 </form>
             </div>
-
+            
             <!-- Back to Home -->
             <div class="text-center">
                 <a href="/welcome" class="text-sm text-gray-600 hover:text-gray-900 transition inline-flex items-center">

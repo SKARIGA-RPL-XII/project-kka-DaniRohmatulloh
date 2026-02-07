@@ -38,18 +38,23 @@ class AuthenticatedSessionController extends Controller
     $request->session()->regenerate();
 
     $user = Auth::user();
+    
+    // Debug: Log user role
+    \Log::info('User logged in', ['email' => $user->email, 'role' => $user->role]);
 
+    // Redirect berdasarkan role
     if ($user->role === 'guru') {
-        return redirect('/guru/dashboard');
+        return redirect()->intended('/guru/dashboard');
     }
 
     if ($user->role === 'murid') {
-        return redirect('/murid/dashboard');
+        return redirect()->intended('/murid/dashboard');
     }
 
+    // Jika role tidak dikenali, logout dan redirect ke login
     Auth::logout();
     return redirect('/login')->withErrors([
-        'role' => 'Role tidak dikenali',
+        'role' => 'Role tidak dikenali: ' . $user->role,
     ]);
 }
     public function destroy(Request $request): RedirectResponse
