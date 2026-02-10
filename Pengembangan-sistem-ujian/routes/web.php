@@ -19,32 +19,7 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::get('/guru/examp', function () {
-    try {
-        // Coba ambil data dari database
-        $mataPelajaran = DB::table('mata_pelajaran')
-            ->orderBy('nama_mapel')
-            ->get();
-        $totalSoal = DB::table('soal')->count();
-        $soals = DB::table('soal')
-            ->leftJoin('mata_pelajaran', 'soal.mapel_id', '=', 'mata_pelajaran.id')
-            ->select('soal.*', 'mata_pelajaran.nama_mapel')
-            ->latest('soal.created_at')
-            ->get();
-    } catch (\Exception $e) {
-        // Fallback ke data dummy jika database tidak tersedia
-        $mataPelajaran = collect([
-            (object)['id' => 1, 'nama_mapel' => 'Matematika'],
-            (object)['id' => 2, 'nama_mapel' => 'Fisika'],
-            (object)['id' => 3, 'nama_mapel' => 'Kimia'],
-            (object)['id' => 4, 'nama_mapel' => 'Biologi']
-        ]);
-        $totalSoal = 0;
-        $soals = collect();
-    }
-    
-    return view('guru.Examp', compact('mataPelajaran', 'totalSoal', 'soals'));
-})->name('guru.examp');
+Route::get('/guru/examp', [GuruController::class, 'examp'])->name('guru.examp');
 
 Route::get('/ujian', function () {
     return view('examp');
@@ -52,6 +27,11 @@ Route::get('/ujian', function () {
 
 // AUTH ROUTES
 require __DIR__.'/auth.php';
+
+// Tambahan route GET logout untuk redirect ke form POST
+Route::get('/logout', function () {
+    return redirect()->route('login');
+})->name('logout.get');
 
 // Route untuk halaman web
 Route::middleware(['auth'])->group(function () {
@@ -79,6 +59,9 @@ Route::middleware(['auth'])->prefix('guru')->name('guru.')->group(function () {
     Route::delete('/mapel/{id}', [SoalController::class, 'deleteSubject'])->name('mapel.destroy');
     
     Route::post('/ujian/kirim', [UjianController::class, 'kirim'])->name('ujian.kirim');
+    Route::post('/ujian/save', [GuruController::class, 'saveExam'])->name('ujian.save');
+    
+    Route::get('/hasil-ujian', [\App\Http\Controllers\Guru\HasilUjianController::class, 'index'])->name('hasil-ujian');
     
     // Dashboard
     Route::get('/dashboard', [GuruController::class, 'index'])->name('dashboard');

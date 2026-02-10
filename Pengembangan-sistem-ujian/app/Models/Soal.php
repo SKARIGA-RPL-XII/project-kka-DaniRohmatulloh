@@ -23,4 +23,9 @@ class Soal extends Model
         'jawaban',
         'tipe'
     ];
+
+    public function mataPelajaran()
+    {
+        return $this->belongsTo(MataPelajaran::class, 'mapel_id');
+    }
 }

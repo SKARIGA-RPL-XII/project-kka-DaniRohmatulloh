@@ -6,50 +6,6 @@
     <title>Riwayat Hasil Ujian</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        body {
-            background-color: #f8fafc;
-        }
-        
-        .card-hover:hover {
-            transform: translateY(-5px);
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        
-        .status-passed {
-            background-color: #d1fae5;
-            color: #065f46;
-        }
-        
-        .status-failed {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-        
-        .status-pending {
-            background-color: #fef3c7;
-            color: #92400e;
-        }
-        
-        .progress-bar {
-            height: 8px;
-            border-radius: 4px;
-            background-color: #e5e7eb;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.5s ease;
-        }
-    </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
 
@@ -141,6 +97,7 @@
             </div>
         </div>
     </nav>
+
     <!-- MAIN CONTENT -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header Section -->
@@ -234,19 +191,25 @@
             @foreach($riwayatUjian as $riwayat)
             @php
                 $nilai = $riwayat->nilai ?? 0;
-                $statusClass = $nilai >= 75 ? 'status-passed' : 'status-failed';
+                $statusBg = $nilai >= 75 ? 'bg-green-100' : 'bg-red-100';
+                $statusTextColor = $nilai >= 75 ? 'text-green-800' : 'text-red-800';
                 $statusText = $nilai >= 75 ? 'Lulus' : 'Tidak Lulus';
                 $nilaiColor = $nilai >= 75 ? 'text-blue-600' : 'text-red-600';
                 $progressColor = $nilai >= 75 ? 'bg-green-500' : 'bg-red-500';
                 $jumlahSoal = \App\Models\Soal::where('mapel_id', $riwayat->ujian->mapel_id)->count();
             @endphp
-            <div class="bg-white rounded-xl shadow overflow-hidden card-hover">
+            <div class="bg-white rounded-xl shadow overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <div class="p-5">
                     <div class="flex justify-between items-start">
                         <div>
                             <div class="flex items-center gap-2 mb-2">
-                                <span class="px-3 py-1 rounded-full {{ $statusClass }} text-sm font-medium">{{ $statusText }}</span>
-                                <span class="text-gray-500 text-sm"><i class="far fa-calendar-alt mr-1"></i>{{ \Carbon\Carbon::parse($riwayat->created_at)->translatedFormat('d M Y') }}</span>
+                                <span class="px-3 py-1 rounded-full text-sm font-medium {{ $statusBg }} {{ $statusTextColor }}">
+                                    {{ $statusText }}
+                                </span>
+                                <span class="text-gray-500 text-sm">
+                                    <i class="far fa-calendar-alt mr-1"></i>
+                                    {{ \Carbon\Carbon::parse($riwayat->created_at)->translatedFormat('d M Y') }}
+                                </span>
                             </div>
                             <h3 class="text-xl font-bold text-gray-800 mb-1">{{ $riwayat->ujian->nama_ujian ?? '-' }}</h3>
                             <p class="text-gray-600 mb-4">{{ $riwayat->ujian->mataPelajaran->nama_mapel ?? '-' }}</p>
@@ -257,13 +220,14 @@
                         </div>
                     </div>
                     
+                    <!-- Progress Bar -->
                     <div class="mb-4">
                         <div class="flex justify-between text-sm text-gray-600 mb-1">
                             <span>Progress</span>
                             <span>{{ $nilai }}/100</span>
                         </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill {{ $progressColor }}" style="width: {{ $nilai }}%"></div>
+                        <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div class="h-full rounded-full {{ $progressColor }}" style="width: {{ $nilai }}%"></div>
                         </div>
                     </div>
                     
@@ -276,7 +240,8 @@
                             <i class="far fa-question-circle mr-2"></i>
                             <span>{{ $jumlahSoal }} Soal</span>
                         </div>
-                        <a href="{{ route('murid.hasil.detail', $riwayat->id) }}" class="text-blue-600 font-medium hover:text-blue-800 transition-colors">
+                        <a href="{{ route('murid.hasil.detail', $riwayat->id) }}" 
+                           class="text-blue-600 font-medium hover:text-blue-800 transition-colors flex items-center">
                             Lihat Detail <i class="fas fa-arrow-right ml-1"></i>
                         </a>
                     </div>
@@ -287,7 +252,7 @@
 
         <!-- Pagination -->
         @if($riwayatUjian->hasPages())
-        <div class="mt-8 flex justify-center">
+        <div class="mt-8">
             {{ $riwayatUjian->links() }}
         </div>
         @endif
@@ -295,17 +260,18 @@
         @else
         <!-- Empty State -->
         <div class="text-center py-12">
-            <div class="inline-block p-6 bg-blue-50 rounded-full mb-4">
-                <i class="fas fa-clipboard-list text-blue-500 text-4xl"></i>
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-50 mb-4">
+                <i class="fas fa-clipboard-list text-blue-500 text-3xl"></i>
             </div>
             <h3 class="text-xl font-bold text-gray-800 mb-2">Belum Ada Riwayat Ujian</h3>
             <p class="text-gray-600 mb-6 max-w-md mx-auto">Anda belum mengerjakan ujian apapun. Silakan kunjungi halaman dashboard untuk memulai ujian pertama Anda.</p>
-            <a href="{{ route('murid.dashboard') }}" class="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors inline-block">
+            <a href="{{ route('murid.dashboard') }}" 
+               class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                <i class="fas fa-external-link-alt"></i>
                 Lihat Daftar Ujian
             </a>
         </div>
         @endif
-
     </main>
 
     <!-- FOOTER -->
@@ -328,7 +294,7 @@
         </div>
     </footer>
 
-    <!-- CUSTOM LOGOUT MODAL -->
+    <!-- LOGOUT MODAL -->
     <div id="logoutModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full transform transition-all duration-300 scale-95">
             <div class="px-6 pt-6 pb-4">
@@ -378,9 +344,9 @@
         </div>
     </div>
 
-    <!-- JavaScript for Dropdown and Interactions -->
+    <!-- JAVASCRIPT -->
     <script>
-        // Toggle profile dropdown
+        // Profile Dropdown Toggle
         document.getElementById('profileDropdownBtn').addEventListener('click', function(e) {
             e.stopPropagation();
             document.getElementById('profileDropdown').classList.toggle('hidden');
@@ -411,7 +377,7 @@
         });
 
         cancelLogout.addEventListener('click', function() {
-            logoutModal.querySelector('div').classList.add('scale-95');
+            logoutModal.querySelector('.scale-95').classList.add('scale-95');
             setTimeout(() => {
                 logoutModal.classList.add('hidden');
             }, 200);
@@ -419,7 +385,7 @@
 
         logoutModal.addEventListener('click', function(e) {
             if (e.target === logoutModal) {
-                logoutModal.querySelector('div').classList.add('scale-95');
+                logoutModal.querySelector('.scale-95').classList.add('scale-95');
                 setTimeout(() => {
                     logoutModal.classList.add('hidden');
                 }, 200);
@@ -428,7 +394,7 @@
 
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && !logoutModal.classList.contains('hidden')) {
-                logoutModal.querySelector('div').classList.add('scale-95');
+                logoutModal.querySelector('.scale-95').classList.add('scale-95');
                 setTimeout(() => {
                     logoutModal.classList.add('hidden');
                 }, 200);
@@ -441,29 +407,26 @@
             submitBtn.disabled = true;
         });
 
-        // Card hover effects
+        // Animate progress bars on scroll
         document.addEventListener('DOMContentLoaded', function() {
-            const examCards = document.querySelectorAll('.card-hover');
+            const progressBars = document.querySelectorAll('.h-full.rounded-full');
             
-            examCards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-5px)';
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const bar = entry.target;
+                        const width = bar.style.width;
+                        bar.style.transition = 'width 1s ease-in-out';
+                        bar.style.width = '0%';
+                        
+                        setTimeout(() => {
+                            bar.style.width = width;
+                        }, 100);
+                    }
                 });
-                
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                });
-            });
+            }, { threshold: 0.5 });
             
-            // Detail button click handler
-            const detailButtons = document.querySelectorAll('button:not([disabled])');
-            detailButtons.forEach(button => {
-                if (button.textContent.includes('Lihat Detail')) {
-                    button.addEventListener('click', function() {
-                        alert('Fitur ini akan menampilkan detail lengkap hasil ujian');
-                    });
-                }
-            });
+            progressBars.forEach(bar => observer.observe(bar));
         });
     </script>
 </body>
