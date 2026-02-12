@@ -49,7 +49,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('dashboard');
 
     // Guru routes
-Route::middleware(['auth'])->prefix('guru')->name('guru.')->group(function () {
+Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(function () {
     Route::get('/soal', [SoalController::class, 'create'])->name('soal.create');
     Route::post('/soal', [SoalController::class, 'store'])->name('soal.store');
     Route::delete('/soal/{soal}', [SoalController::class, 'destroy'])->name('soal.destroy');
@@ -76,7 +76,7 @@ Route::middleware(['auth'])->prefix('guru')->name('guru.')->group(function () {
 });
 
 // Murid routes
-Route::middleware(['auth'])->prefix('murid')->name('murid.')->group(function () {
+Route::middleware(['auth', 'role:murid'])->prefix('murid')->name('murid.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/ujian', [UjianController::class, 'index'])->name('ujian.index');
     Route::get('/ujian/{id}/mulai', [UjianController::class, 'mulai'])->name('ujian.mulai');

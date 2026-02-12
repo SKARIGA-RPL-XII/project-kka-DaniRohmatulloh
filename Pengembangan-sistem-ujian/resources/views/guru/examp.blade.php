@@ -24,6 +24,28 @@
         .selected-question {
             border-left: 4px solid #3b82f6;
         }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border-radius: 9999px;
+        }
+        
+        .sidebar-icon {
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
@@ -47,11 +69,11 @@
             <div class="p-4 border-b border-gray-200/50">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-bold shadow-sm">
-                        <span class="text-sm">G</span>
+                        <span class="text-sm">{{ strtoupper(substr(auth()->user()->nama, 0, 1)) }}</span>
                     </div>
                     <div class="hidden lg:block flex-1">
-                        <p class="font-medium text-gray-800 text-sm">Guru Matematika</p>
-                        <p class="text-xs text-gray-500 truncate">guru@example.com</p>
+                        <p class="font-medium text-gray-800 text-sm">{{ auth()->user()->nama }}</p>
+                        <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email }}</p>
                     </div>
                 </div>
                 <div class="hidden lg:flex items-center gap-2 px-2 py-1 bg-green-50 rounded-full mt-3">
@@ -88,13 +110,6 @@
                         <i class="fas fa-chart-bar text-lg"></i>
                     </div>
                     <span class="hidden lg:block text-sm">Lihat Hasil Ujian</span>
-                </a>
-                
-                <a href="#" class="flex items-center gap-3 p-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50/50 rounded-lg transition-colors">
-                    <div class="sidebar-icon">
-                        <i class="fas fa-users text-lg"></i>
-                    </div>
-                    <span class="hidden lg:block text-sm">Kelas</span>
                 </a>
             </nav>
 

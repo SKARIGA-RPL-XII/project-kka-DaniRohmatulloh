@@ -14,7 +14,11 @@ class SoalController extends Controller
     {
         $mataPelajaran = MataPelajaran::all();
         $recentSoal = Soal::with('mataPelajaran')->latest()->take(10)->get();
-        return view('guru.Kelola-Soal', compact('mataPelajaran', 'recentSoal'));
+        $totalSoal = Soal::count();
+        $soalPG = Soal::where('tipe', 'pilihan_ganda')->count();
+        $soalEssay = Soal::where('tipe', 'essay')->count();
+        
+        return view('guru.Kelola-Soal', compact('mataPelajaran', 'recentSoal', 'totalSoal', 'soalPG', 'soalEssay'));
     }
 
     public function store(Request $request)

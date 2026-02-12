@@ -13,22 +13,6 @@
             font-family: 'Inter', sans-serif;
         }
         
-        .sidebar-icon {
-            width: 2rem;
-            height: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0.5rem;
-            transition: colors 0.2s;
-        }
-        
-        .glass-card {
-            background-color: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(229, 231, 235, 0.5);
-        }
-        
         .result-card {
             transition: all 0.2s;
         }
@@ -38,27 +22,29 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         
-        .score-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-        
-        .progress-ring {
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
         }
         
         .avatar {
             width: 2.5rem;
             height: 2.5rem;
-            border-radius: 9999px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 500;
+            border-radius: 9999px;
             color: white;
+            font-weight: bold;
+        }
+        
+        .score-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border-radius: 9999px;
         }
     </style>
 </head>
@@ -83,10 +69,10 @@
             <div class="p-6 border-b">
                 <div class="flex items-center gap-3 mb-3">
                     <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full flex items-center justify-center text-white font-bold text-lg shadow">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        {{ strtoupper(substr(auth()->user()->nama, 0, 1)) }}
                     </div>
                     <div class="flex-1 min-w-0">
-                        <p class="font-medium text-gray-800 truncate">{{ auth()->user()->name }}</p>
+                        <p class="font-medium text-gray-800 truncate">{{ auth()->user()->nama }}</p>
                         <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email }}</p>
                     </div>
                 </div>
@@ -120,12 +106,6 @@
                    class="flex items-center gap-3 px-4 py-3 bg-indigo-50 text-indigo-700 rounded-lg font-medium">
                     <i class="fas fa-chart-bar w-5 text-center"></i>
                     <span>Lihat Hasil Ujian</span>
-                </a>
-                
-                <a href="#" 
-                   class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-                    <i class="fas fa-users w-5 text-center"></i>
-                    <span>Kelola Kelas</span>
                 </a>
             </nav>
 
@@ -571,7 +551,8 @@
     </div>
 
     <script>
-        // eslint-disable-next-line
+        /* eslint-disable */
+        /* jshint ignore:start */
         // Sample data for demonstration
         const examResults = [
             {

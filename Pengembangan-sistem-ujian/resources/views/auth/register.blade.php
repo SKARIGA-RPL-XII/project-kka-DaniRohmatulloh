@@ -16,7 +16,7 @@
             <!-- Logo/Header -->
             <div class="text-center">
                 <a href="/welcome" class="inline-block">
-                    <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                    <h1 class="text-3xl font-bold text-blue-600 mb-2">
                         UjianOnline
                     </h1>
                 </a>

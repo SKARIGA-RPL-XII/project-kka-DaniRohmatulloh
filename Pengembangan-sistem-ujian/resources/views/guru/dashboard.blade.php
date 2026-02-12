@@ -30,10 +30,10 @@
             <div class="p-6 border-b">
                 <div class="flex items-center gap-3 mb-3">
                     <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full flex items-center justify-center text-white font-bold text-lg shadow">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        {{ strtoupper(substr(auth()->user()->nama, 0, 1)) }}
                     </div>
                     <div class="flex-1 min-w-0">
-                        <p class="font-medium text-gray-800 truncate">{{ auth()->user()->name }}</p>
+                        <p class="font-medium text-gray-800 truncate">{{ auth()->user()->nama }}</p>
                         <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email }}</p>
                     </div>
                 </div>
@@ -67,12 +67,6 @@
                    class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
                     <i class="fas fa-chart-bar w-5 text-center"></i>
                     <span>Lihat Hasil Ujian</span>
-                </a>
-                
-                <a href="#" 
-                   class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-                    <i class="fas fa-users w-5 text-center"></i>
-                    <span>Kelola Kelas</span>
                 </a>
             </nav>
 
@@ -122,7 +116,7 @@
                     <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl p-6 text-white">
                         <div class="flex flex-col md:flex-row justify-between items-center">
                             <div>
-                                <h2 class="text-2xl font-bold mb-2">Selamat datang, {{ auth()->user()->name }}!</h2>
+                                <h2 class="text-2xl font-bold mb-2">Selamat datang, {{ auth()->user()->nama }}!</h2>
                                 <p class="text-blue-100">Sistem ujian online untuk pembelajaran yang lebih baik</p>
                             </div>
                         </div>

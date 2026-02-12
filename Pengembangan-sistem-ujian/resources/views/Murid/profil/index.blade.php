@@ -137,52 +137,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- QUICK ACTIONS -->
-                <div class="bg-white rounded-xl shadow p-6">
-                    <h3 class="font-bold text-gray-900 mb-4">Menu Cepat</h3>
-                    
-                    <div class="space-y-3">
-                        <a href="{{ route('murid.dashboard') }}" 
-                           class="flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded-lg transition">
-                            <i class="fas fa-home text-gray-400 mr-3"></i>
-                            <span>Dashboard</span>
-                            <i class="fas fa-chevron-right ml-auto text-gray-300"></i>
-                        </a>
-
-                        <a href="{{ route('murid.riwayat') }}" 
-                           class="flex items-center p-3 text-gray-700 hover:bg-gray-50 rounded-lg transition">
-                            <i class="fas fa-history text-gray-400 mr-3"></i>
-                            <span>Riwayat Ujian</span>
-                            <i class="fas fa-chevron-right ml-auto text-gray-300"></i>
-                        </a>
-
-                        <form method="POST" action="{{ route('logout') }}" class="pt-3 border-t">
-                            @csrf
-                            <button type="submit" 
-                                    onclick="return confirm('Yakin ingin logout?')"
-                                    class="flex items-center p-3 text-red-600 hover:bg-red-50 rounded-lg transition w-full">
-                                <i class="fas fa-sign-out-alt mr-3"></i>
-                                <span>Keluar</span>
-                                <i class="fas fa-chevron-right ml-auto text-gray-300"></i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- SUPPORT CARD -->
-                <div class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl p-5 text-white">
-                    <div class="flex items-start mb-3">
-                        <i class="fas fa-headset text-xl mr-3"></i>
-                        <div>
-                            <h4 class="font-bold">Butuh Bantuan?</h4>
-                            <p class="text-sm text-indigo-100 mt-1">Tim kami siap membantu Anda</p>
-                        </div>
-                    </div>
-                    <button class="mt-3 w-full bg-white text-indigo-600 font-medium py-2 rounded-lg hover:bg-gray-100 transition">
-                        Hubungi Support
-                    </button>
-                </div>
             </div>
         </div>
     </main>
