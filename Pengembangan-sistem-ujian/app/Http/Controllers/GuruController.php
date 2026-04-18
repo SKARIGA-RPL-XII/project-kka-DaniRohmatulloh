@@ -17,6 +17,14 @@ class GuruController extends Controller {
         return view('guru.dashboard', compact('totalSoal', 'totalUjian', 'totalSiswa'));
     }
 
+    public function dashboard() {
+        $totalSoal = Soal::count();
+        $totalUjian = Ujian::count();
+        $totalSiswa = User::where('role', 'murid')->count();
+        
+        return view('guru.dashboard', compact('totalSoal', 'totalUjian', 'totalSiswa'));
+    }
+
     public function examp() {
         $soals = Soal::with('mataPelajaran')->get()->map(function($soal) {
             return [
@@ -76,4 +84,3 @@ class GuruController extends Controller {
         ]);
     }
 }
-

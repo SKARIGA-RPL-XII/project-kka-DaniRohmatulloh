@@ -196,7 +196,7 @@
                 $statusText = $nilai >= 75 ? 'Lulus' : 'Tidak Lulus';
                 $nilaiColor = $nilai >= 75 ? 'text-blue-600' : 'text-red-600';
                 $progressColor = $nilai >= 75 ? 'bg-green-500' : 'bg-red-500';
-                $jumlahSoal = \App\Models\Soal::where('mapel_id', $riwayat->ujian->mapel_id)->count();
+$jumlahSoal = \App\Models\Soal::where('mapel_id', $riwayat->ujian?->mapel_id)->count();
             @endphp
             <div class="bg-white rounded-xl shadow overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <div class="p-5">
@@ -212,7 +212,7 @@
                                 </span>
                             </div>
                             <h3 class="text-xl font-bold text-gray-800 mb-1">{{ $riwayat->ujian->nama_ujian ?? '-' }}</h3>
-                            <p class="text-gray-600 mb-4">{{ $riwayat->ujian->mataPelajaran->nama_mapel ?? '-' }}</p>
+{{ $riwayat->ujian->mataPelajaran->nama_mapel ?? 'Tidak diketahui' }}
                         </div>
                         <div class="text-right">
                             <div class="text-3xl font-bold {{ $nilaiColor }}">{{ $nilai }}</div>
@@ -241,9 +241,9 @@
                             <span>{{ $jumlahSoal }} Soal</span>
                         </div>
                         <a href="{{ route('murid.hasil.detail', $riwayat->id) }}" 
-                           class="text-blue-600 font-medium hover:text-blue-800 transition-colors flex items-center">
-                            Lihat Detail <i class="fas fa-arrow-right ml-1"></i>
-                        </a>
+                            class="text-blue-600 font-medium hover:text-blue-800 transition-colors flex items-center">
+                             Lihat Detail <i class="fas fa-arrow-right ml-1"></i>
+                         </a>
                     </div>
                 </div>
             </div>

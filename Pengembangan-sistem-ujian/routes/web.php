@@ -3,9 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Guru\SoalController;
+use App\Http\Controllers\Guru\HasilUjianController;
+use App\Http\Controllers\Guru\MapelController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UjianController;
-use App\Http\Controllers\MapelController;
 use App\Http\Controllers\HasilController;
 use App\Http\Controllers\MuridController;
 use App\Http\Controllers\Murid\ProfilController;
@@ -56,10 +57,12 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/soal/{id}', [SoalController::class, 'update'])->name('guru.soal.update');
         Route::delete('/soal/{id}', [SoalController::class, 'destroy'])->name('guru.soal.destroy');
         Route::post('/soal/generate', [SoalController::class, 'generate'])->name('guru.soal.generate');
-        
+        Route::post('/mapel/store', [MapelController::class, 'store'])->name('guru.mapel.store');
+        Route::get('/hasil-ujian', [HasilUjianController::class, 'index'])->name('guru.hasil-ujian');
         // Dashboard guru
         Route::get('/dashboard', [GuruController::class, 'dashboard'])->name('guru.dashboard');
     });
+
 
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

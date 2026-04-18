@@ -344,13 +344,9 @@
                         </label>
                     </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Pertanyaan Utama / Teks Pengantar</label>
-                    <textarea name="pertanyaan_utama" id="pertanyaan_utama" rows="3" required placeholder="Tulis pertanyaan utama atau teks pengantar di sini..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"></textarea>
-                </div>
-                
-                {{-- INI YANG HILANG, TAMBAHKAN INI --}}
+
                 <div id="subQuestionsContainer" class="space-y-4"></div>
+
                 
                 <button type="button" onclick="tambahSubQuestion()" class="w-full py-2 border-2 border-dashed border-indigo-300 text-indigo-600 rounded-lg text-sm font-medium hover:bg-indigo-50 flex items-center justify-center gap-2">
                     <i class="fas fa-plus-circle"></i> Tambah Sub Pertanyaan
@@ -407,6 +403,15 @@
                 const pg = item.querySelector('.pg-options'), essay = item.querySelector('.essay-options');
                 if(pg) pg.classList.toggle('hidden', tipe !== 'pilihan_ganda');
                 if(essay) essay.classList.toggle('hidden', tipe !== 'essay');
+                // Atur atribut required pada radio
+                const radios = item.querySelectorAll('input[type="radio"]');
+                radios.forEach(radio => {
+                    if (tipe === 'pilihan_ganda') {
+                        radio.setAttribute('required', 'required');
+                    } else {
+                        radio.removeAttribute('required');
+                    }
+                });
             });
         }
 
@@ -419,17 +424,56 @@
             const pgHtml = `<div class="pg-options ${pgHidden}"><label class="block text-sm font-medium text-gray-700 mb-2 mt-3">Opsi Jawaban</label><div class="space-y-2">` + ops.map(o => `
                 <div class="flex items-center gap-3">
                     <span class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-xs font-medium text-gray-600">${o}</span>
-                    <input type="text" name="sub_opsi_${o.toLowerCase()}[${idx}]" value="${data?.['opsi_' + o.toLowerCase()] || ''}" placeholder="Opsi ${o}" required class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" name="sub_opsi_${o.toLowerCase()}[${idx}]" value="${data?.['opsi_' + o.toLowerCase()] || ''}" placeholder="Opsi ${o}" class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
                     <input type="radio" name="sub_jawaban_benar[${idx}]" value="${o}" ${data?.jawaban_benar === o ? 'checked' : ''} class="w-4 h-4 text-green-600" required>
                 </div>`).join('') + `</div></div>`;
             const essayHtml = `<div class="essay-options ${essayHidden}"><label class="block text-sm font-medium text-gray-700 mb-1 mt-3">Pedoman Jawaban</label><textarea name="sub_pedoman_jawaban[${idx}]" rows="2" placeholder="Tulis pedoman penskoran..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">${data?.pedoman_jawaban || ''}</textarea></div>`;
             const div = document.createElement('div');
             div.className = 'sub-question-item bg-gray-50 rounded-xl p-4 border border-gray-200';
-            div.innerHTML = `<div class="flex justify-between items-center mb-3"><span class="font-semibold text-gray-700 text-sm">Sub Pertanyaan ${subQuestionCount}</span><button type="button" onclick="hapusSubQuestion(this)" class="text-red-400 hover:text-red-600 text-sm"><i class="fas fa-trash"></i> Hapus</button></div><textarea name="sub_pertanyaan[${idx}]" rows="2" required placeholder="Tulis sub pertanyaan di sini..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">${data?.pertanyaan || ''}</textarea>${pgHtml}${essayHtml}`;
+            div.innerHTML = `<div class="flex justify-between items-center mb-3"><span class="font-semibold text-gray-700 text-sm sub-question-label">Sub Pertanyaan</span><button type="button" onclick="hapusSubQuestion(this)" class="text-red-400 hover:text-red-600 text-sm"><i class="fas fa-trash"></i> Hapus</button></div><textarea name="sub_pertanyaan[${idx}]" rows="2" required placeholder="Tulis sub pertanyaan di sini..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">${data?.pertanyaan || ''}</textarea>${pgHtml}${essayHtml}`;
             document.getElementById('subQuestionsContainer').appendChild(div);
+            updateSubQuestionLabels();
+            reindexSubQuestions();
         }
 
-        function hapusSubQuestion(btn) { btn.closest('.sub-question-item').remove(); }
+        function hapusSubQuestion(btn) {
+            const item = btn.closest('.sub-question-item');
+            // Hapus required pada radio sebelum dihapus dari DOM
+            const radios = item.querySelectorAll('input[type="radio"]');
+            radios.forEach(radio => radio.removeAttribute('required'));
+            item.remove();
+            updateSubQuestionLabels();
+            reindexSubQuestions();
+        }
+        // Reindex semua atribut name pada sub pertanyaan agar urut dan tidak ada required radio yang tidak focusable
+        function reindexSubQuestions() {
+            const items = document.querySelectorAll('#subQuestionsContainer .sub-question-item');
+            items.forEach((item, idx) => {
+                // Textarea pertanyaan
+                const pertanyaan = item.querySelector('textarea[name^="sub_pertanyaan"]');
+                if (pertanyaan) pertanyaan.name = `sub_pertanyaan[${idx}]`;
+                // Essay
+                const essay = item.querySelector('textarea[name^="sub_pedoman_jawaban"]');
+                if (essay) essay.name = `sub_pedoman_jawaban[${idx}]`;
+                // Opsi PG
+                ['a','b','c','d'].forEach(o => {
+                    const opsi = item.querySelector(`input[name^='sub_opsi_${o}']`);
+                    if (opsi) opsi.name = `sub_opsi_${o}[${idx}]`;
+                });
+                // Radio PG
+                const radios = item.querySelectorAll('input[type="radio"][name^="sub_jawaban_benar"]');
+                radios.forEach(radio => {
+                    radio.name = `sub_jawaban_benar[${idx}]`;
+                });
+            });
+        }
+
+        function updateSubQuestionLabels() {
+            const items = document.querySelectorAll('#subQuestionsContainer .sub-question-item .sub-question-label');
+            items.forEach((label, idx) => {
+                label.textContent = 'Sub Pertanyaan ' + (idx + 1);
+            });
+        }
 
         function lihatSoal(mapelId, tipe) {
             const data = soalData[mapelId];
@@ -441,10 +485,13 @@
             document.getElementById('previewSub').textContent = data.soal.length + ' soal \u2022 ' + (tipe === 'pilihan_ganda' ? 'Pilihan Ganda' : 'Essay');
 
             let html = '';
-            data.soal.forEach(function(soal, i) {
+            let nomor = 1;
+            data.soal.forEach(function(soal) {
                 html += '<div class="flex gap-3">';
-                html += '<span class="w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">' + (i + 1) + '</span>';
-                html += '<div class="flex-1">';
+                // Gunakan soal.nomor jika ada, jika tidak pakai counter
+                html += '<span class="w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">' + (soal.nomor ? soal.nomor : nomor) + '</span>';
+                nomor++;
+                html += '<div class="flex-1">'; 
                 html += '<p class="text-gray-800 font-medium text-sm mb-2">' + soal.pertanyaan + '</p>';
 
                 if (tipe === 'pilihan_ganda') {
@@ -491,18 +538,12 @@
         // Validasi form sebelum submit
         document.getElementById('soalForm').addEventListener('submit', function(e) {
             const mapel = document.getElementById('mapel_id').value;
-            const pertanyaan = document.getElementById('pertanyaan_utama').value.trim();
             const tipe = document.querySelector('input[name="tipe"]:checked').value;
             const subItems = document.querySelectorAll('#subQuestionsContainer .sub-question-item');
 
             if (!mapel) {
                 e.preventDefault();
                 showToast('Pilih mata pelajaran terlebih dahulu!', 'error');
-                return;
-            }
-            if (!pertanyaan) {
-                e.preventDefault();
-                showToast('Pertanyaan utama tidak boleh kosong!', 'error');
                 return;
             }
             if (subItems.length === 0) {
@@ -520,6 +561,7 @@
                     showToast('Sub pertanyaan ' + (i+1) + ' tidak boleh kosong!', 'error');
                     return;
                 }
+                // Hanya cek radio jika tipe PG
                 if (tipe === 'pilihan_ganda') {
                     const jawaban = item.querySelector('input[type="radio"]:checked');
                     if (!jawaban) {

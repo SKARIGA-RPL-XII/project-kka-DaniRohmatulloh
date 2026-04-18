@@ -11,10 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subject', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        // Disabled: duplicate table, use mata_pelajaran instead
     }
 
     /**

@@ -24,7 +24,7 @@ public function index()
     $recentSoal = $soal;
     
     // Ubah ini sesuai lokasi file blade Anda
-    return view('soal.index', compact(
+    return view('guru.Kelola-Soal', compact(
         'mataPelajaran', 'soal', 'totalSoal', 
         'soalPG', 'soalEssay', 'recentSoal'
     ));
@@ -38,7 +38,7 @@ public function index()
         $request->validate([
             'mapel_id' => 'required|exists:mata_pelajaran,id',
             'tipe' => 'required|in:pilihan_ganda,essay',
-            'pertanyaan_utama' => 'required|string',
+            'pertanyaan_utama' => 'nullable|string',
             'sub_pertanyaan' => 'required|array|min:1',
             'sub_pertanyaan.*' => 'required|string',
         ]);
@@ -80,15 +80,16 @@ public function index()
                 }
             }
 
-            // Get nomor urut terakhir
-            $lastNomor = Soal::where('mapel_id', $request->mapel_id)->max('nomor') ?? 0;
+// Get next sequential nomor by finding gap or max+1
+$existingSoalCount = Soal::where('mapel_id', $request->mapel_id)->count();
+            $nextNomor = $existingSoalCount + 1;
             
             // Simpan ke database
             $soal = Soal::create([
                 'mapel_id' => $request->mapel_id,
                 'tipe' => $request->tipe,
-                'nomor' => $lastNomor + 1,
-                'pertanyaan' => $request->pertanyaan_utama,
+                'nomor' => $nextNomor,
+                'pertanyaan' => $request->pertanyaan_utama ?? 'Soal ' . $nextNomor,
                 'sub_questions' => json_encode($subQuestions, JSON_UNESCAPED_UNICODE),
                 'opsi_a' => '-',
                 'opsi_b' => '-',
@@ -185,10 +186,20 @@ public function index()
     {
         try {
             $soal = Soal::findOrFail($id);
+            $mapelId = $soal->mapel_id;
             $soal->delete();
             
+            // Re-number soal for this mapel_id
+            $remainingSoal = Soal::where('mapel_id', $mapelId)
+                ->orderBy('created_at')
+                ->get();
+            
+            foreach ($remainingSoal as $index => $s) {
+                $s->update(['nomor' => $index + 1]);
+            }
+            
             return redirect()->route('guru.soal.index')
-                ->with('success', 'Soal berhasil dihapus!');
+                ->with('success', 'Soal berhasil dihapus dan nomor diurutkan ulang!');
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Gagal menghapus soal!');
