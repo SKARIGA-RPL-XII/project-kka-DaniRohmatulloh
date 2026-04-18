@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+@php use App\Models\Soal; @endphp
 <html lang="id">
 
 <head>
@@ -123,10 +124,10 @@
                     </div>
                     <p class="text-gray-600 mt-3 max-w-2xl">
                         Siap untuk mengasah kemampuanmu hari ini? 
-                        @if($ujian->count() > 0)
-                        Ada <span class="font-semibold text-purple-600">{{ $ujian->count() }} ujian</span> yang tersedia!
+                        @if($soalPerMapel->count() > 0)
+                        Ada <span class="font-semibold text-purple-600">{{ $soalPerMapel->count() }} mata pelajaran</span> yang tersedia!
                         @else
-                        Saat ini belum ada ujian yang tersedia.
+                        Saat ini belum ada soal yang tersedia.
                         @endif
                     </p>
                 </div>
@@ -198,8 +199,8 @@
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-500 text-sm font-medium mb-1">Ujian Tersedia</p>
-                        <p class="text-3xl font-bold text-gray-900">{{ $ujian->count() }}</p>
+                        <p class="text-gray-500 text-sm font-medium mb-1">Mapel Tersedia</p>
+                        <p class="text-3xl font-bold text-gray-900">{{ $soalPerMapel->count() }}</p>
                     </div>
                     <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-50 to-orange-100 flex items-center justify-center">
                         <i class="fas fa-clock text-xl text-orange-600"></i>
@@ -207,14 +208,14 @@
                 </div>
                 <div class="mt-4 pt-4 border-t border-gray-100">
                     <div class="flex items-center text-sm">
-                        @if($ujian->count() > 0)
+                        @if($soalPerMapel->count() > 0)
                         <span class="text-orange-600 font-medium flex items-center">
                             <i class="fas fa-book-open mr-1 text-xs"></i>
                             Siap dikerjakan
                         </span>
                         @else
                         <span class="text-gray-500 font-medium">
-                            Tidak ada ujian
+                            Tidak ada soal
                         </span>
                         @endif
                     </div>
@@ -262,7 +263,7 @@
                     <p class="text-gray-600 mt-2">Pilih ujian yang ingin kamu kerjakan</p>
                 </div>
                 
-                @if($ujian->count() > 0 && $mataPelajaran->count() > 0)
+                @if($soalPerMapel->count() > 0 && $mataPelajaran->count() > 0)
                 <div class="flex gap-2">
                     <form method="GET" action="{{ route('murid.dashboard') }}" class="flex gap-2">
                         <select name="mapel_id" onchange="this.form.submit()" class="border border-gray-300 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
@@ -278,110 +279,66 @@
                 @endif
             </div>
 
-            @if($ujian->count() > 0)
+            @if($soalPerMapel->count() > 0)
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($ujian as $item)
+                @foreach($soalPerMapel as $item)
                 @php
-                    // Tentukan warna berdasarkan mata pelajaran
-                    $colors = [
-                        1 => ['from' => 'from-green-400', 'to' => 'to-teal-500', 'bg' => 'bg-green-50', 'text' => 'text-green-700', 'icon' => 'fa-calculator'],
-                    ];
-                    
-                    $color = $colors[$item->mapel_id] ?? ['from' => 'from-purple-400', 'to' => 'to-indigo-500', 'bg' => 'bg-purple-50', 'text' => 'text-purple-700', 'icon' => 'fa-book'];
-                    
-                    // Hitung jumlah peserta yang sudah mengerjakan
-                    $pesertaSudahMengerjakan = \App\Models\HasilUjian::where('ujian_id', $item->id)->count();
-                    
-                    // Check apakah user sudah mengerjakan ujian ini
-                    $sudahMengerjakan = \App\Models\HasilUjian::where('ujian_id', $item->id)
-                        ->where('murid_id', Auth::id())
-                        ->exists();
+                    $mapel = $item->mataPelajaran;
+                    $totalSoal = Soal::where('mapel_id', $item->mapel_id)->sum(\DB::raw('JSON_LENGTH(sub_questions)'));
+                    $colors = ['from-purple-400','from-blue-400','from-green-400','from-orange-400','from-pink-400'];
+                    $tos    = ['to-indigo-500','to-cyan-500','to-teal-500','to-red-400','to-rose-500'];
+                    $bgs    = ['bg-purple-50','bg-blue-50','bg-green-50','bg-orange-50','bg-pink-50'];
+                    $texts  = ['text-purple-700','text-blue-700','text-green-700','text-orange-700','text-pink-700'];
+                    $idx    = $item->mapel_id % 5;
                 @endphp
-                
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
-                    <div class="h-3 bg-gradient-to-r {{ $color['from'] }} {{ $color['to'] }}"></div>
+                    <div class="h-2 bg-gradient-to-r {{ $colors[$idx] }} {{ $tos[$idx] }}"></div>
                     <div class="p-6">
                         <div class="flex items-start justify-between mb-4">
                             <div>
-                                <span class="inline-block px-3 py-1 {{ $color['bg'] }} {{ $color['text'] }} rounded-full text-xs font-semibold">
-                                    {{ $item->mataPelajaran->nama_mapel ?? 'Tidak ada mapel' }}
+                                <span class="inline-block px-3 py-1 {{ $bgs[$idx] }} {{ $texts[$idx] }} rounded-full text-xs font-semibold">
+                                    {{ $mapel->nama_mapel ?? 'N/A' }}
                                 </span>
-                                <h3 class="font-bold text-gray-900 text-lg mt-2">{{ $item->nama_ujian }}</h3>
+                                <h3 class="font-bold text-gray-900 text-lg mt-2">Soal {{ $mapel->nama_mapel ?? 'N/A' }}</h3>
                             </div>
-                            <div class="w-10 h-10 rounded-lg {{ $color['bg'] }} flex items-center justify-center">
-                                <i class="fas {{ $color['icon'] }} {{ $color['text'] }}"></i>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-3 mb-6">
-                            <div class="flex items-center text-gray-600 text-sm">
-                                <i class="fas fa-question-circle {{ $color['text'] }} mr-2"></i>
-                                <span>{{ \App\Models\Soal::where('mapel_id', $item->mapel_id)->count() }} Soal</span>
-                            </div>
-                            <div class="flex items-center text-gray-600 text-sm">
-                                <i class="fas fa-clock {{ $color['text'] }} mr-2"></i>
-                                <span>Durasi: {{ $item->durasi }} Menit</span>
-                            </div>
-                            <div class="flex items-center text-gray-600 text-sm">
-                                <i class="fas fa-users {{ $color['text'] }} mr-2"></i>
-                                <span>{{ $pesertaSudahMengerjakan }} peserta sudah mengerjakan</span>
+                            <div class="w-10 h-10 rounded-lg {{ $bgs[$idx] }} flex items-center justify-center">
+                                <i class="fas fa-book {{ $texts[$idx] }}"></i>
                             </div>
                         </div>
-                        
+                        <div class="space-y-2 mb-6">
+                            <div class="flex items-center text-gray-600 text-sm">
+                                <i class="fas fa-question-circle {{ $texts[$idx] }} mr-2"></i>
+                                <span>{{ $totalSoal }} Soal tersedia</span>
+                            </div>
+                            <div class="flex items-center text-gray-600 text-sm">
+                                <i class="fas fa-layer-group {{ $texts[$idx] }} mr-2"></i>
+                                <span>{{ Soal::where('mapel_id', $item->mapel_id)->count() }} Paket soal</span>
+                            </div>
+                        </div>
                         <div class="pt-4 border-t border-gray-100">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    @if($sudahMengerjakan)
-                                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
-                                        <i class="fas fa-check-circle mr-1"></i> Sudah Dikerjakan
-                                    </span>
-                                    @else
-                                    <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-semibold">
-                                        <i class="fas fa-clock mr-1"></i> Belum Dikerjakan
-                                    </span>
-                                    @endif
-                                </div>
-                                
-                                @if($sudahMengerjakan)
-                                <a href="{{ route('murid.hasil', $item->id) }}" 
-                                   class="px-5 py-2.5 bg-gradient-to-r {{ $color['from'] }} {{ $color['to'] }} text-white font-semibold rounded-xl hover:shadow-lg transition">
-                                    Lihat Hasil
-                                </a>
-                                @else
-                                <a href="{{ route('murid.ujian.mulai', $item->id) }}" 
-                                   class="px-5 py-2.5 bg-gradient-to-r {{ $color['from'] }} {{ $color['to'] }} text-white font-semibold rounded-xl hover:shadow-lg transition">
-                                    Mulai Ujian
-                                </a>
-                                @endif
-                            </div>
+                            <a href="{{ route('murid.ujian.mulai', $item->mapel_id) }}"
+                               class="block text-center px-5 py-2.5 bg-gradient-to-r {{ $colors[$idx] }} {{ $tos[$idx] }} text-white font-semibold rounded-xl hover:shadow-lg transition">
+                                Mulai Ujian
+                            </a>
                         </div>
                     </div>
                 </div>
                 @endforeach
             </div>
             
-            <!-- Pagination -->
-            @if($ujian->hasPages())
-            <div class="mt-8">
-                {{ $ujian->links() }}
-            </div>
-            @endif
-            
             @else
-            <!-- TAMPILAN JIKA TIDAK ADA UJIAN -->
+            <!-- TAMPILAN JIKA TIDAK ADA SOAL -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
                 <div class="w-20 h-20 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 flex items-center justify-center mx-auto mb-6">
                     <i class="fas fa-book-open text-3xl text-gray-400"></i>
                 </div>
-                <h3 class="text-xl font-bold text-gray-800 mb-3">Belum Ada Ujian Tersedia</h3>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Belum Ada Soal Tersedia</h3>
                 <p class="text-gray-600 mb-6 max-w-md mx-auto">
-                    Saat ini belum ada ujian yang tersedia untuk dikerjakan. Silakan hubungi guru Anda atau coba lagi nanti.
+                    Saat ini belum ada soal yang tersedia. Silakan hubungi guru Anda atau coba lagi nanti.
                 </p>
-                <div class="flex gap-4 justify-center">
-                    <a href="{{ route('murid.dashboard') }}" class="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-medium hover:shadow-lg transition">
-                        <i class="fas fa-refresh mr-2"></i> Refresh Halaman
-                    </a>
-                </div>
+                <a href="{{ route('murid.dashboard') }}" class="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-medium hover:shadow-lg transition">
+                    <i class="fas fa-refresh mr-2"></i> Refresh Halaman
+                </a>
             </div>
             @endif
         </section>

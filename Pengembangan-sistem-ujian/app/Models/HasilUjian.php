@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\MataPelajaran;
 
 class HasilUjian extends Model
 {
@@ -11,8 +12,19 @@ class HasilUjian extends Model
     protected $fillable = [
         'murid_id',
         'ujian_id',
+        'mapel_id',
         'nilai',
+        'jawaban',
     ];
+
+    protected $casts = [
+        'jawaban' => 'array',
+    ];
+
+    public function mataPelajaran()
+    {
+        return $this->belongsTo(MataPelajaran::class, 'mapel_id');
+    }
 
     public function murid()
     {

@@ -49,25 +49,17 @@ Route::middleware(['auth'])->group(function () {
     })->name('dashboard');
 
     // Guru routes
-Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(function () {
-    Route::get('/soal', [SoalController::class, 'create'])->name('soal.create');
-    Route::post('/soal', [SoalController::class, 'store'])->name('soal.store');
-    Route::delete('/soal/{soal}', [SoalController::class, 'destroy'])->name('soal.destroy');
-    Route::post('/soal/{soal}/settings', [SoalController::class, 'updateSettings'])->name('soal.settings');
-    
-    Route::post('/mapel', [MapelController::class, 'store'])->name('mapel.store');
-    Route::delete('/mapel/{id}', [SoalController::class, 'deleteSubject'])->name('mapel.destroy');
-    
-    Route::post('/ujian/kirim', [UjianController::class, 'kirim'])->name('ujian.kirim');
-    Route::post('/ujian/save', [GuruController::class, 'saveExam'])->name('ujian.save');
-    
-    Route::get('/hasil-ujian', [\App\Http\Controllers\Guru\HasilUjianController::class, 'index'])->name('hasil-ujian');
-    
-    // Dashboard
-    Route::get('/dashboard', [GuruController::class, 'index'])->name('dashboard');
-});
-    
-    Route::post('/guru/soal/generate', [SoalController::class, 'generate'])->name('guru.soal.generate');
+    Route::prefix('guru')->middleware(['auth'])->group(function () {
+        Route::get('/soal', [SoalController::class, 'index'])->name('guru.soal.index');
+        Route::post('/soal', [SoalController::class, 'store'])->name('guru.soal.store');
+        Route::get('/soal/{id}/edit', [SoalController::class, 'edit'])->name('guru.soal.edit');
+        Route::put('/soal/{id}', [SoalController::class, 'update'])->name('guru.soal.update');
+        Route::delete('/soal/{id}', [SoalController::class, 'destroy'])->name('guru.soal.destroy');
+        Route::post('/soal/generate', [SoalController::class, 'generate'])->name('guru.soal.generate');
+        
+        // Dashboard guru
+        Route::get('/dashboard', [GuruController::class, 'dashboard'])->name('guru.dashboard');
+    });
 
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -78,9 +70,8 @@ Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(f
 // Murid routes
 Route::middleware(['auth', 'role:murid'])->prefix('murid')->name('murid.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/ujian', [UjianController::class, 'index'])->name('ujian.index');
-    Route::get('/ujian/{id}/mulai', [UjianController::class, 'mulai'])->name('ujian.mulai');
-    Route::post('/ujian/{id}/submit', [UjianController::class, 'submit'])->name('ujian.submit');
+    Route::get('/ujian/{mapel_id}/mulai', [UjianController::class, 'mulai'])->name('ujian.mulai');
+    Route::post('/ujian/{mapel_id}/submit', [UjianController::class, 'submit'])->name('ujian.submit');
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat');
     Route::get('/hasil/{ujian_id}', [HasilController::class, 'show'])->name('hasil');
     Route::get('/hasil/detail/{id}', [HasilController::class, 'detail'])->name('hasil.detail');
@@ -94,15 +85,15 @@ Route::middleware(['auth', 'role:murid'])->prefix('murid')->name('murid.')->grou
     });
 });
 
- // Ujian routes
+// Ujian routes
 Route::middleware(['auth'])->prefix('ujian')->name('ujian.')->group(function () {
     Route::get('/', [UjianController::class, 'index'])->name('index');
     Route::get('/{id}/mulai', [UjianController::class, 'mulai'])->name('mulai');
     Route::get('/{id}/halaman', [UjianController::class, 'halamanUjian'])->name('halaman');
     Route::post('/{id}/submit', [UjianController::class, 'submit'])->name('submit');
 });
-    
- // Hasil routes
+
+// Hasil routes
 Route::middleware(['auth'])->prefix('hasil')->name('hasil.')->group(function () {
     Route::get('/', [HasilController::class, 'index'])->name('index');
     Route::get('/{ujian_id}', [HasilController::class, 'show'])->name('show');
@@ -110,47 +101,23 @@ Route::middleware(['auth'])->prefix('hasil')->name('hasil.')->group(function () 
 });
 
 Route::middleware(['auth'])->group(function () {
-
     // Riwayat hasil ujian
-    Route::get('/murid/hasil', [HasilController::class, 'index'])
-        ->name('murid.hasil.index');
+    Route::get('/murid/hasil', [HasilController::class, 'index'])->name('murid.hasil.index');
 
     // Hasil berdasarkan ujian
-    Route::get('/murid/hasil/{ujian_id}', [HasilController::class, 'show'])
-        ->name('murid.hasil.show');
+    Route::get('/murid/hasil/{ujian_id}', [HasilController::class, 'show'])->name('murid.hasil.show');
 
     // Detail hasil / jawaban
-    Route::get('/murid/hasil/detail/{id}', [HasilController::class, 'detail'])
-        ->name('murid.hasil.detail');
+    Route::get('/murid/hasil/detail/{id}', [HasilController::class, 'detail'])->name('murid.hasil.detail');
 });
 
 // API Routes untuk Soal
-Route::prefix('api')->group(function () {
+Route::prefix('api')->middleware(['auth'])->group(function () {
     Route::get('/subjects', [SoalController::class, 'getSubjects']);
     Route::post('/subjects', [SoalController::class, 'addSubject']);
     Route::delete('/subjects/{id}', [SoalController::class, 'deleteSubject']);
     Route::get('/soal', [SoalController::class, 'index']);
     Route::post('/soal', [SoalController::class, 'store']);
-    Route::post('/soal/batch', [SoalController::class, 'storeBatch']);
     Route::get('/soal/{id}', [SoalController::class, 'show']);
     Route::delete('/soal/{id}', [SoalController::class, 'destroy']);
 });
-
- Route::prefix('soal')->name('soal.')->group(function () {
-        Route::get('/', [SoalController::class, 'index'])->name('index');
-        Route::get('/create', [SoalController::class, 'create'])->name('create');
-        Route::post('/', [SoalController::class, 'store'])->name('store');
-        Route::delete('/{soal}', [SoalController::class, 'destroy'])->name('destroy');
-        
-        // Buat soal otomatis
-        Route::get('/create-auto', function () {
-            return view('guru.soal.create-auto');
-        })->name('create-auto');
-    });
-    
-    // Mata Pelajaran
-    Route::prefix('mapel')->name('mapel.')->group(function () {
-        Route::post('/', [MapelController::class, 'store'])->name('store');
-    });
-
-    

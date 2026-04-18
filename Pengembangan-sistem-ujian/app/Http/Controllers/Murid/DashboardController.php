@@ -4,62 +4,46 @@ namespace App\Http\Controllers\Murid;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Ujian;
 use App\Models\MataPelajaran;
 use App\Models\HasilUjian;
 use App\Models\Soal;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
     public function index(Request $request)
     {
         $userId = Auth::id();
-        
-        // Get mata pelajaran untuk filter
+
         $mataPelajaran = MataPelajaran::all();
-        
-        // Get ujian tersedia (ujian yang belum dikerjakan oleh murid ini)
-        $ujianQuery = Ujian::with(['mataPelajaran'])
-            ->whereNotIn('id', function($query) use ($userId) {
-                $query->select('ujian_id')
-                    ->from('hasil_ujian')
-                    ->where('murid_id', $userId);
-            });
-        
-        // Filter by mata pelajaran
-        if ($request->has('mapel_id') && $request->mapel_id != '') {
-            $ujianQuery->where('mapel_id', $request->mapel_id);
+
+        // Ambil mapel yang sudah ada soalnya sebagai "ujian tersedia"
+        $soalQuery = Soal::with('mataPelajaran')
+            ->select('mapel_id')
+            ->groupBy('mapel_id')
+            ->havingRaw('COUNT(*) > 0');
+
+        if ($request->filled('mapel_id')) {
+            $soalQuery->where('mapel_id', $request->mapel_id);
         }
-        
-        $ujian = $ujianQuery->paginate(6);
-        
-        // Get riwayat ujian terakhir (max 5)
+
+        $soalPerMapel = $soalQuery->get();
+
+        // Statistik
+        $totalUjianDiikuti  = HasilUjian::where('murid_id', $userId)->count();
+        $rataRataNilai      = round(HasilUjian::where('murid_id', $userId)->avg('nilai') ?? 0, 1);
+        $nilaiTertinggi     = HasilUjian::where('murid_id', $userId)->max('nilai') ?? 0;
+        $ujianBaruMingguIni = Soal::where('created_at', '>=', now()->subDays(7))
+            ->distinct('mapel_id')->count('mapel_id');
+
         $riwayatUjian = HasilUjian::with(['ujian.mataPelajaran'])
             ->where('murid_id', $userId)
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
-        
-        // Hitung statistik
-        $totalUjianDiikuti = HasilUjian::where('murid_id', $userId)->count();
-        
-        $ujianBaruMingguIni = Ujian::where('created_at', '>=', Carbon::now()->subDays(7))
-            ->whereNotIn('id', function($query) use ($userId) {
-                $query->select('ujian_id')
-                    ->from('hasil_ujian')
-                    ->where('murid_id', $userId);
-            })
-            ->count();
-        
-        $rataRataNilai = HasilUjian::where('murid_id', $userId)->avg('nilai');
-        $rataRataNilai = $rataRataNilai ? round($rataRataNilai, 1) : 0;
-        
-        $nilaiTertinggi = HasilUjian::where('murid_id', $userId)->max('nilai') ?? 0;
-        
+
         return view('murid.dashboard', compact(
-            'ujian',
+            'soalPerMapel',
             'mataPelajaran',
             'riwayatUjian',
             'totalUjianDiikuti',

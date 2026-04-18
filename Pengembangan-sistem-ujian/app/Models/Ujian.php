@@ -12,6 +12,10 @@ class Ujian extends Model
         'mapel_id',
         'nama_ujian',
         'durasi',
+        'tanggal',
+        'jam_mulai',
+        'jam_selesai',
+        'deskripsi',
     ];
 
     public function mataPelajaran()

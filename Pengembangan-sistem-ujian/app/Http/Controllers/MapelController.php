@@ -11,7 +11,7 @@ class MapelController extends Controller
     {
         $validated = $request->validate([
             'nama_mapel' => 'required|string|max:100|unique:mata_pelajaran,nama_mapel',
-            'kode_mapel' => 'nullable|string|max:20',
+            'kode_mapel' => 'required|string|max:20|unique:mata_pelajaran,kode_mapel',
             'deskripsi' => 'nullable|string',
         ]);
 
