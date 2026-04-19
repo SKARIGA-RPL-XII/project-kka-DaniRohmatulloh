@@ -134,6 +134,10 @@
                                 <i class="fas fa-book-medical"></i>
                                 <span>Tambah Mapel</span>
                             </button>
+                            <button onclick="showKelolaMapelModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors">
+                                <i class="fas fa-list"></i>
+                                <span>Kelola Mapel</span>
+                            </button>
                             <button onclick="showTambahSoalModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors">
                                 <i class="fas fa-plus"></i>
                                 <span>Tambah Soal</span>
@@ -310,55 +314,55 @@
     </div>
 
     {{-- Modal Tambah/Edit Soal --}}
-    {{-- Modal Tambah/Edit Soal --}}
-<div id="soalModal" class="fixed inset-0 bg-gray-900/50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-2xl p-6 max-w-4xl w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-5">
-            <h3 class="text-xl font-bold text-gray-800" id="modalTitle">Tambah Soal Baru</h3>
-            <button onclick="hideSoalModal()" class="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-lg"><i class="fas fa-times"></i></button>
-        </div>
-        <form method="POST" action="{{ route('guru.soal.store') }}" id="soalForm">
-            @csrf
-            <input type="hidden" name="_method" id="formMethod" value="POST">
-            <input type="hidden" name="soal_id" id="soalId">
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Mata Pelajaran</label>
-                    <select name="mapel_id" id="mapel_id" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
-                        <option value="">Pilih Mata Pelajaran</option>
-                        @foreach($mataPelajaran as $mapel)
-                            <option value="{{ $mapel->id }}">{{ $mapel->nama_mapel }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipe Soal</label>
-                    <div class="flex gap-4">
-                        <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg flex-1 cursor-pointer hover:bg-gray-50">
-                            <input type="radio" name="tipe" value="pilihan_ganda" class="w-4 h-4 text-indigo-600" checked onchange="toggleTipeForm()">
-                            <span class="text-sm text-gray-700">Pilihan Ganda</span>
-                        </label>
-                        <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg flex-1 cursor-pointer hover:bg-gray-50">
-                            <input type="radio" name="tipe" value="essay" class="w-4 h-4 text-indigo-600" onchange="toggleTipeForm()">
-                            <span class="text-sm text-gray-700">Essay</span>
-                        </label>
+    <div id="soalModal" class="fixed inset-0 bg-gray-900/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-6 max-w-4xl w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-xl font-bold text-gray-800" id="modalTitle">Tambah Soal Baru</h3>
+                <button onclick="hideSoalModal()" class="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-lg"><i class="fas fa-times"></i></button>
+            </div>
+            <form method="POST" action="{{ route('guru.soal.store') }}" id="soalForm">
+                @csrf
+                <input type="hidden" name="_method" id="formMethod" value="POST">
+                <input type="hidden" name="soal_id" id="soalId">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Mata Pelajaran</label>
+                        <select name="mapel_id" id="mapel_id" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
+                            <option value="">Pilih Mata Pelajaran</option>
+                            @foreach($mataPelajaran as $mapel)
+                                <option value="{{ $mapel->id }}">{{ $mapel->nama_mapel }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tipe Soal</label>
+                        <div class="flex gap-4">
+                            <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg flex-1 cursor-pointer hover:bg-gray-50">
+                                <input type="radio" name="tipe" value="pilihan_ganda" class="w-4 h-4 text-indigo-600" checked onchange="toggleTipeForm()">
+                                <span class="text-sm text-gray-700">Pilihan Ganda</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-3 border border-gray-200 rounded-lg flex-1 cursor-pointer hover:bg-gray-50">
+                                <input type="radio" name="tipe" value="essay" class="w-4 h-4 text-indigo-600" onchange="toggleTipeForm()">
+                                <span class="text-sm text-gray-700">Essay</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="subQuestionsContainer" class="space-y-4"></div>
+
+                    
+                    <button type="button" onclick="tambahSubQuestion()" class="w-full py-2 border-2 border-dashed border-indigo-300 text-indigo-600 rounded-lg text-sm font-medium hover:bg-indigo-50 flex items-center justify-center gap-2">
+                        <i class="fas fa-plus-circle"></i> Tambah Sub Pertanyaan
+                    </button>
+                    <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                        <button type="button" onclick="hideSoalModal()" class="px-4 py-2 border border-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50">Batal</button>
+                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 shadow-sm">Simpan Soal</button>
                     </div>
                 </div>
-
-                <div id="subQuestionsContainer" class="space-y-4"></div>
-
-                
-                <button type="button" onclick="tambahSubQuestion()" class="w-full py-2 border-2 border-dashed border-indigo-300 text-indigo-600 rounded-lg text-sm font-medium hover:bg-indigo-50 flex items-center justify-center gap-2">
-                    <i class="fas fa-plus-circle"></i> Tambah Sub Pertanyaan
-                </button>
-                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                    <button type="button" onclick="hideSoalModal()" class="px-4 py-2 border border-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50">Batal</button>
-                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 shadow-sm">Simpan Soal</button>
-                </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
+
     {{-- Modal Tambah Mata Pelajaran --}}
     <div id="tambahMapelModal" class="fixed inset-0 bg-gray-900/50 hidden items-center justify-center z-50">
         <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
@@ -368,6 +372,7 @@
             </div>
             <form method="POST" action="{{ route('guru.mapel.store') }}">
                 @csrf
+
                 <div class="space-y-4">
                     <div><label class="block text-sm font-medium text-gray-700 mb-1">Nama Mata Pelajaran</label><input type="text" name="nama_mapel" required placeholder="Contoh: Matematika" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"></div>
                     <div><label class="block text-sm font-medium text-gray-700 mb-1">Kode Mapel</label><input type="text" name="kode_mapel" required placeholder="Contoh: MTK" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"></div>
@@ -377,6 +382,93 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+
+    {{-- Modal Kelola Mata Pelajaran (Daftar Mapel + Hapus) --}}
+    <div id="kelolaMapelModal" class="fixed inset-0 bg-gray-900/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-6 max-w-2xl w-full mx-4 shadow-2xl max-h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center mb-5 flex-shrink-0">
+                <h3 class="text-xl font-bold text-gray-800">Kelola Mata Pelajaran</h3>
+                <button onclick="hideKelolaMapelModal()" class="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-lg"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="overflow-y-auto flex-1">
+                <div class="space-y-2">
+                    @forelse($mataPelajaran as $mapel)
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:shadow-sm transition-shadow">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-book text-white text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-800">{{ $mapel->nama_mapel }}</p>
+                                <p class="text-xs text-gray-500">Kode: {{ $mapel->kode_mapel }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="editMapel({{ $mapel->id }}, '{{ $mapel->nama_mapel }}', '{{ $mapel->kode_mapel }}')" 
+                                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="confirmDeleteMapel({{ $mapel->id }}, '{{ $mapel->nama_mapel }}')" 
+                                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="text-center py-12">
+                        <i class="fas fa-folder-open text-gray-300 text-5xl mb-4"></i>
+                        <p class="text-gray-500">Belum ada mata pelajaran</p>
+                    </div>
+                    @endforelse
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-4 flex-shrink-0">
+                <button onclick="hideKelolaMapelModal()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal Edit Mata Pelajaran --}}
+    <div id="editMapelModal" class="fixed inset-0 bg-gray-900/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-xl font-bold text-gray-800">Edit Mata Pelajaran</h3>
+                <button onclick="hideEditMapelModal()" class="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-lg"><i class="fas fa-times"></i></button>
+            </div>
+            <form method="POST" action="" id="editMapelForm">
+                @csrf
+                @method('PUT')
+                <div class="space-y-4">
+                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Nama Mata Pelajaran</label><input type="text" name="nama_mapel" id="edit_nama_mapel" required placeholder="Contoh: Matematika" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"></div>
+                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Kode Mapel</label><input type="text" name="kode_mapel" id="edit_kode_mapel" required placeholder="Contoh: MTK" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"></div>
+                    <div class="flex justify-end gap-3 pt-2">
+                        <button type="button" onclick="hideEditMapelModal()" class="px-4 py-2 border border-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50">Batal</button>
+                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 shadow-sm">Update</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- Modal Konfirmasi Hapus Mapel --}}
+    <div id="deleteMapelConfirmModal" class="fixed inset-0 bg-gray-900/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl text-center">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Hapus Mata Pelajaran</h3>
+            <p class="text-gray-600 mb-4" id="deleteMapelMessage">Apakah Anda yakin ingin menghapus mata pelajaran ini?</p>
+            <p class="text-sm text-red-600 mb-5" id="deleteMapelWarning">Semua soal yang terkait dengan mata pelajaran ini juga akan terhapus!</p>
+            <div class="flex gap-3">
+                <button onclick="hideDeleteMapelConfirm()" class="flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl font-medium">Batal</button>
+                <form method="POST" action="" id="deleteMapelForm">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium shadow-sm">Ya, Hapus</button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -629,6 +721,39 @@
 
         function showTambahMapelModal() { document.getElementById('tambahMapelModal').classList.remove('hidden'); document.getElementById('tambahMapelModal').classList.add('flex'); }
         function hideTambahMapelModal() { document.getElementById('tambahMapelModal').classList.add('hidden'); document.getElementById('tambahMapelModal').classList.remove('flex'); }
+        
+        function showKelolaMapelModal() { document.getElementById('kelolaMapelModal').classList.remove('hidden'); document.getElementById('kelolaMapelModal').classList.add('flex'); }
+        function hideKelolaMapelModal() { document.getElementById('kelolaMapelModal').classList.add('hidden'); document.getElementById('kelolaMapelModal').classList.remove('flex'); }
+        
+        function editMapel(id, nama, kode) {
+            document.getElementById('edit_nama_mapel').value = nama;
+            document.getElementById('edit_kode_mapel').value = kode;
+            document.getElementById('editMapelForm').action = '/guru/mapel/' + id;
+            hideKelolaMapelModal();
+            document.getElementById('editMapelModal').classList.remove('hidden');
+            document.getElementById('editMapelModal').classList.add('flex');
+        }
+        
+        function hideEditMapelModal() { 
+            document.getElementById('editMapelModal').classList.add('hidden'); 
+            document.getElementById('editMapelModal').classList.remove('flex');
+            showKelolaMapelModal();
+        }
+        
+        function confirmDeleteMapel(id, nama) {
+            document.getElementById('deleteMapelMessage').innerHTML = `Apakah Anda yakin ingin menghapus mata pelajaran <strong class="text-red-600">${nama}</strong>?`;
+            document.getElementById('deleteMapelForm').action = '/guru/mapel/' + id;
+            hideKelolaMapelModal();
+            document.getElementById('deleteMapelConfirmModal').classList.remove('hidden');
+            document.getElementById('deleteMapelConfirmModal').classList.add('flex');
+        }
+        
+        function hideDeleteMapelConfirm() { 
+            document.getElementById('deleteMapelConfirmModal').classList.add('hidden'); 
+            document.getElementById('deleteMapelConfirmModal').classList.remove('flex');
+            showKelolaMapelModal();
+        }
+        
         function showLogoutConfirm() { document.getElementById('logoutModal').classList.remove('hidden'); document.getElementById('logoutModal').classList.add('flex'); }
         function hideLogoutConfirm() { document.getElementById('logoutModal').classList.add('hidden'); document.getElementById('logoutModal').classList.remove('flex'); }
         function logout() { alert('Logout berhasil!'); window.location.href = '/login'; }
@@ -641,7 +766,19 @@
 
         document.getElementById('filterMapel')?.addEventListener('change', function() { filterSoal(this.value, document.getElementById('searchSoal')?.value.toLowerCase() || ''); });
         document.getElementById('searchSoal')?.addEventListener('keyup', function() { filterSoal(document.getElementById('filterMapel')?.value || '', this.value.toLowerCase()); });
-        window.onclick = function(e) { ['soalModal', 'tambahMapelModal', 'logoutModal', 'previewModal'].forEach(id => { if(e.target === document.getElementById(id)) eval('hide' + id.charAt(0).toUpperCase() + id.slice(1).replace('Modal','') + 'Modal()'); }); };
+        window.onclick = function(e) { 
+            ['soalModal', 'tambahMapelModal', 'kelolaMapelModal', 'editMapelModal', 'deleteMapelConfirmModal', 'logoutModal', 'previewModal'].forEach(id => { 
+                if(e.target === document.getElementById(id)) {
+                    if(id === 'previewModal') tutupPreview();
+                    else if(id === 'editMapelModal') hideEditMapelModal();
+                    else if(id === 'deleteMapelConfirmModal') hideDeleteMapelConfirm();
+                    else if(id === 'kelolaMapelModal') hideKelolaMapelModal();
+                    else if(id === 'tambahMapelModal') hideTambahMapelModal();
+                    else if(id === 'soalModal') hideSoalModal();
+                    else if(id === 'logoutModal') hideLogoutConfirm();
+                }
+            }); 
+        };
         document.getElementById('previewModal').addEventListener('click', function(e) { if(e.target === this) tutupPreview(); });
         
         // Auto-remove success/error messages after 5 seconds
@@ -655,7 +792,7 @@
         }, 5000);
     </script>
 
-    {{-- Hidden forms untuk delete --}}
+    {{-- Hidden forms untuk delete soal --}}
     @foreach($soal as $soalItem)
     <form id="deleteForm-{{ $soalItem->id }}" method="POST" action="/guru/soal/{{ $soalItem->id }}" style="display:none">
         @csrf

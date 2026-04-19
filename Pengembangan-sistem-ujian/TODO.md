@@ -1,13 +1,8 @@
-# All tasks complete ✅
+# Update: DUPLIKAT CONTROLLER DITEMUKAN!
 
-**Summary:**
-- examp.blade.php sidebar exactly matches guru dashboard (Pengaturan active)
-- Kelola-Soal.blade.php success/error alerts auto-fade & remove after 5s (close X still works)
+**Root Cause Fixed**: Route `guru.mapel.store` panggil **app/Http/Controllers/Guru/MapelController.php** (JSON), bukan yang kita edit.
 
-Linter JS errors ignored (blade.php files).
-
-Test: Add mapel → green alert appears, fades after 5s.
-
-**Commands:**
-`php artisan serve`
-Visit /guru/soal
+## Next Steps
+- [x] Step 1: Fixed wrong MapelController.php
+- [x] Step 2: Edit **app/Http/Controllers/Guru/MapelController.php** (replace JSON → redirect success)
+- [ ] Step 3: Test & complete

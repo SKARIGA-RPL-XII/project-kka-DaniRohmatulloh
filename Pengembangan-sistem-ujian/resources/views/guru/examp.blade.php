@@ -46,6 +46,14 @@
             justify-content: center;
             border-radius: 0.5rem;
         }
+        
+        /* Loading animation */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
@@ -164,7 +172,7 @@
                                         <p class="text-gray-600 text-sm mt-1">Pilih soal untuk ditambahkan ke ujian</p>
                                     </div>
                                     <div class="flex items-center gap-3">
-                                        <span class="badge bg-blue-100 text-blue-700" id="questionCount">14 soal</span>
+                                        <span class="badge bg-blue-100 text-blue-700" id="questionCount">0 soal</span>
                                         <div class="relative">
                                             <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                                             <input type="text" placeholder="Cari soal..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm w-48" id="searchInput" onkeyup="filterQuestions()">
@@ -174,10 +182,10 @@
                             </div>
                             
                             <div class="p-4">
-                                <!-- Filter Chips -->
+                                <!-- Filter Chips - Dropdown Pilih Materi -->
                                 <div class="flex flex-wrap gap-2 mb-4">
-                                    <select onchange="filterQuestions()" id="subjectFilter" class="px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                                        <option value="">Semua Pelajaran</option>
+                                    <select onchange="filterBySubject()" id="subjectFilter" class="px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                                        <option value="">Pilih Materi</option>
                                         @foreach($mataPelajaran as $mapel)
                                         <option value="{{ $mapel->id }}">{{ $mapel->nama_mapel }}</option>
                                         @endforeach
@@ -194,18 +202,24 @@
                                     </button>
                                 </div>
                                 
+                                <!-- Loading Indicator -->
+                                <div id="loadingIndicator" class="hidden text-center py-8">
+                                    <i class="fas fa-spinner loading-spinner text-3xl text-blue-500"></i>
+                                    <p class="mt-2 text-gray-500">Memuat soal...</p>
+                                </div>
+                                
                                 <!-- Questions List -->
                                 <div class="space-y-3 max-h-[500px] overflow-y-auto pr-2" id="questionsList"></div>
                                 
                                 <!-- Empty State -->
                                 <div id="emptyState" class="hidden text-center py-12">
                                     <div class="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                                        <i class="fas fa-search text-gray-400 text-2xl"></i>
+                                        <i class="fas fa-inbox text-gray-400 text-2xl"></i>
                                     </div>
-                                    <p class="text-gray-500 mb-2">Tidak ada soal yang ditemukan</p>
-                                    <button onclick="clearFilters()" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                        Reset filter
-                                    </button>
+                                    <p class="text-gray-500 mb-2" id="emptyStateText">Belum ada soal</p>
+                                    <a href="/guru/soal" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                        <i class="fas fa-plus mr-1"></i>Buat soal baru
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -283,10 +297,10 @@
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-2">Mata Pelajaran</label>
-                                            <select id="examSubject" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                            <select id="examSubject" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="updateExamName()">
                                                 <option value="">Pilih...</option>
                                                 @foreach($mataPelajaran as $mapel)
-                                                <option value="{{ $mapel->id }}">{{ $mapel->nama_mapel }}</option>
+                                                <option value="{{ $mapel->id }}" data-nama="{{ $mapel->nama_mapel }}">{{ $mapel->nama_mapel }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -355,7 +369,7 @@
         </div>
     </div>
 
-    <!-- Modals (Minimal) -->
+    <!-- Modals -->
     <div id="questionDetailModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
@@ -369,33 +383,6 @@
                 <div class="flex gap-3 pt-6 border-t mt-6">
                     <button onclick="addToExamFromDetail()" class="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium py-3 px-6 rounded-lg hover:shadow-md">
                         <i class="fas fa-plus mr-2"></i>Tambah ke Ujian
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="createExamModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl max-w-md w-full">
-            <div class="p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-gray-900">Buat Ujian Baru</h3>
-                    <button onclick="hideCreateExamModal()" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-lg"></i>
-                    </button>
-                </div>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Ujian</label>
-                        <input type="text" id="newExamName" placeholder="Masukkan nama ujian" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    </div>
-                </div>
-                <div class="flex gap-3 pt-6 mt-6">
-                    <button onclick="createNewExam()" class="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium py-3 px-6 rounded-lg hover:shadow-md">
-                        <i class="fas fa-plus mr-2"></i>Buat Ujian
-                    </button>
-                    <button onclick="hideCreateExamModal()" class="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50">
-                        Batal
                     </button>
                 </div>
             </div>
@@ -422,17 +409,19 @@
         </div>
     </div>
 
-    <!-- JavaScript (Tetap sama, hanya ditampilkan sebagian untuk singkat) -->
     <script>
-/* eslint-disable-next-line */
-        let questions = @json($soals);
-        let selectedQuestions = new Set();
-        /* eslint-disable-next-line */
+        let allQuestions = @json($soals);
+        let currentDisplayQuestions = [];
+        let selectedQuestions = new Set(); // Menyimpan ID soal yang terpilih
+        let selectedQuestionsPerSubject = {}; // Menyimpan pilihan soal per mapel
         let recentExams = @json($ujians);
         let mataPelajaran = @json($mataPelajaran);
         let currentQuestionId = null;
+        let currentSubjectId = null;
 
         function initializeData() {
+            // Tampilkan semua soal awal
+            currentDisplayQuestions = [...allQuestions];
             updateUI();
         }
 
@@ -447,18 +436,28 @@
             const container = document.getElementById('questionsList');
             const emptyState = document.getElementById('emptyState');
             
-            if (questions.length === 0) {
+            if (currentDisplayQuestions.length === 0) {
                 container.innerHTML = '';
+                const emptyStateText = document.getElementById('emptyStateText');
+                if (currentSubjectId) {
+                    const mapelName = mataPelajaran.find(m => m.id == currentSubjectId)?.nama_mapel;
+                    emptyStateText.innerHTML = `Belum ada soal untuk mata pelajaran <strong>${mapelName || ''}</strong><br>Silakan buat soal terlebih dahulu`;
+                } else {
+                    emptyStateText.innerHTML = 'Pilih materi terlebih dahulu untuk melihat soal';
+                }
                 emptyState.classList.remove('hidden');
+                document.getElementById('questionCount').textContent = '0 soal';
                 return;
             }
             
             emptyState.classList.add('hidden');
             let html = '';
-            questions.forEach(q => {
+            currentDisplayQuestions.forEach(q => {
+                // Cek apakah soal terpilih (dari selectedQuestions atau dari per mapel)
                 const isSelected = selectedQuestions.has(q.id);
                 const bgColor = isSelected ? 'bg-blue-50/80 border-blue-200' : 'bg-white/50 border-gray-200/50';
                 const textColor = isSelected ? 'text-blue-700' : 'text-gray-800';
+                const mapelName = mataPelajaran.find(m => m.id == q.mapel_id)?.nama_mapel || q.subject;
                 
                 html += `<div class="question-card p-4 border rounded-xl cursor-pointer ${bgColor} ${textColor} ${isSelected ? 'selected-question' : ''}" 
                          onclick="toggleQuestionSelection(${q.id})" 
@@ -466,15 +465,14 @@
                     <div class="flex justify-between items-start">
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-2">
-                                <span class="font-medium truncate">${q.title}</span>
-                                <span class="badge ${q.type==='pilihan_ganda'?'bg-green-100 text-green-700':'bg-blue-100 text-blue-700'}">
-                                    ${q.type==='pilihan_ganda'?'PG':'Essay'}
+                                <span class="font-medium truncate">${q.title || 'Soal ' + q.id}</span>
+                                <span class="badge ${q.tipe === 'pilihan_ganda' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}">
+                                    ${q.tipe === 'pilihan_ganda' ? 'PG' : 'Essay'}
                                 </span>
                             </div>
-                            <p class="text-sm text-gray-600 line-clamp-2">${q.question}</p>
+                            <p class="text-sm text-gray-600 line-clamp-2">${(q.pertanyaan || q.question || 'Soal tanpa pertanyaan').substring(0, 100)}${(q.pertanyaan || q.question || '').length > 100 ? '...' : ''}</p>
                             <div class="flex items-center gap-3 mt-3 text-xs">
-                                <span class="text-gray-500"><i class="fas fa-book mr-1"></i>${q.subject}</span>
-                                <span class="text-gray-500"><i class="fas fa-star mr-1"></i>${q.points} poin</span>
+                                <span class="text-gray-500"><i class="fas fa-book mr-1"></i>${mapelName}</span>
                             </div>
                         </div>
                         ${isSelected ? 
@@ -488,7 +486,7 @@
                 </div>`;
             });
             container.innerHTML = html;
-            document.getElementById('questionCount').textContent = `${questions.length} soal`;
+            document.getElementById('questionCount').textContent = `${currentDisplayQuestions.length} soal`;
         }
 
         function renderSelectedQuestions() {
@@ -510,11 +508,12 @@
             
             let html = '';
             selectedQuestions.forEach(id => {
-                const q = questions.find(q => q.id === id);
+                const q = allQuestions.find(q => q.id === id);
                 if (q) {
+                    const title = q.title || 'Soal ' + q.id;
                     html += `<div class="flex items-center justify-between p-2 bg-blue-50 rounded-lg">
-                        <span class="text-sm text-gray-700 truncate">${q.title}</span>
-                        <button onclick="toggleQuestionSelection(${q.id})" class="text-red-500 hover:text-red-700">
+                        <span class="text-sm text-gray-700 truncate flex-1">${title}</span>
+                        <button onclick="toggleQuestionSelection(${q.id})" class="text-red-500 hover:text-red-700 ml-2">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>`;
@@ -529,63 +528,119 @@
         function renderRecentExams() {
             const container = document.getElementById('recentExams');
             if (!recentExams || recentExams.length === 0) {
-                container.innerHTML = '<p class="text-gray-500 col-span-3">Belum ada ujian</p>';
+                container.innerHTML = '<div class="col-span-3 text-center py-8"><p class="text-gray-500">Belum ada ujian yang dibuat</p></div>';
                 return;
             }
             
             let html = '';
-            recentExams.forEach(exam => {
+            recentExams.slice(0, 3).forEach(exam => {
                 html += `<div class="glass-card rounded-xl p-4">
-                    <h4 class="font-semibold text-gray-800 mb-2">${exam.name}</h4>
+                    <h4 class="font-semibold text-gray-800 mb-2">${exam.nama_ujian || exam.name}</h4>
                     <div class="space-y-1 text-sm text-gray-600">
-                        <p><i class="fas fa-book mr-2"></i>${exam.subject}</p>
-                        <p><i class="fas fa-question mr-2"></i>${exam.questionCount} soal</p>
-                        <p><i class="fas fa-clock mr-2"></i>${exam.duration} menit</p>
+                        <p><i class="fas fa-book mr-2"></i>${exam.mapel?.nama_mapel || exam.subject || '-'}</p>
+                        <p><i class="fas fa-clock mr-2"></i>${exam.durasi || exam.duration || 0} menit</p>
                     </div>
-                    <span class="inline-block mt-3 px-3 py-1 text-xs rounded-full ${
-                        exam.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
-                    }">${exam.status === 'active' ? 'Aktif' : 'Draft'}</span>
+                    <span class="inline-block mt-3 px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">Aktif</span>
                 </div>`;
             });
             container.innerHTML = html;
         }
 
         function updateStats() {
-            const pgCount = questions.filter(q => q.type === 'pilihan_ganda').length;
-            const essayCount = questions.filter(q => q.type === 'essay').length;
+            const pgCount = currentDisplayQuestions.filter(q => q.tipe === 'pilihan_ganda').length;
+            const essayCount = currentDisplayQuestions.filter(q => q.tipe === 'essay').length;
             
             document.getElementById('statsPG').textContent = pgCount;
             document.getElementById('statsEssay').textContent = essayCount;
-            document.getElementById('statsTotal').textContent = questions.length;
-            document.getElementById('totalQuestions').textContent = questions.length;
+            document.getElementById('statsTotal').textContent = currentDisplayQuestions.length;
+            document.getElementById('totalQuestions').textContent = allQuestions.length;
             document.getElementById('activeExams').textContent = recentExams.filter(e => e.status === 'active').length;
         }
 
-        function toggleQuestionSelection(id) {
-            if (selectedQuestions.has(id)) {
-                selectedQuestions.delete(id);
-            } else {
-                selectedQuestions.add(id);
+        // Fungsi untuk update nama ujian otomatis berdasarkan mapel yang dipilih
+        function updateExamName() {
+            const examSubjectSelect = document.getElementById('examSubject');
+            const selectedOption = examSubjectSelect.options[examSubjectSelect.selectedIndex];
+            const mapelName = selectedOption.getAttribute('data-nama');
+            
+            if (mapelName) {
+                const examNameInput = document.getElementById('examName');
+                // Buat nama ujian otomatis: "Ujian [Nama Mapel]"
+                examNameInput.value = `Ujian ${mapelName}`;
             }
-            updateUI();
         }
 
-function filterQuestions() {
-            const container = document.getElementById('questionsList');
-            const emptyState = document.getElementById('emptyState');
-            const search = document.getElementById('searchInput').value.toLowerCase();
+        // Fungsi filter berdasarkan mata pelajaran - TIDAK mereset pilihan soal
+        function filterBySubject() {
             const subjectFilterVal = document.getElementById('subjectFilter').value;
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const questionsList = document.getElementById('questionsList');
+            
+            if (!subjectFilterVal) {
+                // Jika tidak memilih materi, kosongkan tampilan soal
+                currentDisplayQuestions = [];
+                currentSubjectId = null;
+                updateUI();
+                return;
+            }
+            
+            // Tampilkan loading
+            loadingIndicator.classList.remove('hidden');
+            questionsList.classList.add('hidden');
+            currentSubjectId = parseInt(subjectFilterVal);
+            
+            // Simulasi loading atau fetch data
+            setTimeout(() => {
+                // Filter soal berdasarkan mapel_id
+                currentDisplayQuestions = allQuestions.filter(q => q.mapel_id == subjectFilterVal);
+                
+                // Load pilihan soal yang sudah disimpan untuk mapel ini
+                if (selectedQuestionsPerSubject[currentSubjectId]) {
+                    // Jika ada pilihan sebelumnya untuk mapel ini, gunakan
+                    selectedQuestions.clear();
+                    selectedQuestionsPerSubject[currentSubjectId].forEach(id => selectedQuestions.add(id));
+                } else {
+                    // Jika belum ada pilihan untuk mapel ini, kosongkan
+                    selectedQuestions.clear();
+                }
+                
+                // Update tampilan
+                updateUI();
+                
+                // Sembunyikan loading
+                loadingIndicator.classList.add('hidden');
+                questionsList.classList.remove('hidden');
+                
+                // Reset filter tipe dan search
+                document.getElementById('typeFilter').value = '';
+                document.getElementById('searchInput').value = '';
+                
+                // Tampilkan pesan jika tidak ada soal
+                if (currentDisplayQuestions.length === 0) {
+                    const mapelName = mataPelajaran.find(m => m.id == currentSubjectId)?.nama_mapel;
+                    showMessage(`Belum ada soal untuk mata pelajaran "${mapelName}". Silakan buat soal terlebih dahulu.`, 'info');
+                }
+            }, 300);
+        }
+
+        function filterQuestions() {
+            // Filter berdasarkan tipe dan search dari currentDisplayQuestions
+            const search = document.getElementById('searchInput').value.toLowerCase();
             const typeFilterVal = document.getElementById('typeFilter').value;
             
-            let filteredQuestions = questions.filter(q => {
-                return q.title.toLowerCase().includes(search) &&
-                       (!subjectFilterVal || q.mapel_id.toString() === subjectFilterVal) &&
-                       (!typeFilterVal || q.type === typeFilterVal);
+            let filteredQuestions = currentDisplayQuestions.filter(q => {
+                const questionText = (q.pertanyaan || q.question || q.title || '').toLowerCase();
+                return questionText.includes(search) && (!typeFilterVal || q.tipe === typeFilterVal);
             });
+            
+            // Render filtered questions
+            const container = document.getElementById('questionsList');
+            const emptyState = document.getElementById('emptyState');
             
             if (filteredQuestions.length === 0) {
                 container.innerHTML = '';
                 emptyState.classList.remove('hidden');
+                document.getElementById('emptyStateText').innerHTML = 'Tidak ada soal yang ditemukan';
                 document.getElementById('questionCount').textContent = '0 soal';
                 return;
             }
@@ -604,15 +659,14 @@ function filterQuestions() {
                     <div class="flex justify-between items-start">
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-2">
-                                <span class="font-medium truncate">${q.title}</span>
-                                <span class="badge ${q.type==='pilihan_ganda'?'bg-green-100 text-green-700':'bg-blue-100 text-blue-700'}">
-                                    ${q.type==='pilihan_ganda'?'PG':'Essay'}
+                                <span class="font-medium truncate">${q.title || 'Soal ' + q.id}</span>
+                                <span class="badge ${q.tipe === 'pilihan_ganda' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}">
+                                    ${q.tipe === 'pilihan_ganda' ? 'PG' : 'Essay'}
                                 </span>
                             </div>
-                            <p class="text-sm text-gray-600 line-clamp-2">${q.question}</p>
+                            <p class="text-sm text-gray-600 line-clamp-2">${(q.pertanyaan || q.question || 'Soal tanpa pertanyaan').substring(0, 100)}${(q.pertanyaan || q.question || '').length > 100 ? '...' : ''}</p>
                             <div class="flex items-center gap-3 mt-3 text-xs">
                                 <span class="text-gray-500"><i class="fas fa-book mr-1"></i>${mapelName}</span>
-                                <span class="text-gray-500"><i class="fas fa-star mr-1"></i>${q.points} poin</span>
                             </div>
                         </div>
                         ${isSelected ? 
@@ -631,19 +685,46 @@ function filterQuestions() {
 
         function clearFilters() {
             document.getElementById('searchInput').value = '';
-            document.getElementById('subjectFilter').value = '';
             document.getElementById('typeFilter').value = '';
-            filterQuestions();
+            document.getElementById('subjectFilter').value = '';
+            currentDisplayQuestions = [];
+            currentSubjectId = null;
+            selectedQuestions.clear();
+            updateUI();
         }
 
         function selectAllQuestions() {
-            questions.forEach(q => selectedQuestions.add(q.id));
-            updateUI();
+            currentDisplayQuestions.forEach(q => selectedQuestions.add(q.id));
+            // Simpan pilihan ke per mapel
+            if (currentSubjectId) {
+                selectedQuestionsPerSubject[currentSubjectId] = Array.from(selectedQuestions);
+            }
+            renderQuestions();
+            renderSelectedQuestions();
         }
 
         function clearExamConfig() {
             selectedQuestions.clear();
-            updateUI();
+            // Hapus juga dari penyimpanan per mapel
+            if (currentSubjectId) {
+                delete selectedQuestionsPerSubject[currentSubjectId];
+            }
+            renderQuestions();
+            renderSelectedQuestions();
+        }
+
+        function toggleQuestionSelection(id) {
+            if (selectedQuestions.has(id)) {
+                selectedQuestions.delete(id);
+            } else {
+                selectedQuestions.add(id);
+            }
+            // Simpan pilihan ke per mapel
+            if (currentSubjectId) {
+                selectedQuestionsPerSubject[currentSubjectId] = Array.from(selectedQuestions);
+            }
+            renderQuestions();
+            renderSelectedQuestions();
         }
 
         function calculateScorePerQuestion() {
@@ -675,7 +756,8 @@ function filterQuestions() {
                 body: JSON.stringify({
                     nama_ujian: examName,
                     mapel_id: examSubject,
-                    durasi: examDuration
+                    durasi: examDuration,
+                    soal_ids: Array.from(selectedQuestions)
                 })
             })
             .then(response => response.json())
@@ -698,8 +780,18 @@ function filterQuestions() {
 
         function showMessage(message, type) {
             const container = document.getElementById('messageContainer');
-            const bgColor = type === 'success' ? 'bg-green-50 border-green-500 text-green-800' : 'bg-red-50 border-red-500 text-red-800';
-            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            let bgColor, icon;
+            
+            if (type === 'success') {
+                bgColor = 'bg-green-50 border-green-500 text-green-800';
+                icon = 'fa-check-circle';
+            } else if (type === 'error') {
+                bgColor = 'bg-red-50 border-red-500 text-red-800';
+                icon = 'fa-exclamation-circle';
+            } else {
+                bgColor = 'bg-blue-50 border-blue-500 text-blue-800';
+                icon = 'fa-info-circle';
+            }
             
             container.innerHTML = `
                 <div class="${bgColor} border-l-4 p-4 mb-6 rounded-r-lg">
@@ -716,19 +808,35 @@ function filterQuestions() {
         }
 
         function previewExam() {
+            if (selectedQuestions.size === 0) {
+                showMessage('Pilih soal terlebih dahulu untuk preview', 'error');
+                return;
+            }
             alert('Fitur preview ujian akan segera tersedia');
-        }
-
-        function loadSampleQuestions() {
-            alert('Fitur load sample akan segera tersedia');
-        }
-
-        function exportQuestions() {
-            alert('Fitur export akan segera tersedia');
         }
 
         function showQuestionDetail(id) {
             currentQuestionId = id;
+            const q = allQuestions.find(q => q.id === id);
+            if (q) {
+                const content = document.getElementById('questionDetailContent');
+                content.innerHTML = `
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">Judul:</label>
+                            <p class="mt-1 p-3 bg-gray-50 rounded-lg">${q.title || 'Soal ' + q.id}</p>
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">Pertanyaan:</label>
+                            <p class="mt-1 p-3 bg-gray-50 rounded-lg">${q.pertanyaan || q.question || '-'}</p>
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">Tipe:</label>
+                            <p class="mt-1 p-3 bg-gray-50 rounded-lg">${q.tipe === 'pilihan_ganda' ? 'Pilihan Ganda' : 'Essay'}</p>
+                        </div>
+                    </div>
+                `;
+            }
             document.getElementById('questionDetailModal').classList.remove('hidden');
         }
 
@@ -739,7 +847,12 @@ function filterQuestions() {
         function addToExamFromDetail() {
             if (currentQuestionId) {
                 selectedQuestions.add(currentQuestionId);
-                updateUI();
+                // Simpan pilihan ke per mapel
+                if (currentSubjectId) {
+                    selectedQuestionsPerSubject[currentSubjectId] = Array.from(selectedQuestions);
+                }
+                renderQuestions();
+                renderSelectedQuestions();
                 hideQuestionDetail();
             }
         }
@@ -765,13 +878,12 @@ function filterQuestions() {
             form.submit();
         }
 
-        // Inisialisasi
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             initializeData();
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
                     hideQuestionDetail();
-                    hideCreateExamModal();
                     hideLogoutConfirm();
                 }
             });

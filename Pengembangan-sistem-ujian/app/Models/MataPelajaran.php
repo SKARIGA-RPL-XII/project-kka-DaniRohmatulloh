@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class MataPelajaran extends Model
 {
@@ -14,10 +14,12 @@ class MataPelajaran extends Model
     protected $fillable = [
         'nama_mapel',
         'kode_mapel',
-        'deskripsi'
     ];
 
-    public function soals()
+    /**
+     * Relasi ke tabel soal
+     */
+    public function soal()
     {
         return $this->hasMany(Soal::class, 'mapel_id');
     }

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Guru\SoalController;
 use App\Http\Controllers\Guru\HasilUjianController;
+use App\Http\Controllers\Guru\MataPelajaranController;
 use App\Http\Controllers\Guru\MapelController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UjianController;
@@ -51,13 +52,18 @@ Route::middleware(['auth'])->group(function () {
 
     // Guru routes
     Route::prefix('guru')->middleware(['auth'])->group(function () {
+        // Route untuk Mata Pelajaran
+        Route::get('/mapel', [MataPelajaranController::class, 'index'])->name('guru.mapel.index');
+        Route::post('/mapel', [MataPelajaranController::class, 'store'])->name('guru.mapel.store');
+        Route::put('/mapel/{id}', [MataPelajaranController::class, 'update'])->name('guru.mapel.update');
+        Route::delete('/mapel/{id}', [MataPelajaranController::class, 'destroy'])->name('guru.mapel.destroy');
+
         Route::get('/soal', [SoalController::class, 'index'])->name('guru.soal.index');
         Route::post('/soal', [SoalController::class, 'store'])->name('guru.soal.store');
         Route::get('/soal/{id}/edit', [SoalController::class, 'edit'])->name('guru.soal.edit');
         Route::put('/soal/{id}', [SoalController::class, 'update'])->name('guru.soal.update');
         Route::delete('/soal/{id}', [SoalController::class, 'destroy'])->name('guru.soal.destroy');
         Route::post('/soal/generate', [SoalController::class, 'generate'])->name('guru.soal.generate');
-        Route::post('/mapel/store', [MapelController::class, 'store'])->name('guru.mapel.store');
         Route::get('/hasil-ujian', [HasilUjianController::class, 'index'])->name('guru.hasil-ujian');
         // Dashboard guru
         Route::get('/dashboard', [GuruController::class, 'dashboard'])->name('guru.dashboard');
