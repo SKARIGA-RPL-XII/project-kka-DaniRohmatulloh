@@ -61,6 +61,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/hasil-ujian', [HasilUjianController::class, 'index'])->name('guru.hasil-ujian');
         // Dashboard guru
         Route::get('/dashboard', [GuruController::class, 'dashboard'])->name('guru.dashboard');
+        Route::post('/ujian/save', [GuruController::class, 'saveExam'])->name('guru.ujian.save');
     });
 
 

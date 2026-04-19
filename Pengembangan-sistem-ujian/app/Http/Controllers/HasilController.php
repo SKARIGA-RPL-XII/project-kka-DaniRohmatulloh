@@ -19,6 +19,7 @@ class HasilController extends Controller
 
     public function detail($id)
     {
-        return view('murid.hasil.detail', compact('id'));
+        $hasil = \App\Models\HasilUjian::with(['murid', 'ujian.mataPelajaran'])->findOrFail($id);
+        return view('murid.hasil.detail', compact('hasil'));
     }
 }

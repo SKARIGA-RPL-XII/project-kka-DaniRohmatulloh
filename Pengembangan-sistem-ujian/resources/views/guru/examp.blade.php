@@ -50,79 +50,75 @@
 </head>
 <body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
     <div class="flex min-h-screen">
-        <!-- Sidebar - Lebih Minimalis -->
-        <aside class="w-20 lg:w-64 bg-white/80 backdrop-blur-sm border-r border-gray-200/50 flex flex-col">
-            <!-- Logo Compact -->
-            <div class="p-4 border-b border-gray-200/50">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <!-- Logo -->
+            <div class="p-6 border-b">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center shadow-sm">
+                    <div class="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
                         <i class="fas fa-chalkboard-teacher text-white text-lg"></i>
                     </div>
-                    <div class="hidden lg:block">
-                        <h1 class="font-bold text-gray-800 text-sm">ExamPro</h1>
-                        <p class="text-xs text-gray-500">Guru</p>
+                    <div>
+                        <h1 class="font-bold text-gray-800">ExamSystem</h1>
+                        <p class="text-xs text-gray-500">Dashboard Guru</p>
                     </div>
                 </div>
             </div>
 
-            <!-- User Profile Compact -->
-            <div class="p-4 border-b border-gray-200/50">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-bold shadow-sm">
-                        <span class="text-sm">{{ strtoupper(substr(auth()->user()->nama, 0, 1)) }}</span>
+            <!-- User Profile -->
+            <div class="p-6 border-b">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full flex items-center justify-center text-white font-bold text-lg shadow">
+                        {{ strtoupper(substr(auth()->user()->nama, 0, 1)) }}
                     </div>
-                    <div class="hidden lg:block flex-1">
-                        <p class="font-medium text-gray-800 text-sm">{{ auth()->user()->nama }}</p>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-medium text-gray-800 truncate">{{ auth()->user()->nama }}</p>
                         <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email }}</p>
                     </div>
                 </div>
-                <div class="hidden lg:flex items-center gap-2 px-2 py-1 bg-green-50 rounded-full mt-3">
-                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span class="text-xs text-green-700">Online</span>
+                <div class="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 rounded-full">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span class="text-xs font-medium text-blue-700">Guru Aktif</span>
                 </div>
             </div>
 
-            <!-- Navigation - Icons Only on Mobile -->
-            <nav class="flex-1 p-3 space-y-1">
-                <a href="/guru/dashboard" class="flex items-center gap-3 p-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50/50 rounded-lg transition-colors">
-                    <div class="sidebar-icon">
-                        <i class="fas fa-home text-lg"></i>
-                    </div>
-                    <span class="hidden lg:block text-sm">Dashboard</span>
+            <!-- Navigation -->
+            <nav class="flex-1 p-4 space-y-1">
+                <a href="/guru/dashboard" 
+                   class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="fas fa-home w-5 text-center text-gray-500 hover:text-indigo-600"></i>
+                    <span>Dashboard</span>
                 </a>
                 
-                <a href="/guru/soal" class="flex items-center gap-3 p-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50/50 rounded-lg transition-colors">
-                    <div class="sidebar-icon">
-                        <i class="fas fa-question-circle text-lg"></i>
-                    </div>
-                    <span class="hidden lg:block text-sm">Buat Soal</span>
+                <a href="/guru/soal" 
+                   class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="fas fa-question-circle w-5 text-center text-gray-500 hover:text-indigo-600"></i>
+                    <span>Kelola Soal</span>
                 </a>
                 
-                <a href="#" class="flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 text-blue-700 rounded-lg font-medium">
-                    <div class="sidebar-icon bg-blue-100 text-blue-600">
-                        <i class="fas fa-cogs text-lg"></i>
-                    </div>
-                    <span class="hidden lg:block text-sm">Pengaturan</span>
+                <a href="/guru/examp" 
+                   class="flex items-center gap-3 px-4 py-3 bg-indigo-50 text-indigo-700 rounded-lg font-medium">
+                    <i class="fas fa-cog w-5 text-center text-indigo-600"></i>
+                    <span>Pengaturan Soal</span>
                 </a>
                 
-                <a href="{{ route('guru.hasil-ujian') }}" class="flex items-center gap-3 p-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50/50 rounded-lg transition-colors">
-                    <div class="sidebar-icon">
-                        <i class="fas fa-chart-bar text-lg"></i>
-                    </div>
-                    <span class="hidden lg:block text-sm">Lihat Hasil Ujian</span>
+                <a href="{{ route('guru.hasil-ujian') }}" 
+                   class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="fas fa-chart-bar w-5 text-center text-gray-500 hover:text-indigo-600"></i>
+                    <span>Lihat Hasil Ujian</span>
                 </a>
             </nav>
 
             <!-- Logout -->
-            <div class="p-4 border-t border-gray-200/50">
-                <button onclick="showLogoutConfirm()" class="flex items-center gap-3 p-3 text-red-600 hover:text-red-700 hover:bg-red-50/50 rounded-lg w-full transition-colors">
-                    <div class="sidebar-icon">
-                        <i class="fas fa-sign-out-alt text-lg"></i>
-                    </div>
-                    <span class="hidden lg:block text-sm">Logout</span>
+            <div class="p-4 border-t">
+                <button onclick="showLogoutConfirm()" 
+                        class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                    <i class="fas fa-sign-out-alt w-5 text-center"></i>
+                    <span>Logout</span>
                 </button>
             </div>
         </aside>
+
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
@@ -182,10 +178,9 @@
                                 <div class="flex flex-wrap gap-2 mb-4">
                                     <select onchange="filterQuestions()" id="subjectFilter" class="px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
                                         <option value="">Semua Pelajaran</option>
-                                        <option value="matematika">Matematika</option>
-                                        <option value="fisika">Fisika</option>
-                                        <option value="kimia">Kimia</option>
-                                        <option value="biologi">Biologi</option>
+                                        @foreach($mataPelajaran as $mapel)
+                                        <option value="{{ $mapel->id }}">{{ $mapel->nama_mapel }}</option>
+                                        @endforeach
                                     </select>
                                     
                                     <select onchange="filterQuestions()" id="typeFilter" class="px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
@@ -429,11 +424,12 @@
 
     <!-- JavaScript (Tetap sama, hanya ditampilkan sebagian untuk singkat) -->
     <script>
-        // eslint-disable-next-line
+/* eslint-disable-next-line */
         let questions = @json($soals);
         let selectedQuestions = new Set();
-        // eslint-disable-next-line
+        /* eslint-disable-next-line */
         let recentExams = @json($ujians);
+        let mataPelajaran = @json($mataPelajaran);
         let currentQuestionId = null;
 
         function initializeData() {
@@ -574,8 +570,63 @@
             updateUI();
         }
 
-        function filterQuestions() {
-            // Implementasi filter
+function filterQuestions() {
+            const container = document.getElementById('questionsList');
+            const emptyState = document.getElementById('emptyState');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const subjectFilterVal = document.getElementById('subjectFilter').value;
+            const typeFilterVal = document.getElementById('typeFilter').value;
+            
+            let filteredQuestions = questions.filter(q => {
+                return q.title.toLowerCase().includes(search) &&
+                       (!subjectFilterVal || q.mapel_id.toString() === subjectFilterVal) &&
+                       (!typeFilterVal || q.type === typeFilterVal);
+            });
+            
+            if (filteredQuestions.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                document.getElementById('questionCount').textContent = '0 soal';
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            let html = '';
+            filteredQuestions.forEach(q => {
+                const isSelected = selectedQuestions.has(q.id);
+                const bgColor = isSelected ? 'bg-blue-50/80 border-blue-200' : 'bg-white/50 border-gray-200/50';
+                const textColor = isSelected ? 'text-blue-700' : 'text-gray-800';
+                const mapelName = mataPelajaran.find(m => m.id == q.mapel_id)?.nama_mapel || q.subject;
+                
+                html += `<div class="question-card p-4 border rounded-xl cursor-pointer ${bgColor} ${textColor} ${isSelected ? 'selected-question' : ''}" 
+                         onclick="toggleQuestionSelection(${q.id})" 
+                         oncontextmenu="showQuestionDetail(${q.id});return false;">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="font-medium truncate">${q.title}</span>
+                                <span class="badge ${q.type==='pilihan_ganda'?'bg-green-100 text-green-700':'bg-blue-100 text-blue-700'}">
+                                    ${q.type==='pilihan_ganda'?'PG':'Essay'}
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-600 line-clamp-2">${q.question}</p>
+                            <div class="flex items-center gap-3 mt-3 text-xs">
+                                <span class="text-gray-500"><i class="fas fa-book mr-1"></i>${mapelName}</span>
+                                <span class="text-gray-500"><i class="fas fa-star mr-1"></i>${q.points} poin</span>
+                            </div>
+                        </div>
+                        ${isSelected ? 
+                            `<div class="ml-3">
+                                <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-xs"></i>
+                                </div>
+                            </div>` : ''
+                        }
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+            document.getElementById('questionCount').textContent = `${filteredQuestions.length} soal`;
         }
 
         function clearFilters() {

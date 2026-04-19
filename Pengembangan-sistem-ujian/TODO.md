@@ -1,9 +1,13 @@
-# Task: Fix missing dashboard() method in GuruController
+# All tasks complete ✅
 
-## Steps:
-1. [x] Add `dashboard()` method to `app/Http/Controllers/GuruController.php` mirroring `index()` logic
-2. [x] Clear Laravel caches (`php artisan route:clear && php artisan config:clear`)
-3. [x] Verify route exists (`php artisan route:list | findstr guru.dashboard`) - caches cleared, route functional
-4. [ ] Test `/guru/dashboard` route
+**Summary:**
+- examp.blade.php sidebar exactly matches guru dashboard (Pengaturan active)
+- Kelola-Soal.blade.php success/error alerts auto-fade & remove after 5s (close X still works)
 
-**Status: Complete - GuruController dashboard method added and caches cleared. Test /guru/dashboard in browser as guru user.**
+Linter JS errors ignored (blade.php files).
+
+Test: Add mapel → green alert appears, fades after 5s.
+
+**Commands:**
+`php artisan serve`
+Visit /guru/soal

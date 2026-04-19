@@ -643,7 +643,18 @@
         document.getElementById('searchSoal')?.addEventListener('keyup', function() { filterSoal(document.getElementById('filterMapel')?.value || '', this.value.toLowerCase()); });
         window.onclick = function(e) { ['soalModal', 'tambahMapelModal', 'logoutModal', 'previewModal'].forEach(id => { if(e.target === document.getElementById(id)) eval('hide' + id.charAt(0).toUpperCase() + id.slice(1).replace('Modal','') + 'Modal()'); }); };
         document.getElementById('previewModal').addEventListener('click', function(e) { if(e.target === this) tutupPreview(); });
+        
+        // Auto-remove success/error messages after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.bg-green-100, .bg-red-100');
+            alerts.forEach(function(alert) {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(function() { alert.remove(); }, 500);
+            });
+        }, 5000);
     </script>
+
     {{-- Hidden forms untuk delete --}}
     @foreach($soal as $soalItem)
     <form id="deleteForm-{{ $soalItem->id }}" method="POST" action="/guru/soal/{{ $soalItem->id }}" style="display:none">

@@ -32,12 +32,12 @@ class GuruController extends Controller {
                 'title' => $soal->pertanyaan,
                 'subject' => strtolower($soal->mataPelajaran->nama_mapel ?? 'umum'),
                 'mapel_id' => $soal->mapel_id,
-                'type' => $soal->tipe_soal,
+'type' => $soal->tipe,
                 'difficulty' => 'medium',
                 'points' => 2,
                 'created' => $soal->created_at->format('Y-m-d'),
                 'question' => $soal->pertanyaan,
-                'options' => $soal->tipe_soal === 'pilihan_ganda' ? [
+'options' => $soal->tipe === 'pilihan_ganda' ? [
                     $soal->pilihan_a,
                     $soal->pilihan_b,
                     $soal->pilihan_c,
