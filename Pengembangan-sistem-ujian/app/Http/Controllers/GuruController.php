@@ -29,7 +29,7 @@ class GuruController extends Controller {
         $soals = Soal::with('mataPelajaran')->get()->map(function($soal) {
             return [
                 'id' => $soal->id,
-                'title' => $soal->pertanyaan,
+'title' => $soal->mataPelajaran->nama_mapel ?? 'Soal ' . $soal->id,
                 'subject' => strtolower($soal->mataPelajaran->nama_mapel ?? 'umum'),
                 'mapel_id' => $soal->mapel_id,
 'type' => $soal->tipe,

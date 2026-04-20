@@ -77,11 +77,11 @@
             <div class="p-6 border-b">
                 <div class="flex items-center gap-3 mb-3">
                     <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full flex items-center justify-center text-white font-bold text-lg shadow">
-                        {{ strtoupper(substr(auth()->user()->nama, 0, 1)) }}
+{{ strtoupper(substr(auth()->user()->nama ?? 'G', 0, 1)) }}
                     </div>
                     <div class="flex-1 min-w-0">
-                        <p class="font-medium text-gray-800 truncate">{{ auth()->user()->nama }}</p>
-                        <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email }}</p>
+                        <p class="font-medium text-gray-800 truncate">{{ auth()->user()->nama ?? 'Guru' }}</p>
+                        <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email ?? 'guru@email.com' }}</p>
                     </div>
                 </div>
                 <div class="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 rounded-full">
@@ -186,7 +186,7 @@
                                 <div class="flex flex-wrap gap-2 mb-4">
                                     <select onchange="filterBySubject()" id="subjectFilter" class="px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
                                         <option value="">Pilih Materi</option>
-                                        @foreach($mataPelajaran as $mapel)
+                                        @foreach($mataPelajaran ?? [] as $mapel)
                                         <option value="{{ $mapel->id }}">{{ $mapel->nama_mapel }}</option>
                                         @endforeach
                                     </select>
@@ -299,7 +299,7 @@
                                             <label class="block text-sm font-medium text-gray-700 mb-2">Mata Pelajaran</label>
                                             <select id="examSubject" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="updateExamName()">
                                                 <option value="">Pilih...</option>
-                                                @foreach($mataPelajaran as $mapel)
+                                                @foreach($mataPelajaran ?? [] as $mapel)
                                                 <option value="{{ $mapel->id }}" data-nama="{{ $mapel->nama_mapel }}">{{ $mapel->nama_mapel }}</option>
                                                 @endforeach
                                             </select>
@@ -410,18 +410,17 @@
     </div>
 
     <script>
-        let allQuestions = @json($soals);
+        let allQuestions = @json($soals ?? []);
         let currentDisplayQuestions = [];
-        let selectedQuestions = new Set(); // Menyimpan ID soal yang terpilih
-        let selectedQuestionsPerSubject = {}; // Menyimpan pilihan soal per mapel
-        let recentExams = @json($ujians);
-        let mataPelajaran = @json($mataPelajaran);
+        let selectedQuestions = new Set();
+        let selectedQuestionsPerSubject = {};
+        let recentExams = @json($ujians ?? []);
+        let mataPelajaran = @json($mataPelajaran ?? []);
         let currentQuestionId = null;
         let currentSubjectId = null;
 
         function initializeData() {
-            // Tampilkan semua soal awal
-            currentDisplayQuestions = [...allQuestions];
+            currentDisplayQuestions = [];
             updateUI();
         }
 
@@ -453,11 +452,10 @@
             emptyState.classList.add('hidden');
             let html = '';
             currentDisplayQuestions.forEach(q => {
-                // Cek apakah soal terpilih (dari selectedQuestions atau dari per mapel)
                 const isSelected = selectedQuestions.has(q.id);
                 const bgColor = isSelected ? 'bg-blue-50/80 border-blue-200' : 'bg-white/50 border-gray-200/50';
                 const textColor = isSelected ? 'text-blue-700' : 'text-gray-800';
-                const mapelName = mataPelajaran.find(m => m.id == q.mapel_id)?.nama_mapel || q.subject;
+                const mapelName = mataPelajaran.find(m => m.id == q.mapel_id)?.nama_mapel || q.subject || '-';
                 
                 html += `<div class="question-card p-4 border rounded-xl cursor-pointer ${bgColor} ${textColor} ${isSelected ? 'selected-question' : ''}" 
                          onclick="toggleQuestionSelection(${q.id})" 
@@ -470,7 +468,7 @@
                                     ${q.tipe === 'pilihan_ganda' ? 'PG' : 'Essay'}
                                 </span>
                             </div>
-                            <p class="text-sm text-gray-600 line-clamp-2">${(q.pertanyaan || q.question || 'Soal tanpa pertanyaan').substring(0, 100)}${(q.pertanyaan || q.question || '').length > 100 ? '...' : ''}</p>
+                            <p class="text-sm text-gray-600 line-clamp-2">${((q.pertanyaan || q.question || 'Soal tanpa pertanyaan') + '').substring(0, 100)}${((q.pertanyaan || q.question || '') + '').length > 100 ? '...' : ''}</p>
                             <div class="flex items-center gap-3 mt-3 text-xs">
                                 <span class="text-gray-500"><i class="fas fa-book mr-1"></i>${mapelName}</span>
                             </div>
@@ -510,7 +508,9 @@
             selectedQuestions.forEach(id => {
                 const q = allQuestions.find(q => q.id === id);
                 if (q) {
-                    const title = q.title || 'Soal ' + q.id;
+                    const mapelName = mataPelajaran.find(m => m.id == q.mapel_id)?.nama_mapel || q.subject || '-';
+                    const tipeText = q.tipe === 'pilihan_ganda' ? 'PG' : 'Essay';
+                    const title = `${mapelName} - ${tipeText}`;
                     html += `<div class="flex items-center justify-between p-2 bg-blue-50 rounded-lg">
                         <span class="text-sm text-gray-700 truncate flex-1">${title}</span>
                         <button onclick="toggleQuestionSelection(${q.id})" class="text-red-500 hover:text-red-700 ml-2">
@@ -557,7 +557,6 @@
             document.getElementById('activeExams').textContent = recentExams.filter(e => e.status === 'active').length;
         }
 
-        // Fungsi untuk update nama ujian otomatis berdasarkan mapel yang dipilih
         function updateExamName() {
             const examSubjectSelect = document.getElementById('examSubject');
             const selectedOption = examSubjectSelect.options[examSubjectSelect.selectedIndex];
@@ -565,57 +564,42 @@
             
             if (mapelName) {
                 const examNameInput = document.getElementById('examName');
-                // Buat nama ujian otomatis: "Ujian [Nama Mapel]"
                 examNameInput.value = `Ujian ${mapelName}`;
             }
         }
 
-        // Fungsi filter berdasarkan mata pelajaran - TIDAK mereset pilihan soal
         function filterBySubject() {
             const subjectFilterVal = document.getElementById('subjectFilter').value;
             const loadingIndicator = document.getElementById('loadingIndicator');
             const questionsList = document.getElementById('questionsList');
             
             if (!subjectFilterVal) {
-                // Jika tidak memilih materi, kosongkan tampilan soal
                 currentDisplayQuestions = [];
                 currentSubjectId = null;
                 updateUI();
                 return;
             }
             
-            // Tampilkan loading
             loadingIndicator.classList.remove('hidden');
             questionsList.classList.add('hidden');
             currentSubjectId = parseInt(subjectFilterVal);
             
-            // Simulasi loading atau fetch data
             setTimeout(() => {
-                // Filter soal berdasarkan mapel_id
                 currentDisplayQuestions = allQuestions.filter(q => q.mapel_id == subjectFilterVal);
                 
-                // Load pilihan soal yang sudah disimpan untuk mapel ini
                 if (selectedQuestionsPerSubject[currentSubjectId]) {
-                    // Jika ada pilihan sebelumnya untuk mapel ini, gunakan
                     selectedQuestions.clear();
                     selectedQuestionsPerSubject[currentSubjectId].forEach(id => selectedQuestions.add(id));
                 } else {
-                    // Jika belum ada pilihan untuk mapel ini, kosongkan
                     selectedQuestions.clear();
                 }
                 
-                // Update tampilan
                 updateUI();
-                
-                // Sembunyikan loading
                 loadingIndicator.classList.add('hidden');
                 questionsList.classList.remove('hidden');
-                
-                // Reset filter tipe dan search
                 document.getElementById('typeFilter').value = '';
                 document.getElementById('searchInput').value = '';
                 
-                // Tampilkan pesan jika tidak ada soal
                 if (currentDisplayQuestions.length === 0) {
                     const mapelName = mataPelajaran.find(m => m.id == currentSubjectId)?.nama_mapel;
                     showMessage(`Belum ada soal untuk mata pelajaran "${mapelName}". Silakan buat soal terlebih dahulu.`, 'info');
@@ -624,24 +608,40 @@
         }
 
         function filterQuestions() {
-            // Filter berdasarkan tipe dan search dari currentDisplayQuestions
             const search = document.getElementById('searchInput').value.toLowerCase();
             const typeFilterVal = document.getElementById('typeFilter').value;
             
-            let filteredQuestions = currentDisplayQuestions.filter(q => {
-                const questionText = (q.pertanyaan || q.question || q.title || '').toLowerCase();
-                return questionText.includes(search) && (!typeFilterVal || q.tipe === typeFilterVal);
-            });
+            if (currentDisplayQuestions.length === 0) return; // Skip jika belum pilih mapel
             
-            // Render filtered questions
+            // Filter real-time dari currentDisplayQuestions (tampilkan soal hanya saat ada search)
+            let filteredQuestions = [];
+            if (search) {
+                filteredQuestions = currentDisplayQuestions.filter(q => {
+                    const questionText = (q.pertanyaan || q.question || q.title || q.nomor || '').toLowerCase();
+                    const mapelText = mataPelajaran.find(m => m.id == q.mapel_id)?.nama_mapel?.toLowerCase() || '';
+                    return (questionText.includes(search) || mapelText.includes(search)) && (!typeFilterVal || q.tipe === typeFilterVal);
+                });
+            } else {
+                // Jika kosong, kosongkan tampilan (desain awal)
+                filteredQuestions = [];
+            }
+            
             const container = document.getElementById('questionsList');
             const emptyState = document.getElementById('emptyState');
             
+            // Update count
+            document.getElementById('questionCount').textContent = `${filteredQuestions.length} soal`;
+            
             if (filteredQuestions.length === 0) {
-                container.innerHTML = '';
-                emptyState.classList.remove('hidden');
-                document.getElementById('emptyStateText').innerHTML = 'Tidak ada soal yang ditemukan';
-                document.getElementById('questionCount').textContent = '0 soal';
+                if (search) {
+                    container.innerHTML = '';
+                    emptyState.classList.remove('hidden');
+                    document.getElementById('emptyStateText').textContent = 'Tidak ada soal yang ditemukan';
+                } else {
+                    container.innerHTML = '';
+                    emptyState.classList.remove('hidden');
+                    document.getElementById('emptyStateText').textContent = 'Cari soal dengan mengetik di atas...';
+                }
                 return;
             }
             
@@ -651,7 +651,7 @@
                 const isSelected = selectedQuestions.has(q.id);
                 const bgColor = isSelected ? 'bg-blue-50/80 border-blue-200' : 'bg-white/50 border-gray-200/50';
                 const textColor = isSelected ? 'text-blue-700' : 'text-gray-800';
-                const mapelName = mataPelajaran.find(m => m.id == q.mapel_id)?.nama_mapel || q.subject;
+                const mapelName = mataPelajaran.find(m => m.id == q.mapel_id)?.nama_mapel || q.subject || '-';
                 
                 html += `<div class="question-card p-4 border rounded-xl cursor-pointer ${bgColor} ${textColor} ${isSelected ? 'selected-question' : ''}" 
                          onclick="toggleQuestionSelection(${q.id})" 
@@ -664,24 +664,11 @@
                                     ${q.tipe === 'pilihan_ganda' ? 'PG' : 'Essay'}
                                 </span>
                             </div>
-                            <p class="text-sm text-gray-600 line-clamp-2">${(q.pertanyaan || q.question || 'Soal tanpa pertanyaan').substring(0, 100)}${(q.pertanyaan || q.question || '').length > 100 ? '...' : ''}</p>
+                            <p class="text-sm text-gray-600 line-clamp-2">${((q.pertanyaan || q.question || 'Soal tanpa pertanyaan') + '').substring(0, 100)}${((q.pertanyaan || q.question || '') + '').length > 100 ? '...' : ''}</p>
                             <div class="flex items-center gap-3 mt-3 text-xs">
                                 <span class="text-gray-500"><i class="fas fa-book mr-1"></i>${mapelName}</span>
                             </div>
                         </div>
-                        ${isSelected ? 
-                            `<div class="ml-3">
-                                <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center">
-                                    <i class="fas fa-check text-xs"></i>
-                                </div>
-                            </div>` : ''
-                        }
-                    </div>
-                </div>`;
-            });
-            container.innerHTML = html;
-            document.getElementById('questionCount').textContent = `${filteredQuestions.length} soal`;
-        }
 
         function clearFilters() {
             document.getElementById('searchInput').value = '';
@@ -695,7 +682,6 @@
 
         function selectAllQuestions() {
             currentDisplayQuestions.forEach(q => selectedQuestions.add(q.id));
-            // Simpan pilihan ke per mapel
             if (currentSubjectId) {
                 selectedQuestionsPerSubject[currentSubjectId] = Array.from(selectedQuestions);
             }
@@ -705,7 +691,6 @@
 
         function clearExamConfig() {
             selectedQuestions.clear();
-            // Hapus juga dari penyimpanan per mapel
             if (currentSubjectId) {
                 delete selectedQuestionsPerSubject[currentSubjectId];
             }
@@ -719,7 +704,6 @@
             } else {
                 selectedQuestions.add(id);
             }
-            // Simpan pilihan ke per mapel
             if (currentSubjectId) {
                 selectedQuestionsPerSubject[currentSubjectId] = Array.from(selectedQuestions);
             }
@@ -847,7 +831,6 @@
         function addToExamFromDetail() {
             if (currentQuestionId) {
                 selectedQuestions.add(currentQuestionId);
-                // Simpan pilihan ke per mapel
                 if (currentSubjectId) {
                     selectedQuestionsPerSubject[currentSubjectId] = Array.from(selectedQuestions);
                 }
@@ -878,7 +861,6 @@
             form.submit();
         }
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             initializeData();
             document.addEventListener('keydown', function(e) {

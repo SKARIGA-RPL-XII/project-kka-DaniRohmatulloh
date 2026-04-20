@@ -1,8 +1,15 @@
-# Update: DUPLIKAT CONTROLLER DITEMUKAN!
+# Fix Pengaturan Soal Ujian (examp.blade.php)
 
-**Root Cause Fixed**: Route `guru.mapel.store` panggil **app/Http/Controllers/Guru/MapelController.php** (JSON), bukan yang kita edit.
+**Requirements**:
+1. Card "Soal Tersedia" **kosong awal** (no soal).
+2. Filter mapel → **show soal** (auto populate from $soals).
+3. Pilih soal → **add to "Soal Terpilih"** (persist, no reset).
+4. **Fix nama**: "Sejarah" bukan "Soal 1" → use mataPelajaran.nama_mapel.
 
-## Next Steps
-- [x] Step 1: Fixed wrong MapelController.php
-- [x] Step 2: Edit **app/Http/Controllers/Guru/MapelController.php** (replace JSON → redirect success)
-- [ ] Step 3: Test & complete
+**Plan**:
+1. [ ] JS `initializeData()` → `currentDisplayQuestions = [];` (kosong).
+2. [ ] `filterBySubject()` → populate soal, persist selected.
+3. [ ] Name display → `mapelName` from mataPelajaran.find().
+4. [ ] Test.
+
+Proceed step-by-step.

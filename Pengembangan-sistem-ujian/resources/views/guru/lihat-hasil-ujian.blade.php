@@ -154,17 +154,15 @@
                         
                         <select class="border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" id="examFilter" onchange="filterResults()">
                             <option value="">Semua Ujian</option>
-                            <option value="uts">UTS Matematika</option>
-                            <option value="uas">UAS Matematika</option>
-                            <option value="quiz1">Kuis 1</option>
-                            <option value="quiz2">Kuis 2</option>
+                            @foreach($ujianList as $ujian)
+                            <option value="{{ $ujian->id }}">{{ $ujian->nama_ujian }}</option>
+                            @endforeach
                         </select>
                         
-                        <select class="border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" id="classFilter" onchange="filterResults()">
-                            <option value="">Semua Kelas</option>
-                            <option value="10a">Kelas 10A</option>
-                            <option value="10b">Kelas 10B</option>
-                            <option value="11a">Kelas 11A</option>
+                        <select class="border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" id="typeFilter" onchange="filterResults()">
+                            <option value="">Semua Tipe</option>
+                            <option value="pilihan_ganda">Pilihan Ganda</option>
+                            <option value="essay">Essay</option>
                         </select>
                         
                         <button onclick="clearFilters()" class="px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm">
@@ -719,11 +717,31 @@
         function filterResults() {
             const search = document.getElementById('searchInput').value.toLowerCase();
             const exam = document.getElementById('examFilter').value;
-            const kelas = document.getElementById('classFilter').value;
+            const type = document.getElementById('typeFilter').value;
             
-            // Implementasi filter client-side
-            console.log('Filtering:', { search, exam, kelas });
-            // Di implementasi real, akan ada request ke server
+            // Filter table rows
+            const rows = document.querySelectorAll('tbody tr:not(:first-child)');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                const studentName = row.cells[0].textContent.toLowerCase();
+                const examName = row.cells[1].textContent.toLowerCase();
+                const classType = row.cells[2].textContent.toLowerCase();
+                
+                const matchesSearch = studentName.includes(search) || examName.includes(search);
+                const matchesExam = !exam || examName.includes(exam);
+                const matchesType = !type || classType.includes(type);
+                
+                if (matchesSearch && matchesExam && matchesType) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Update counter
+            document.querySelector('.text-gray-600').textContent = `Menampilkan ${visibleCount} hasil`;
         }
 
         function clearFilters() {

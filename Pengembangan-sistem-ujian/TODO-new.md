@@ -1,9 +1,14 @@
-# Task: Fix missing guru.hasil-ujian route
+# Fix Lihat Hasil Ujian (lihat-hasil-ujian.blade.php + Controller)
 
-## Steps:
-1. [ ] Add route for guru.hasil-ujian in routes/web.php pointing to HasilUjianController::index
+**Issues**:
+1. Dropdown `Semua Ujian` → **dynamic from Ujian DB** (`$ujianList` available).
+2. Dropdown `Semua Kelas` → **"Pilihan Ganda"/"Essay"**.
+3. **Pencarian**: `filterResults()` → implement real filter.
 
-3. [ ] Verify new route exists
-4. [ ] Test /guru/hasil-ujian
+**Plan**:
+1. [ ] Blade: Fix dropdowns to `@foreach($ujianList)`, type filter "PG/Essay".
+2. [ ] JS: `filterResults()` → client-side filter on `$results` data.
+3. [ ] Controller: Pass `$soalTypes` or use tipe from Ujian/Hasil.
+4. [ ] Test.
 
-**Status: Starting implementation**
+Proceed.
