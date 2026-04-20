@@ -42,14 +42,54 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        return view('murid.dashboard', compact(
+        // XP calculation
+        $totalXP = $totalUjianDiikuti * 100;
+        $userLevel = 1 + floor($totalXP / 1000);
+        $levelProgress = ($totalXP % 1000) / 1000 * 100;
+        $currentLevelXP = $totalXP % 1000;
+        $nextLevelXP = 1000;
+
+        return view('Murid.dashboard', compact(
             'soalPerMapel',
             'mataPelajaran',
             'riwayatUjian',
             'totalUjianDiikuti',
             'ujianBaruMingguIni',
             'rataRataNilai',
-            'nilaiTertinggi'
+            'nilaiTertinggi',
+            'totalXP',
+            'userLevel',
+            'levelProgress',
+            'currentLevelXP',
+            'nextLevelXP'
         ));
     }
+
+    public function redeemXP(Request $request)
+    {
+        $request->validate([
+            'item_name' => 'required|string|max:255',
+            'xp_cost' => 'required|integer|min:1'
+        ]);
+
+        $user = Auth::user();
+        $userXP = $user->xp ?? 0;
+
+        if ($userXP < $request->xp_cost) {
+            return response()->json([
+                'success' => false,
+                'message' => 'XP tidak mencukupi!'
+            ]);
+        }
+
+        $user->xp = $userXP - $request->xp_cost;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Hadiah berhasil ditebus!',
+            'remaining_xp' => $user->xp
+        ]);
+    }
 }
+

@@ -98,10 +98,22 @@ class UjianController extends Controller
 
         $nilai = $totalSoal > 0 ? round(($benar / $totalSoal) * 100) : 0;
 
+
+
+        // Buat atau ambil ujian
+        $ujian = \App\Models\Ujian::firstOrCreate(
+            ['mapel_id' => $mapel_id],
+            [
+                'nama_ujian' => 'Ujian ' . $mapel->nama_mapel,
+                'durasi' => 60,
+            ]
+        );
+
+
         // Simpan hasil
         $hasil = HasilUjian::create([
             'murid_id'  => Auth::id(),
-            'ujian_id'  => null,
+            'ujian_id'  => $ujian->id,
             'mapel_id'  => $mapel_id,
             'nilai'     => $nilai,
             'jawaban'   => json_encode($detail),

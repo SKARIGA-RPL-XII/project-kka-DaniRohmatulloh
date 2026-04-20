@@ -9,6 +9,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .float-icon { animation: float 3s ease-in-out infinite; }
+        .pulse-animation { animation: pulse 2s ease-in-out infinite; }
+        .xp-bar-transition { transition: width 0.5s ease-out; }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px -12px rgba(0, 0, 0, 0.15); }
+    </style>
 </head>
 
 <body class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
@@ -28,6 +43,31 @@
                     </div>
                 </div>
 
+                <!-- XP DISPLAY DI NAVBAR -->
+                <div class="hidden md:flex items-center gap-4">
+                    <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl px-4 py-2 border border-yellow-200">
+                        <div class="flex items-center gap-3">
+                            <div class="relative">
+                                <i class="fas fa-star text-yellow-500 text-xl float-icon"></i>
+                                <div class="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full"></div>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Total XP</p>
+                                <p class="font-bold text-yellow-600 text-lg">{{ number_format($totalXP ?? 0) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl px-4 py-2 border border-indigo-200">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-trophy text-purple-500 text-xl"></i>
+                            <div>
+                                <p class="text-xs text-gray-500">Level</p>
+                                <p class="font-bold text-purple-600 text-lg">{{ $userLevel ?? 1 }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- MENU -->
                 <ul class="hidden md:flex items-center gap-1 bg-gray-50 rounded-2xl p-1">
                     <li>
@@ -40,6 +80,12 @@
                         <a href="{{ route('murid.riwayat') }}" class="flex items-center gap-2 px-5 py-2 rounded-xl text-gray-600 hover:text-purple-600 hover:bg-white transition font-medium">
                             <i class="fas fa-history text-sm"></i>
                             Riwayat
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('murid.xp.store') }}" class="flex items-center gap-2 px-5 py-2 rounded-xl text-gray-600 hover:text-yellow-600 hover:bg-white transition font-medium">
+                            <i class="fas fa-store text-sm"></i>
+                            XP Store
                         </a>
                     </li>
                 </ul>
@@ -63,14 +109,12 @@
 
                     <!-- Dropdown Menu -->
                     <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
-                        <!-- Header -->
                         <div class="px-5 py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
                             <p class="text-xs opacity-90">Login sebagai</p>
                             <p class="font-bold text-lg">{{ Auth::user()->nama }}</p>
                             <p class="text-xs opacity-75 mt-1">{{ Auth::user()->email }}</p>
                         </div>
                         
-                        <!-- Menu Items -->
                         <div class="py-2">
                             <a href="{{ route('murid.profil.index') }}" 
                                class="flex items-center gap-3 px-5 py-3 text-gray-700 hover:bg-purple-50 transition group">
@@ -82,8 +126,17 @@
                                     <p class="text-xs text-gray-500">Kelola data pribadi</p>
                                 </div>
                             </a>
+                            <a href="{{ route('murid.xp.store') }}" 
+                               class="flex items-center gap-3 px-5 py-3 text-gray-700 hover:bg-yellow-50 transition group">
+                                <div class="w-8 h-8 rounded-lg bg-yellow-100 flex items-center justify-center text-yellow-600 group-hover:bg-yellow-200">
+                                    <i class="fas fa-coins text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium">XP Store</p>
+                                    <p class="text-xs text-gray-500">Tukar XP dengan hadiah</p>
+                                </div>
+                            </a>
                             <div class="border-t border-gray-100 my-2"></div>
-                            <!-- Logout Button -->
                             <button type="button" 
                                     id="logoutBtn"
                                     class="w-full text-left flex items-center gap-3 px-5 py-3 text-red-600 hover:bg-red-50 transition group">
@@ -101,6 +154,31 @@
             </div>
         </div>
     </nav>
+
+    <!-- XP LEVEL BAR -->
+    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-indigo-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-chart-line text-purple-500 text-sm"></i>
+                    <span class="text-sm font-medium text-gray-700">Level {{ $userLevel ?? 1 }}</span>
+                </div>
+                <div class="flex-1">
+                    <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div class="h-full bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full xp-bar-transition" style="width: {{ $xpProgress ?? 0 }}%"></div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-star text-yellow-500 text-xs"></i>
+                    <span class="text-xs text-gray-500">{{ number_format($currentLevelXP ?? 0) }}/{{ number_format($nextLevelXP ?? 1000) }} XP</span>
+                </div>
+                <div class="flex items-center gap-2 bg-white/50 rounded-lg px-3 py-1">
+                    <i class="fas fa-gem text-purple-500 text-xs"></i>
+                    <span class="text-xs font-semibold text-purple-600">Next: Level {{ ($userLevel ?? 1) + 1 }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- MAIN CONTENT -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -134,10 +212,10 @@
             </div>
         </div>
 
-        <!-- STATISTICS CARDS -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <!-- STATISTICS CARDS dengan XP Info -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
             <!-- Card 1: Total Ujian Diikuti -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition card-hover">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500 text-sm font-medium mb-1">Total Ujian Diikuti</p>
@@ -147,24 +225,10 @@
                         <i class="fas fa-file-alt text-xl text-purple-600"></i>
                     </div>
                 </div>
-                <div class="mt-4 pt-4 border-t border-gray-100">
-                    <div class="flex items-center text-sm">
-                        @if($ujianBaruMingguIni > 0)
-                        <span class="text-green-600 font-medium flex items-center">
-                            <i class="fas fa-arrow-up mr-1 text-xs"></i>
-                            {{ $ujianBaruMingguIni ?? 0 }} baru minggu ini
-                        </span>
-                        @else
-                        <span class="text-gray-500 font-medium">
-                            Belum ada ujian baru
-                        </span>
-                        @endif
-                    </div>
-                </div>
             </div>
 
             <!-- Card 2: Rata-rata Nilai -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition card-hover">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500 text-sm font-medium mb-1">Rata-rata Nilai</p>
@@ -174,29 +238,10 @@
                         <i class="fas fa-chart-line text-xl text-green-600"></i>
                     </div>
                 </div>
-                <div class="mt-4 pt-4 border-t border-gray-100">
-                    <div class="flex items-center text-sm">
-                        @if($rataRataNilai > 75)
-                        <span class="text-green-600 font-medium flex items-center">
-                            <i class="fas fa-trend-up mr-1 text-xs"></i>
-                            Nilai baik
-                        </span>
-                        @elseif($rataRataNilai > 0)
-                        <span class="text-yellow-600 font-medium flex items-center">
-                            <i class="fas fa-exclamation-circle mr-1 text-xs"></i>
-                            Perlu peningkatan
-                        </span>
-                        @else
-                        <span class="text-gray-500 font-medium">
-                            Belum ada nilai
-                        </span>
-                        @endif
-                    </div>
-                </div>
             </div>
 
             <!-- Card 3: Ujian Tersedia -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition card-hover">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500 text-sm font-medium mb-1">Mapel Tersedia</p>
@@ -206,24 +251,10 @@
                         <i class="fas fa-clock text-xl text-orange-600"></i>
                     </div>
                 </div>
-                <div class="mt-4 pt-4 border-t border-gray-100">
-                    <div class="flex items-center text-sm">
-                        @if($soalPerMapel->count() > 0)
-                        <span class="text-orange-600 font-medium flex items-center">
-                            <i class="fas fa-book-open mr-1 text-xs"></i>
-                            Siap dikerjakan
-                        </span>
-                        @else
-                        <span class="text-gray-500 font-medium">
-                            Tidak ada soal
-                        </span>
-                        @endif
-                    </div>
-                </div>
             </div>
 
             <!-- Card 4: Nilai Tertinggi -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition card-hover">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500 text-sm font-medium mb-1">Nilai Tertinggi</p>
@@ -233,20 +264,70 @@
                         <i class="fas fa-trophy text-xl text-blue-600"></i>
                     </div>
                 </div>
-                <div class="mt-4 pt-4 border-t border-gray-100">
-                    <div class="flex items-center text-sm">
-                        @if($nilaiTertinggi > 0)
-                        <span class="text-blue-600 font-medium flex items-center">
-                            <i class="fas fa-crown mr-1 text-xs"></i>
-                            Pencapaian terbaik
-                        </span>
-                        @else
-                        <span class="text-gray-500 font-medium">
-                            Belum ada nilai
-                        </span>
-                        @endif
+            </div>
+
+            <!-- Card 5: Total XP -->
+            <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl shadow-sm border border-yellow-200 p-6 hover:shadow-md transition card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium mb-1">Total XP</p>
+                        <p class="text-3xl font-bold text-yellow-600">{{ number_format($totalXP ?? 0) }}</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-yellow-100 to-orange-100 flex items-center justify-center">
+                        <i class="fas fa-star text-xl text-yellow-600 float-icon"></i>
                     </div>
                 </div>
+                <div class="mt-3 pt-3 border-t border-yellow-200">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-gray-500">Ke Level {{ ($userLevel ?? 1) + 1 }}</span>
+                        <span class="text-yellow-600 font-semibold">{{ number_format($currentLevelXP ?? 0) }}/{{ number_format($nextLevelXP ?? 1000) }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- XP STORE PREVIEW SECTION -->
+        <div class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-r from-yellow-100 to-orange-100 flex items-center justify-center">
+                            <i class="fas fa-store text-yellow-600"></i>
+                        </div>
+                        XP Store
+                    </h2>
+                    <p class="text-gray-600 mt-1">Tukarkan XP-mu dengan hadiah keren!</p>
+                </div>
+                <a href="{{ route('murid.xp.store') }}" class="px-4 py-2 text-yellow-600 hover:text-yellow-700 font-medium flex items-center gap-2">
+                    Lihat Semua <i class="fas fa-arrow-right text-sm"></i>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                @php
+                    $storeItems = [
+                        ['icon' => 'fa-hourglass-half', 'name' => 'Perpanjang Waktu', 'xp' => 200, 'color' => 'blue'],
+                        ['icon' => 'fa-lightbulb', 'name' => 'Petunjuk Soal', 'xp' => 100, 'color' => 'yellow'],
+                        ['icon' => 'fa-gem', 'name' => 'Theme Premium', 'xp' => 500, 'color' => 'purple'],
+                    ];
+                @endphp
+                @foreach($storeItems as $item)
+                <div class="bg-white rounded-xl border border-gray-100 p-4 card-hover">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-{{ $item['color'] }}-50 flex items-center justify-center">
+                            <i class="fas {{ $item['icon'] }} text-{{ $item['color'] }}-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">{{ $item['name'] }}</p>
+                            <p class="text-xs text-gray-500">{{ $item['xp'] }} XP</p>
+                        </div>
+                        <button onclick="showXPRedeem('{{ $item['name'] }}', {{ $item['xp'] }})" 
+                                class="px-3 py-1.5 bg-gradient-to-r from-{{ $item['color'] }}-500 to-{{ $item['color'] }}-600 text-white text-xs rounded-lg hover:shadow-md transition">
+                            Tukar
+                        </button>
+                    </div>
+                </div>
+                @endforeach
             </div>
         </div>
 
@@ -290,8 +371,9 @@
                     $bgs    = ['bg-purple-50','bg-blue-50','bg-green-50','bg-orange-50','bg-pink-50'];
                     $texts  = ['text-purple-700','text-blue-700','text-green-700','text-orange-700','text-pink-700'];
                     $idx    = $item->mapel_id % 5;
+                    $xpReward = $totalSoal * 10;
                 @endphp
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition card-hover">
                     <div class="h-2 bg-gradient-to-r {{ $colors[$idx] }} {{ $tos[$idx] }}"></div>
                     <div class="p-6">
                         <div class="flex items-start justify-between mb-4">
@@ -305,7 +387,7 @@
                                 <i class="fas fa-book {{ $texts[$idx] }}"></i>
                             </div>
                         </div>
-                        <div class="space-y-2 mb-6">
+                        <div class="space-y-2 mb-4">
                             <div class="flex items-center text-gray-600 text-sm">
                                 <i class="fas fa-question-circle {{ $texts[$idx] }} mr-2"></i>
                                 <span>{{ $totalSoal }} Soal tersedia</span>
@@ -313,6 +395,10 @@
                             <div class="flex items-center text-gray-600 text-sm">
                                 <i class="fas fa-layer-group {{ $texts[$idx] }} mr-2"></i>
                                 <span>{{ Soal::where('mapel_id', $item->mapel_id)->count() }} Paket soal</span>
+                            </div>
+                            <div class="flex items-center text-yellow-600 text-sm">
+                                <i class="fas fa-star mr-2"></i>
+                                <span>+{{ $xpReward }} XP jika selesai</span>
                             </div>
                         </div>
                         <div class="pt-4 border-t border-gray-100">
@@ -371,6 +457,7 @@
                                 <th class="text-left py-4 px-6 text-gray-600 font-semibold">Nama Ujian</th>
                                 <th class="text-left py-4 px-6 text-gray-600 font-semibold">Mata Pelajaran</th>
                                 <th class="text-left py-4 px-6 text-gray-600 font-semibold">Nilai</th>
+                                <th class="text-left py-4 px-6 text-gray-600 font-semibold">XP Dapat</th>
                                 <th class="text-left py-4 px-6 text-gray-600 font-semibold">Tanggal</th>
                                 <th class="text-left py-4 px-6 text-gray-600 font-semibold">Status</th>
                                 <th class="text-left py-4 px-6 text-gray-600 font-semibold">Aksi</th>
@@ -380,6 +467,7 @@
                             @foreach($riwayatUjian as $riwayat)
                             @php
                                 $nilai = $riwayat->nilai ?? 0;
+                                $xpEarned = $nilai * 10;
                                 $statusColor = $nilai >= 75 ? 'bg-green-100 text-green-800' : 
                                              ($nilai >= 60 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800');
                                 $statusText = $nilai >= 75 ? 'Lulus' : 
@@ -401,6 +489,13 @@
                                         </span>
                                         <span class="text-gray-400 mx-2">/</span>
                                         <span class="text-gray-600">100</span>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center gap-1 text-yellow-600">
+                                        <i class="fas fa-star text-xs"></i>
+                                        <span class="font-semibold">+{{ $xpEarned }}</span>
+                                        <span class="text-xs text-gray-400">XP</span>
                                     </div>
                                 </td>
                                 <td class="py-4 px-6 text-gray-600">
@@ -427,7 +522,6 @@
             </div>
         </section>
         @elseif($totalUjianDiikuti > 0)
-        <!-- Jika ada ujian diikuti tapi tidak ada riwayat (seharusnya tidak terjadi) -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
             <div class="w-16 h-16 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 flex items-center justify-center mx-auto mb-6">
                 <i class="fas fa-history text-2xl text-gray-400"></i>
@@ -459,6 +553,47 @@
             </div>
         </div>
     </footer>
+
+    <!-- MODAL XP REDEEM -->
+    <div id="xpRedeemModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full transform transition-all duration-300">
+            <div class="px-6 pt-6 pb-4">
+                <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-yellow-100">
+                    <i class="fas fa-gift text-2xl text-yellow-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 text-center">Tukar Hadiah</h3>
+                <p class="text-gray-600 text-center mt-2" id="redeemMessage"></p>
+            </div>
+            <div class="px-6 pb-6">
+                <div class="bg-yellow-50 rounded-lg p-4 mb-6">
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-600">XP Kamu</span>
+                        <span class="font-bold text-yellow-600 text-lg">{{ number_format($totalXP ?? 0) }}</span>
+                    </div>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="text-gray-600">Biaya</span>
+                        <span class="font-bold text-red-600 text-lg" id="redeemCost">0</span>
+                    </div>
+                    <div class="flex items-center justify-between mt-2 pt-2 border-t border-yellow-200">
+                        <span class="text-gray-600">Sisa XP</span>
+                        <span class="font-bold text-green-600 text-lg" id="remainingXP">0</span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="closeXPRedeem()" 
+                            class="py-3 px-4 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition">
+                        Batal
+                    </button>
+                    <button onclick="redeemItem()" 
+                            id="confirmRedeemBtn"
+                            class="py-3 px-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-medium rounded-xl hover:from-yellow-600 hover:to-orange-600 transition">
+                        <i class="fas fa-check mr-2"></i>
+                        Konfirmasi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- CUSTOM LOGOUT MODAL -->
     <div id="logoutModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -510,25 +645,79 @@
         </div>
     </div>
 
-    <!-- JavaScript for Dropdown -->
+    <!-- JavaScript -->
     <script>
-        // Toggle profile dropdown
+        // Variables for XP Redeem
+        let currentRedeemItem = '';
+        let currentRedeemCost = 0;
+        let currentUserXP = {{ $totalXP ?? 0 }};
+
+        // Profile Dropdown
         document.getElementById('profileDropdownBtn').addEventListener('click', function(e) {
             e.stopPropagation();
             document.getElementById('profileDropdown').classList.toggle('hidden');
         });
 
-        // Close dropdown when clicking outside
         document.addEventListener('click', function(e) {
             const dropdown = document.getElementById('profileDropdown');
             const button = document.getElementById('profileDropdownBtn');
-            
             if (!dropdown.contains(e.target) && !button.contains(e.target)) {
                 dropdown.classList.add('hidden');
             }
         });
 
-        // Logout Modal Logic
+        // XP Redeem Functions
+        function showXPRedeem(itemName, xpCost) {
+            if (currentUserXP < xpCost) {
+                alert('XP Anda tidak mencukupi! Silakan kerjakan lebih banyak ujian untuk mengumpulkan XP.');
+                return;
+            }
+            currentRedeemItem = itemName;
+            currentRedeemCost = xpCost;
+            document.getElementById('redeemMessage').innerHTML = `Apakah Anda yakin ingin menukar <strong>${itemName}</strong> dengan <strong>${xpCost} XP</strong>?`;
+            document.getElementById('redeemCost').textContent = xpCost;
+            document.getElementById('remainingXP').textContent = currentUserXP - xpCost;
+            document.getElementById('xpRedeemModal').classList.remove('hidden');
+        }
+
+        function closeXPRedeem() {
+            document.getElementById('xpRedeemModal').classList.add('hidden');
+        }
+
+        function redeemItem() {
+            const confirmBtn = document.getElementById('confirmRedeemBtn');
+            confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
+            confirmBtn.disabled = true;
+
+            fetch('{{ route("murid.xp.redeem") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    item_name: currentRedeemItem,
+                    xp_cost: currentRedeemCost
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`✨ Berhasil! ${currentRedeemItem} telah ditambahkan ke akun Anda.`);
+                    location.reload();
+                } else {
+                    alert('Gagal menukar XP: ' + (data.message || 'Terjadi kesalahan'));
+                }
+            })
+            .catch(error => {
+                alert('Terjadi kesalahan: ' + error.message);
+            })
+            .finally(() => {
+                closeXPRedeem();
+            });
+        }
+
+        // Logout Modal
         const logoutBtn = document.getElementById('logoutBtn');
         const logoutModal = document.getElementById('logoutModal');
         const cancelLogout = document.getElementById('cancelLogout');
@@ -559,11 +748,16 @@
         });
 
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && !logoutModal.classList.contains('hidden')) {
-                logoutModal.querySelector('div').classList.add('scale-95');
-                setTimeout(() => {
-                    logoutModal.classList.add('hidden');
-                }, 200);
+            if (e.key === 'Escape') {
+                if (!logoutModal.classList.contains('hidden')) {
+                    logoutModal.querySelector('div').classList.add('scale-95');
+                    setTimeout(() => {
+                        logoutModal.classList.add('hidden');
+                    }, 200);
+                }
+                if (!document.getElementById('xpRedeemModal').classList.contains('hidden')) {
+                    closeXPRedeem();
+                }
             }
         });
 

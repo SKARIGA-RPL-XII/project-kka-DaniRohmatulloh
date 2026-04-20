@@ -128,12 +128,7 @@
                         <h1 class="text-2xl font-bold text-gray-800">Hasil Ujian Siswa</h1>
                         <p class="text-gray-600 mt-1">Lihat dan kelola hasil ujian yang telah diselesaikan</p>
                     </div>
-                    
-                    <!-- Quick Actions -->
                     <div class="flex items-center gap-3">
-                        <button onclick="exportAllResults()" class="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:shadow-md transition-shadow text-sm font-medium">
-                            <i class="fas fa-file-export mr-2"></i>Export Semua
-                        </button>
                         <button onclick="refreshResults()" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm">
                             <i class="fas fa-redo mr-2"></i>Refresh
                         </button>
@@ -271,9 +266,11 @@
                             <thead>
                                 <tr class="bg-gray-50/50">
                                     <th class="text-left p-4 text-sm font-medium text-gray-700">Siswa</th>
+
                                     <th class="text-left p-4 text-sm font-medium text-gray-700">Ujian</th>
-                                    <th class="text-left p-4 text-sm font-medium text-gray-700">Kelas</th>
+                                    <th class="text-left p-4 text-sm font-medium text-gray-700">Tipe Ujian</th>
                                     <th class="text-left p-4 text-sm font-medium text-gray-700">Nilai</th>
+
                                     <th class="text-left p-4 text-sm font-medium text-gray-700">Status</th>
                                     <th class="text-left p-4 text-sm font-medium text-gray-700">Waktu</th>
                                     <th class="text-left p-4 text-sm font-medium text-gray-700">Aksi</th>
@@ -293,16 +290,18 @@
                                             </div>
                                         </div>
                                     </td>
+
                                     <td class="p-4">
                                         <p class="font-medium text-gray-800">{{ $result->exam_name }}</p>
                                         <p class="text-xs text-gray-500">{{ $result->exam_subject }}</p>
                                     </td>
                                     <td class="p-4">
-                                        <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
-                                            {{ $result->class }}
+                                        <span class="inline-flex px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">
+                                            {{ $result->tipe_ujian }}
                                         </span>
                                     </td>
                                     <td class="p-4">
+
                                         <div class="flex items-center gap-2">
                                             <span class="text-xl font-bold 
                                                 @if($result->score >= 85) text-emerald-600

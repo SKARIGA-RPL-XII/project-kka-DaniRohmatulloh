@@ -78,8 +78,14 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Murid routes
+
 Route::middleware(['auth', 'role:murid'])->prefix('murid')->name('murid.')->group(function () {
+
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/xp/store', function() { return view('murid.xp-store'); })->name('xp.store');
+    Route::post('/xp/redeem', [DashboardController::class, 'redeemXP'])->name('xp.redeem');
+
+
     Route::get('/ujian/{mapel_id}/mulai', [UjianController::class, 'mulai'])->name('ujian.mulai');
     Route::post('/ujian/{mapel_id}/submit', [UjianController::class, 'submit'])->name('ujian.submit');
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat');

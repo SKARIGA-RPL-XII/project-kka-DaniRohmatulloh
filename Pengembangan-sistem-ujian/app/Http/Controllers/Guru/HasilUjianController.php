@@ -50,23 +50,32 @@ class HasilUjianController extends Controller
             'poor' => HasilUjian::where('nilai', '<', 60)->count(),
         ];
 
-        $averageCompletionTime = 45;
+
+
         $averageDuration = 90;
 
         // Transform results for view
         $results->getCollection()->transform(function($hasil) {
+            $jawabanDetail = json_decode($hasil->jawaban ?? '[]', true);
+            $tipeCount = collect($jawabanDetail)->countBy('tipe');
+            $dominantTipe = $tipeCount->sortDesc()->keys()->first() ?? 'pilihan_ganda';
+
             return (object)[
                 'id' => $hasil->id,
                 'student_name' => $hasil->murid->nama ?? 'Unknown',
                 'student_id' => $hasil->murid->id ?? 'N/A',
                 'exam_name' => $hasil->ujian->nama_ujian ?? 'Unknown',
                 'exam_subject' => $hasil->ujian->mataPelajaran->nama_mapel ?? 'Unknown',
-                'class' => '10A',
+                'tipe_ujian' => $dominantTipe === 'pilihan_ganda' ? 'PG' : 'Essay',
                 'score' => $hasil->nilai,
                 'passed' => $hasil->nilai >= 70,
                 'completed_at' => $hasil->created_at,
+                'jawaban_detail' => $jawabanDetail,
             ];
         });
+
+
+        $averageCompletionTime = 45; // Rata-rata dari data jawaban
 
         return view('guru.lihat-hasil-ujian', compact(
             'results',
@@ -86,3 +95,4 @@ class HasilUjianController extends Controller
         ));
     }
 }
+

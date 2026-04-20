@@ -9,58 +9,20 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .question-card {
-            transition: all 0.2s;
-        }
-        
-        .question-card:hover {
-            transform: translateY(-2px);
-        }
-        
-        .selected-question {
-            border-left: 4px solid #3b82f6;
-        }
-        
-        .glass-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-        }
-        
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            font-size: 0.75rem;
-            font-weight: 500;
-            border-radius: 9999px;
-        }
-        
-        .sidebar-icon {
-            width: 2rem;
-            height: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0.5rem;
-        }
-        
-        /* Loading animation */
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .loading-spinner {
-            animation: spin 1s linear infinite;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .question-card { transition: all 0.2s; }
+        .question-card:hover { transform: translateY(-2px); }
+        .selected-question { border-left: 4px solid #3b82f6; }
+        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+        .badge { display: inline-block; padding: 0.25rem 0.75rem; font-size: 0.75rem; font-weight: 500; border-radius: 9999px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-spinner { animation: spin 1s linear infinite; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
     <div class="flex min-h-screen">
         <!-- Sidebar -->
         <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
-            <!-- Logo -->
             <div class="p-6 border-b">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
@@ -73,11 +35,10 @@
                 </div>
             </div>
 
-            <!-- User Profile -->
             <div class="p-6 border-b">
                 <div class="flex items-center gap-3 mb-3">
                     <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full flex items-center justify-center text-white font-bold text-lg shadow">
-{{ strtoupper(substr(auth()->user()->nama ?? 'G', 0, 1)) }}
+                        {{ strtoupper(substr(auth()->user()->nama ?? 'G', 0, 1)) }}
                     </div>
                     <div class="flex-1 min-w-0">
                         <p class="font-medium text-gray-800 truncate">{{ auth()->user()->nama ?? 'Guru' }}</p>
@@ -90,65 +51,40 @@
                 </div>
             </div>
 
-            <!-- Navigation -->
             <nav class="flex-1 p-4 space-y-1">
-                <a href="/guru/dashboard" 
-                   class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-                    <i class="fas fa-home w-5 text-center text-gray-500 hover:text-indigo-600"></i>
-                    <span>Dashboard</span>
+                <a href="/guru/dashboard" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="fas fa-home w-5 text-center text-gray-500 hover:text-indigo-600"></i><span>Dashboard</span>
                 </a>
-                
-                <a href="/guru/soal" 
-                   class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-                    <i class="fas fa-question-circle w-5 text-center text-gray-500 hover:text-indigo-600"></i>
-                    <span>Kelola Soal</span>
+                <a href="/guru/soal" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="fas fa-question-circle w-5 text-center text-gray-500 hover:text-indigo-600"></i><span>Kelola Soal</span>
                 </a>
-                
-                <a href="/guru/examp" 
-                   class="flex items-center gap-3 px-4 py-3 bg-indigo-50 text-indigo-700 rounded-lg font-medium">
-                    <i class="fas fa-cog w-5 text-center text-indigo-600"></i>
-                    <span>Pengaturan Soal</span>
+                <a href="/guru/examp" class="flex items-center gap-3 px-4 py-3 bg-indigo-50 text-indigo-700 rounded-lg font-medium">
+                    <i class="fas fa-cog w-5 text-center text-indigo-600"></i><span>Pengaturan Soal</span>
                 </a>
-                
-                <a href="{{ route('guru.hasil-ujian') }}" 
-                   class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-                    <i class="fas fa-chart-bar w-5 text-center text-gray-500 hover:text-indigo-600"></i>
-                    <span>Lihat Hasil Ujian</span>
+                <a href="{{ route('guru.hasil-ujian') }}" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="fas fa-chart-bar w-5 text-center text-gray-500 hover:text-indigo-600"></i><span>Lihat Hasil Ujian</span>
                 </a>
             </nav>
 
-            <!-- Logout -->
             <div class="p-4 border-t">
-                <button onclick="showLogoutConfirm()" 
-                        class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                    <i class="fas fa-sign-out-alt w-5 text-center"></i>
-                    <span>Logout</span>
+                <button onclick="showLogoutConfirm()" class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                    <i class="fas fa-sign-out-alt w-5 text-center"></i><span>Logout</span>
                 </button>
             </div>
         </aside>
 
-
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Header -->
             <header class="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 px-6 py-4">
                 <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                     <div>
                         <h1 class="text-2xl font-bold text-gray-800">Pengaturan Soal Ujian</h1>
                         <p class="text-gray-600 mt-1">Atur waktu, nilai, dan konfigurasi ujian</p>
                     </div>
-                    
-                    <!-- Quick Actions -->
                     <div class="flex items-center gap-3">
                         <div class="hidden lg:flex items-center gap-4 text-sm text-gray-600">
-                            <span class="flex items-center gap-1">
-                                <i class="fas fa-database text-blue-500"></i>
-                                <span id="totalQuestions">0</span> soal
-                            </span>
-                            <span class="flex items-center gap-1">
-                                <i class="fas fa-clock text-green-500"></i>
-                                <span id="activeExams">0</span> aktif
-                            </span>
+                            <span class="flex items-center gap-1"><i class="fas fa-database text-blue-500"></i><span id="totalQuestions">0</span> soal</span>
+                            <span class="flex items-center gap-1"><i class="fas fa-clock text-green-500"></i><span id="activeExams">0</span> aktif</span>
                         </div>
                     </div>
                 </div>
@@ -157,7 +93,6 @@
             <main class="flex-1 overflow-auto p-4 md:p-6">
                 <div id="messageContainer"></div>
 
-                <!-- Content Grid -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Soal Tersedia -->
                     <div class="lg:col-span-2">
@@ -166,8 +101,7 @@
                                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                     <div>
                                         <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                                            <i class="fas fa-question-circle text-blue-500"></i>
-                                            Soal Tersedia
+                                            <i class="fas fa-question-circle text-blue-500"></i> Soal Tersedia
                                         </h2>
                                         <p class="text-gray-600 text-sm mt-1">Pilih soal untuk ditambahkan ke ujian</p>
                                     </div>
@@ -175,14 +109,13 @@
                                         <span class="badge bg-blue-100 text-blue-700" id="questionCount">0 soal</span>
                                         <div class="relative">
                                             <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                                            <input type="text" placeholder="Cari soal..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm w-48" id="searchInput" onkeyup="filterQuestions()">
+                                            <input type="text" placeholder="Cari soal..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm w-48" id="searchInput" onkeyup="handleSearch()">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             
                             <div class="p-4">
-                                <!-- Filter Chips - Dropdown Pilih Materi -->
                                 <div class="flex flex-wrap gap-2 mb-4">
                                     <select onchange="filterBySubject()" id="subjectFilter" class="px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
                                         <option value="">Pilih Materi</option>
@@ -191,27 +124,24 @@
                                         @endforeach
                                     </select>
                                     
-                                    <select onchange="filterQuestions()" id="typeFilter" class="px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                                    <select onchange="filterByType()" id="typeFilter" class="px-3 py-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
                                         <option value="">Semua Tipe</option>
                                         <option value="pilihan_ganda">Pilihan Ganda</option>
                                         <option value="essay">Essay</option>
                                     </select>
                                     
-                                    <button onclick="clearFilters()" class="px-3 py-1.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm">
-                                        <i class="fas fa-redo mr-1"></i>Reset
+                                    <button onclick="refreshQuestions()" class="px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm font-medium flex items-center gap-1">
+                                        <i class="fas fa-sync-alt"></i>Refresh
                                     </button>
                                 </div>
                                 
-                                <!-- Loading Indicator -->
                                 <div id="loadingIndicator" class="hidden text-center py-8">
                                     <i class="fas fa-spinner loading-spinner text-3xl text-blue-500"></i>
                                     <p class="mt-2 text-gray-500">Memuat soal...</p>
                                 </div>
                                 
-                                <!-- Questions List -->
                                 <div class="space-y-3 max-h-[500px] overflow-y-auto pr-2" id="questionsList"></div>
                                 
-                                <!-- Empty State -->
                                 <div id="emptyState" class="hidden text-center py-12">
                                     <div class="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
                                         <i class="fas fa-inbox text-gray-400 text-2xl"></i>
@@ -224,7 +154,6 @@
                             </div>
                         </div>
                         
-                        <!-- Quick Stats -->
                         <div class="grid grid-cols-3 gap-4 mt-4">
                             <div class="glass-card rounded-xl p-4 text-center">
                                 <div class="text-2xl font-bold text-green-600" id="statsPG">0</div>
@@ -241,18 +170,15 @@
                         </div>
                     </div>
                     
-                    <!-- Panel Kanan - Pengaturan Ujian -->
+                    <!-- Panel Kanan -->
                     <div class="space-y-6">
-                        <!-- Soal Terpilih -->
                         <div class="glass-card rounded-2xl shadow-sm p-5">
                             <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                                <i class="fas fa-list-check text-green-500"></i>
-                                Soal Terpilih
+                                <i class="fas fa-list-check text-green-500"></i> Soal Terpilih
                             </h3>
                             
                             <div id="selectedQuestionsSection" class="hidden">
                                 <div id="selectedQuestionsList" class="space-y-2 mb-4 max-h-[200px] overflow-y-auto p-2"></div>
-                                
                                 <div class="flex justify-between items-center border-t border-gray-200/50 pt-4">
                                     <div>
                                         <span class="text-sm text-gray-600">Terpilih: </span>
@@ -275,19 +201,16 @@
                                     <i class="fas fa-plus text-gray-400 text-xl"></i>
                                 </div>
                                 <p class="text-gray-600 mb-2">Belum ada soal terpilih</p>
-                                <p class="text-sm text-gray-500">Pilih soal dari daftar di sebelah</p>
+                                <p class="text-sm text-gray-500">Klik soal dari daftar di sebelah</p>
                             </div>
                         </div>
                         
-                        <!-- Pengaturan Ujian -->
                         <div id="examConfigSection" class="hidden">
                             <div class="glass-card rounded-2xl shadow-sm p-5 space-y-5">
                                 <h3 class="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                                    <i class="fas fa-cogs text-purple-500"></i>
-                                    Pengaturan Ujian
+                                    <i class="fas fa-cogs text-purple-500"></i> Pengaturan Ujian
                                 </h3>
                                 
-                                <!-- Basic Settings -->
                                 <div class="space-y-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Nama Ujian</label>
@@ -312,13 +235,10 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Score Settings -->
                                 <div class="pt-4 border-t border-gray-200/50">
                                     <h4 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                                        <i class="fas fa-star text-yellow-500"></i>
-                                        Pengaturan Nilai
+                                        <i class="fas fa-star text-yellow-500"></i> Pengaturan Nilai
                                     </h4>
-                                    
                                     <div class="grid grid-cols-2 gap-4 mb-3">
                                         <div>
                                             <label class="block text-xs text-gray-600 mb-1">Nilai Total</label>
@@ -333,7 +253,6 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Actions -->
                                 <div class="pt-4 border-t border-gray-200/50">
                                     <div class="flex gap-3">
                                         <button onclick="saveExamConfig()" class="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 hover:shadow-md">
@@ -349,22 +268,16 @@
                     </div>
                 </div>
                 
-                <!-- Recent Exams -->
                 <div class="mt-8">
                     <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                        <i class="fas fa-history text-indigo-500"></i>
-                        Ujian Terbaru
+                        <i class="fas fa-history text-indigo-500"></i> Ujian Terbaru
                     </h2>
-                    
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="recentExams"></div>
                 </div>
             </main>
 
-            <!-- Footer Minimal -->
             <footer class="bg-white/80 backdrop-blur-sm border-t border-gray-200/50 px-6 py-3">
-                <p class="text-sm text-gray-600 text-center">
-                    &copy; 2024 ExamPro • Sistem Pengaturan Soal Ujian
-                </p>
+                <p class="text-sm text-gray-600 text-center">&copy; 2024 ExamPro • Sistem Pengaturan Soal Ujian</p>
             </footer>
         </div>
     </div>
@@ -375,9 +288,7 @@
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold text-gray-900">Detail Soal</h3>
-                    <button onclick="hideQuestionDetail()" class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times text-lg"></i>
-                    </button>
+                    <button onclick="hideQuestionDetail()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
                 </div>
                 <div id="questionDetailContent"></div>
                 <div class="flex gap-3 pt-6 border-t mt-6">
@@ -398,12 +309,8 @@
                 <h3 class="text-lg font-bold text-gray-900 mb-2">Konfirmasi Logout</h3>
                 <p class="text-gray-600 mb-6">Anda yakin ingin keluar?</p>
                 <div class="flex gap-3">
-                    <button onclick="hideLogoutConfirm()" class="flex-1 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50">
-                        Batal
-                    </button>
-                    <button onclick="performLogout()" class="flex-1 py-3 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600">
-                        Logout
-                    </button>
+                    <button onclick="hideLogoutConfirm()" class="flex-1 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50">Batal</button>
+                    <button onclick="performLogout()" class="flex-1 py-3 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600">Logout</button>
                 </div>
             </div>
         </div>
@@ -418,6 +325,14 @@
         let mataPelajaran = @json($mataPelajaran ?? []);
         let currentQuestionId = null;
         let currentSubjectId = null;
+        let currentTypeFilter = '';
+        let currentSearchText = '';
+
+        // Debug: Log data untuk memastikan tipe soal benar
+        console.log('All Questions:', allQuestions);
+        allQuestions.forEach(q => {
+            console.log(`Soal ID: ${q.id}, Tipe: ${q.tipe}, Mapel: ${q.mapel_id}`);
+        });
 
         function initializeData() {
             currentDisplayQuestions = [];
@@ -435,10 +350,33 @@
             const container = document.getElementById('questionsList');
             const emptyState = document.getElementById('emptyState');
             
-            if (currentDisplayQuestions.length === 0) {
+            let displayData = [...currentDisplayQuestions];
+            
+            // Apply type filter FIRST
+            if (currentTypeFilter) {
+                displayData = displayData.filter(q => q.tipe === currentTypeFilter);
+            }
+            
+            // Apply search filter
+            if (currentSearchText) {
+                displayData = displayData.filter(q => {
+                    const questionText = (q.pertanyaan || q.question || q.title || '').toLowerCase();
+                    const mapelName = mataPelajaran.find(m => m.id == q.mapel_id)?.nama_mapel?.toLowerCase() || '';
+                    return questionText.includes(currentSearchText) || mapelName.includes(currentSearchText);
+                });
+            }
+            
+            console.log('Display Data after filters:', displayData.length, 'Type filter:', currentTypeFilter);
+            
+            if (displayData.length === 0) {
                 container.innerHTML = '';
                 const emptyStateText = document.getElementById('emptyStateText');
-                if (currentSubjectId) {
+                if (currentSearchText) {
+                    emptyStateText.innerHTML = 'Tidak ada soal yang cocok dengan pencarian';
+                } else if (currentTypeFilter) {
+                    const typeName = currentTypeFilter === 'pilihan_ganda' ? 'Pilihan Ganda' : 'Essay';
+                    emptyStateText.innerHTML = `Tidak ada soal dengan tipe <strong>${typeName}</strong> untuk mata pelajaran ini`;
+                } else if (currentSubjectId) {
                     const mapelName = mataPelajaran.find(m => m.id == currentSubjectId)?.nama_mapel;
                     emptyStateText.innerHTML = `Belum ada soal untuk mata pelajaran <strong>${mapelName || ''}</strong><br>Silakan buat soal terlebih dahulu`;
                 } else {
@@ -451,11 +389,17 @@
             
             emptyState.classList.add('hidden');
             let html = '';
-            currentDisplayQuestions.forEach(q => {
+            displayData.forEach(q => {
                 const isSelected = selectedQuestions.has(q.id);
                 const bgColor = isSelected ? 'bg-blue-50/80 border-blue-200' : 'bg-white/50 border-gray-200/50';
                 const textColor = isSelected ? 'text-blue-700' : 'text-gray-800';
-                const mapelName = mataPelajaran.find(m => m.id == q.mapel_id)?.nama_mapel || q.subject || '-';
+                const mapelName = mataPelajaran.find(m => m.id == q.mapel_id)?.nama_mapel || '-';
+                
+                // TAMPILKAN TIPE YANG BENAR
+                const isPilihanGanda = q.tipe === 'pilihan_ganda';
+                const tipeDisplay = isPilihanGanda ? 'Pilihan Ganda' : 'Essay';
+                const tipeShort = isPilihanGanda ? 'PG' : 'Essay';
+                const tipeColor = isPilihanGanda ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700';
                 
                 html += `<div class="question-card p-4 border rounded-xl cursor-pointer ${bgColor} ${textColor} ${isSelected ? 'selected-question' : ''}" 
                          onclick="toggleQuestionSelection(${q.id})" 
@@ -464,27 +408,20 @@
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-2">
                                 <span class="font-medium truncate">${q.title || 'Soal ' + q.id}</span>
-                                <span class="badge ${q.tipe === 'pilihan_ganda' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}">
-                                    ${q.tipe === 'pilihan_ganda' ? 'PG' : 'Essay'}
-                                </span>
+                                <span class="badge ${tipeColor}">${tipeShort}</span>
                             </div>
                             <p class="text-sm text-gray-600 line-clamp-2">${((q.pertanyaan || q.question || 'Soal tanpa pertanyaan') + '').substring(0, 100)}${((q.pertanyaan || q.question || '') + '').length > 100 ? '...' : ''}</p>
                             <div class="flex items-center gap-3 mt-3 text-xs">
                                 <span class="text-gray-500"><i class="fas fa-book mr-1"></i>${mapelName}</span>
+                                <span class="text-gray-500"><i class="fas fa-tag mr-1"></i>${tipeDisplay}</span>
                             </div>
                         </div>
-                        ${isSelected ? 
-                            `<div class="ml-3">
-                                <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center">
-                                    <i class="fas fa-check text-xs"></i>
-                                </div>
-                            </div>` : ''
-                        }
+                        ${isSelected ? `<div class="ml-3"><div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center"><i class="fas fa-check text-xs"></i></div></div>` : ''}
                     </div>
                 </div>`;
             });
             container.innerHTML = html;
-            document.getElementById('questionCount').textContent = `${currentDisplayQuestions.length} soal`;
+            document.getElementById('questionCount').textContent = `${displayData.length} soal`;
         }
 
         function renderSelectedQuestions() {
@@ -508,14 +445,12 @@
             selectedQuestions.forEach(id => {
                 const q = allQuestions.find(q => q.id === id);
                 if (q) {
-                    const mapelName = mataPelajaran.find(m => m.id == q.mapel_id)?.nama_mapel || q.subject || '-';
+                    const mapelName = mataPelajaran.find(m => m.id == q.mapel_id)?.nama_mapel || '-';
                     const tipeText = q.tipe === 'pilihan_ganda' ? 'PG' : 'Essay';
                     const title = `${mapelName} - ${tipeText}`;
                     html += `<div class="flex items-center justify-between p-2 bg-blue-50 rounded-lg">
                         <span class="text-sm text-gray-700 truncate flex-1">${title}</span>
-                        <button onclick="toggleQuestionSelection(${q.id})" class="text-red-500 hover:text-red-700 ml-2">
-                            <i class="fas fa-times"></i>
-                        </button>
+                        <button onclick="toggleQuestionSelection(${q.id})" class="text-red-500 hover:text-red-700 ml-2"><i class="fas fa-times"></i></button>
                     </div>`;
                 }
             });
@@ -547,12 +482,12 @@
         }
 
         function updateStats() {
-            const pgCount = currentDisplayQuestions.filter(q => q.tipe === 'pilihan_ganda').length;
-            const essayCount = currentDisplayQuestions.filter(q => q.tipe === 'essay').length;
+            const pgCount = allQuestions.filter(q => q.tipe === 'pilihan_ganda').length;
+            const essayCount = allQuestions.filter(q => q.tipe === 'essay').length;
             
             document.getElementById('statsPG').textContent = pgCount;
             document.getElementById('statsEssay').textContent = essayCount;
-            document.getElementById('statsTotal').textContent = currentDisplayQuestions.length;
+            document.getElementById('statsTotal').textContent = allQuestions.length;
             document.getElementById('totalQuestions').textContent = allQuestions.length;
             document.getElementById('activeExams').textContent = recentExams.filter(e => e.status === 'active').length;
         }
@@ -561,10 +496,8 @@
             const examSubjectSelect = document.getElementById('examSubject');
             const selectedOption = examSubjectSelect.options[examSubjectSelect.selectedIndex];
             const mapelName = selectedOption.getAttribute('data-nama');
-            
             if (mapelName) {
-                const examNameInput = document.getElementById('examName');
-                examNameInput.value = `Ujian ${mapelName}`;
+                document.getElementById('examName').value = `Ujian ${mapelName}`;
             }
         }
 
@@ -573,19 +506,21 @@
             const loadingIndicator = document.getElementById('loadingIndicator');
             const questionsList = document.getElementById('questionsList');
             
-            if (!subjectFilterVal) {
-                currentDisplayQuestions = [];
-                currentSubjectId = null;
-                updateUI();
-                return;
-            }
-            
             loadingIndicator.classList.remove('hidden');
             questionsList.classList.add('hidden');
-            currentSubjectId = parseInt(subjectFilterVal);
+            currentSubjectId = subjectFilterVal ? parseInt(subjectFilterVal) : null;
             
             setTimeout(() => {
-                currentDisplayQuestions = allQuestions.filter(q => q.mapel_id == subjectFilterVal);
+                if (!currentSubjectId) {
+                    currentDisplayQuestions = [];
+                } else {
+                    currentDisplayQuestions = allQuestions.filter(q => q.mapel_id == currentSubjectId);
+                    console.log(`Filtered by subject ${currentSubjectId}: ${currentDisplayQuestions.length} questions`);
+                    // Log tipe soal yang ada
+                    currentDisplayQuestions.forEach(q => {
+                        console.log(`  - Soal ID ${q.id}, Tipe: ${q.tipe}`);
+                    });
+                }
                 
                 if (selectedQuestionsPerSubject[currentSubjectId]) {
                     selectedQuestions.clear();
@@ -594,94 +529,55 @@
                     selectedQuestions.clear();
                 }
                 
-                updateUI();
+                // Reset filters when changing subject
+                currentSearchText = '';
+                currentTypeFilter = '';
+                document.getElementById('searchInput').value = '';
+                document.getElementById('typeFilter').value = '';
+                
+                renderQuestions();
+                renderSelectedQuestions();
                 loadingIndicator.classList.add('hidden');
                 questionsList.classList.remove('hidden');
-                document.getElementById('typeFilter').value = '';
-                document.getElementById('searchInput').value = '';
                 
-                if (currentDisplayQuestions.length === 0) {
-                    const mapelName = mataPelajaran.find(m => m.id == currentSubjectId)?.nama_mapel;
-                    showMessage(`Belum ada soal untuk mata pelajaran "${mapelName}". Silakan buat soal terlebih dahulu.`, 'info');
+                if (currentDisplayQuestions.length === 0 && currentSubjectId) {
+                    const mapelName = mataPelajaran.find(m => m.id == currentSubjectId)?.nama_mapel || 'materi';
+                    showMessage(`Belum ada soal untuk ${mapelName}. Silakan buat soal terlebih dahulu.`, 'info');
                 }
             }, 300);
         }
 
-        function filterQuestions() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const typeFilterVal = document.getElementById('typeFilter').value;
-            
-            if (currentDisplayQuestions.length === 0) return; // Skip jika belum pilih mapel
-            
-            // Filter real-time dari currentDisplayQuestions (tampilkan soal hanya saat ada search)
-            let filteredQuestions = [];
-            if (search) {
-                filteredQuestions = currentDisplayQuestions.filter(q => {
-                    const questionText = (q.pertanyaan || q.question || q.title || q.nomor || '').toLowerCase();
-                    const mapelText = mataPelajaran.find(m => m.id == q.mapel_id)?.nama_mapel?.toLowerCase() || '';
-                    return (questionText.includes(search) || mapelText.includes(search)) && (!typeFilterVal || q.tipe === typeFilterVal);
-                });
-            } else {
-                // Jika kosong, kosongkan tampilan (desain awal)
-                filteredQuestions = [];
-            }
-            
-            const container = document.getElementById('questionsList');
-            const emptyState = document.getElementById('emptyState');
-            
-            // Update count
-            document.getElementById('questionCount').textContent = `${filteredQuestions.length} soal`;
-            
-            if (filteredQuestions.length === 0) {
-                if (search) {
-                    container.innerHTML = '';
-                    emptyState.classList.remove('hidden');
-                    document.getElementById('emptyStateText').textContent = 'Tidak ada soal yang ditemukan';
-                } else {
-                    container.innerHTML = '';
-                    emptyState.classList.remove('hidden');
-                    document.getElementById('emptyStateText').textContent = 'Cari soal dengan mengetik di atas...';
-                }
-                return;
-            }
-            
-            emptyState.classList.add('hidden');
-            let html = '';
-            filteredQuestions.forEach(q => {
-                const isSelected = selectedQuestions.has(q.id);
-                const bgColor = isSelected ? 'bg-blue-50/80 border-blue-200' : 'bg-white/50 border-gray-200/50';
-                const textColor = isSelected ? 'text-blue-700' : 'text-gray-800';
-                const mapelName = mataPelajaran.find(m => m.id == q.mapel_id)?.nama_mapel || q.subject || '-';
-                
-                html += `<div class="question-card p-4 border rounded-xl cursor-pointer ${bgColor} ${textColor} ${isSelected ? 'selected-question' : ''}" 
-                         onclick="toggleQuestionSelection(${q.id})" 
-                         oncontextmenu="showQuestionDetail(${q.id});return false;">
-                    <div class="flex justify-between items-start">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="font-medium truncate">${q.title || 'Soal ' + q.id}</span>
-                                <span class="badge ${q.tipe === 'pilihan_ganda' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}">
-                                    ${q.tipe === 'pilihan_ganda' ? 'PG' : 'Essay'}
-                                </span>
-                            </div>
-                            <p class="text-sm text-gray-600 line-clamp-2">${((q.pertanyaan || q.question || 'Soal tanpa pertanyaan') + '').substring(0, 100)}${((q.pertanyaan || q.question || '') + '').length > 100 ? '...' : ''}</p>
-                            <div class="flex items-center gap-3 mt-3 text-xs">
-                                <span class="text-gray-500"><i class="fas fa-book mr-1"></i>${mapelName}</span>
-                            </div>
-                        </div>
+        function filterByType() {
+            currentTypeFilter = document.getElementById('typeFilter').value;
+            console.log('Filter by type:', currentTypeFilter);
+            renderQuestions();
+        }
 
-        function clearFilters() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('typeFilter').value = '';
-            document.getElementById('subjectFilter').value = '';
-            currentDisplayQuestions = [];
-            currentSubjectId = null;
-            selectedQuestions.clear();
-            updateUI();
+        function handleSearch() {
+            currentSearchText = document.getElementById('searchInput').value.toLowerCase();
+            renderQuestions();
+        }
+
+        function refreshQuestions() {
+            location.reload();
         }
 
         function selectAllQuestions() {
-            currentDisplayQuestions.forEach(q => selectedQuestions.add(q.id));
+            let questionsToSelect = [...currentDisplayQuestions];
+            
+            // Apply current filters to get visible questions
+            if (currentTypeFilter) {
+                questionsToSelect = questionsToSelect.filter(q => q.tipe === currentTypeFilter);
+            }
+            if (currentSearchText) {
+                questionsToSelect = questionsToSelect.filter(q => {
+                    const questionText = (q.pertanyaan || q.question || q.title || '').toLowerCase();
+                    const mapelName = mataPelajaran.find(m => m.id == q.mapel_id)?.nama_mapel?.toLowerCase() || '';
+                    return questionText.includes(currentSearchText) || mapelName.includes(currentSearchText);
+                });
+            }
+            
+            questionsToSelect.forEach(q => selectedQuestions.add(q.id));
             if (currentSubjectId) {
                 selectedQuestionsPerSubject[currentSubjectId] = Array.from(selectedQuestions);
             }
@@ -731,6 +627,8 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menyimpan...';
 
+            const soalIds = Array.from(selectedQuestions);
+            
             fetch('/guru/ujian/save', {
                 method: 'POST',
                 headers: {
@@ -741,19 +639,20 @@
                     nama_ujian: examName,
                     mapel_id: examSubject,
                     durasi: examDuration,
-                    soal_ids: Array.from(selectedQuestions)
+                    soal_ids: soalIds
                 })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    showMessage('✓ Ujian berhasil disimpan dan sudah tersedia di Dashboard Murid!', 'success');
+                    showMessage(`✓ Ujian berhasil disimpan! ${selectedQuestions.size} soal berhasil ditambahkan.`, 'success');
                     setTimeout(() => location.reload(), 2000);
                 } else {
                     showMessage('Gagal menyimpan ujian: ' + (data.message || 'Terjadi kesalahan'), 'error');
                 }
             })
             .catch(error => {
+                console.error('Error:', error);
                 showMessage('Terjadi kesalahan: ' + error.message, 'error');
             })
             .finally(() => {
@@ -777,18 +676,8 @@
                 icon = 'fa-info-circle';
             }
             
-            container.innerHTML = `
-                <div class="${bgColor} border-l-4 p-4 mb-6 rounded-r-lg">
-                    <div class="flex items-center gap-3">
-                        <i class="fas ${icon} text-xl"></i>
-                        <p class="font-medium">${message}</p>
-                    </div>
-                </div>
-            `;
-            
-            setTimeout(() => {
-                container.innerHTML = '';
-            }, 5000);
+            container.innerHTML = `<div class="${bgColor} border-l-4 p-4 mb-6 rounded-r-lg"><div class="flex items-center gap-3"><i class="fas ${icon} text-xl"></i><p class="font-medium">${message}</p></div></div>`;
+            setTimeout(() => { container.innerHTML = ''; }, 5000);
         }
 
         function previewExam() {
@@ -803,30 +692,19 @@
             currentQuestionId = id;
             const q = allQuestions.find(q => q.id === id);
             if (q) {
+                const tipeText = q.tipe === 'pilihan_ganda' ? 'Pilihan Ganda' : 'Essay';
                 const content = document.getElementById('questionDetailContent');
-                content.innerHTML = `
-                    <div class="space-y-4">
-                        <div>
-                            <label class="text-sm font-medium text-gray-700">Judul:</label>
-                            <p class="mt-1 p-3 bg-gray-50 rounded-lg">${q.title || 'Soal ' + q.id}</p>
-                        </div>
-                        <div>
-                            <label class="text-sm font-medium text-gray-700">Pertanyaan:</label>
-                            <p class="mt-1 p-3 bg-gray-50 rounded-lg">${q.pertanyaan || q.question || '-'}</p>
-                        </div>
-                        <div>
-                            <label class="text-sm font-medium text-gray-700">Tipe:</label>
-                            <p class="mt-1 p-3 bg-gray-50 rounded-lg">${q.tipe === 'pilihan_ganda' ? 'Pilihan Ganda' : 'Essay'}</p>
-                        </div>
-                    </div>
-                `;
+                content.innerHTML = `<div class="space-y-4">
+                    <div><label class="text-sm font-medium text-gray-700">Judul:</label><p class="mt-1 p-3 bg-gray-50 rounded-lg">${q.title || 'Soal ' + q.id}</p></div>
+                    <div><label class="text-sm font-medium text-gray-700">Pertanyaan:</label><p class="mt-1 p-3 bg-gray-50 rounded-lg">${q.pertanyaan || q.question || '-'}</p></div>
+                    <div><label class="text-sm font-medium text-gray-700">Tipe:</label><p class="mt-1 p-3 bg-gray-50 rounded-lg">${tipeText}</p></div>
+                    <div><label class="text-sm font-medium text-gray-700">Mata Pelajaran:</label><p class="mt-1 p-3 bg-gray-50 rounded-lg">${mataPelajaran.find(m => m.id == q.mapel_id)?.nama_mapel || '-'}</p></div>
+                </div>`;
             }
             document.getElementById('questionDetailModal').classList.remove('hidden');
         }
 
-        function hideQuestionDetail() {
-            document.getElementById('questionDetailModal').classList.add('hidden');
-        }
+        function hideQuestionDetail() { document.getElementById('questionDetailModal').classList.add('hidden'); }
 
         function addToExamFromDetail() {
             if (currentQuestionId) {
@@ -840,14 +718,9 @@
             }
         }
 
-        function showLogoutConfirm() {
-            document.getElementById('logoutModal').classList.remove('hidden');
-        }
-
-        function hideLogoutConfirm() {
-            document.getElementById('logoutModal').classList.add('hidden');
-        }
-
+        function showLogoutConfirm() { document.getElementById('logoutModal').classList.remove('hidden'); }
+        function hideLogoutConfirm() { document.getElementById('logoutModal').classList.add('hidden'); }
+        
         function performLogout() {
             const form = document.createElement('form');
             form.method = 'POST';
